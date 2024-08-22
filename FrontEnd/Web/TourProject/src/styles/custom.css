@@ -1,0 +1,94 @@
+@keyframes zoomInOut {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.slide-background {
+  animation: zoomInOut 5s infinite ease-in-out;
+}
+
+
+@keyframes slideInLeft {
+  from {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+/* Đảm bảo các phần tử bị ẩn trước khi animation bắt đầu */
+.hidden-animation {
+  opacity: 0;
+}
+
+.animate-left {
+  animation: slideInLeft 2s ease forwards;
+}
+
+.animate-right {
+  animation: slideInRight 2s ease forwards;
+}
+
+@keyframes roll-left {
+  0% {
+    transform: translateX(-300%) rotate(-360deg);
+  }
+  100% {
+    transform: translateX(0) rotate(0deg);
+  }
+}
+
+@keyframes roll-right {
+  0% {
+    transform: translateX(300%) rotate(360deg);
+  }
+  100% {
+    transform: translateX(0) rotate(0deg);
+  }
+}
+
+.animate-roll-left {
+  animation: roll-left 3s ease-in-out forwards;
+}
+
+.animate-roll-right {
+  animation: roll-right 3s ease-in-out forwards;
+}
+
+
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0px rgba(63, 208, 212);
+  }
+  50% {
+    box-shadow: 0 0 30px rgba(63, 208, 212);
+  }
+  100% {
+    box-shadow: 0 0 0px rgba(63, 208, 212);
+  }
+}
+
+.animate-pulse {
+  animation: pulse 2s infinite;
+}
