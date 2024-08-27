@@ -92,3 +92,25 @@
 .animate-pulse {
   animation: pulse 2s infinite;
 }
+
+/* Animation Footer */
+.dot {
+  @apply absolute bg-customColor rounded-full opacity-80;
+  width: 3px;
+  height: 3px;
+  animation: move 10s infinite ease-in-out;
+  top: var(--start-top);
+  left: var(--start-left);
+}
+
+@keyframes move {
+  0% {
+    transform: translate(0, 0);
+    opacity: 0.8;
+  }
+  100% {
+    transform: translate(var(--x), var(--y));
+    opacity: 0.8;
+  }
+}
+
