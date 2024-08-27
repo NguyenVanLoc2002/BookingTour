@@ -15,6 +15,7 @@ import { FaBus } from "react-icons/fa6";
 import { GiCommercialAirplane, GiShipBow } from "react-icons/gi";
 import { BsCalendar4Week, BsCalendarHeart } from "react-icons/bs";
 import { TiWeatherPartlySunny } from "react-icons/ti";
+import Footer from "../../layouts/Footer";
 
 function MainLayout() {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
@@ -129,7 +130,7 @@ function MainLayout() {
       <div className="w-full h-full flex flex-col">
         <Header />
         <Menu />
-        <div className="relative w-full max-w-full h-[500px] overflow-hidden">
+        <div className="relative w-full h-[500px] overflow-hidden md:h-[500px] sm:h-[250px]">
           <div
             id="slide1"
             className="absolute inset-0 bg-center bg-cover object-cover slide-background"
@@ -413,7 +414,7 @@ function MainLayout() {
           {/* MN */}
           <div className="flex items-center space-x-6 mt-3 mb-3">
             <div
-              ref={(el) => (elementRefs.current[0] = el)}
+              ref={(el) => (elementRefs.current[2] = el)}
               data-direction="left"
               className="group overflow-hidden relative w-72 h-72 rounded-full "
             >
@@ -625,7 +626,7 @@ function MainLayout() {
             </div>
 
             <div
-              ref={(el) => (elementRefs.current[1] = el)}
+              ref={(el) => (elementRefs.current[3] = el)}
               data-direction="right"
               className="group overflow-hidden relative w-72 h-72 rounded-full "
             >
@@ -640,6 +641,9 @@ function MainLayout() {
             </div>
           </div>
         </div>
+
+        {/* Footer */}
+        <Footer />
       </div>
     </>
   );
