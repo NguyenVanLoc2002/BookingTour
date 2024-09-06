@@ -40,6 +40,9 @@ dependencies {
 	implementation 'org.springframework:spring-jdbc'
 	testImplementation 'org.springframework.kafka:spring-kafka-test'
 
+	//implement file
+	implementation files('BackEnd/CommonService/build/libs/CommonService-0.0.1-SNAPSHOT.jar')
+
 
 	compileOnly 'org.projectlombok:lombok'
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'

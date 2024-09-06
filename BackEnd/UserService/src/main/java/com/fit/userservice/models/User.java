@@ -3,6 +3,9 @@ package com.fit.userservice.models;
 
 import lombok.*;
 import org.springframework.cglib.core.Local;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.relational.core.mapping.Column;
+import org.springframework.data.relational.core.mapping.Table;
 
 import java.time.LocalDate;
 
@@ -12,9 +15,12 @@ import java.time.LocalDate;
 @Getter
 @Setter
 @ToString
-
+@Table(name = "users")
 public class User {
-    private String userId;
+    @Id
+    private Long userId;
+    @Column("full_name")
+    private String name;
     private String email;
     private LocalDate registrationDate;
 }
