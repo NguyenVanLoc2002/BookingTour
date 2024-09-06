@@ -2,6 +2,9 @@ package com.fit.userservice.models;
 
 
 import lombok.*;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.relational.core.mapping.Column;
+import org.springframework.data.relational.core.mapping.Table;
 
 import java.time.LocalDate;
 
@@ -10,8 +13,10 @@ import java.time.LocalDate;
 @Getter
 @Setter
 @ToString
-public class Customer extends  User{
-    private String name;
+@Table(name = "customers")
+public class Customer {
+    @Column("user_id")
+    private Long userId;
     private String address;
     private boolean gender;
     private LocalDate dateOfBirth;

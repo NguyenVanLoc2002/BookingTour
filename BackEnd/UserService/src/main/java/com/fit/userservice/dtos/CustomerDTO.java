@@ -11,7 +11,7 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CustomerDTO {
-    private String userId;
+    private Long userId;
     private String email;
     private LocalDate registrationDate;
     private String name;
@@ -23,9 +23,6 @@ public class CustomerDTO {
     public static Customer convertToEntity(CustomerDTO customerDTO) {
         Customer customer = new Customer();
         customer.setUserId(customerDTO.getUserId());
-        customer.setEmail(customerDTO.getEmail());
-        customer.setRegistrationDate(customerDTO.getRegistrationDate());
-        customer.setName(customerDTO.getName());
         customer.setAddress(customerDTO.getAddress());
         customer.setGender(customerDTO.isGender());
         customer.setDateOfBirth(customerDTO.getDateOfBirth());
@@ -36,9 +33,6 @@ public class CustomerDTO {
     public static CustomerDTO convertToDto(Customer customer) {
         CustomerDTO customerDTO = new CustomerDTO();
         customerDTO.setUserId(customer.getUserId());
-        customerDTO.setEmail(customer.getEmail());
-        customerDTO.setRegistrationDate(customer.getRegistrationDate());
-        customerDTO.setName(customer.getName());
         customerDTO.setAddress(customer.getAddress());
         customerDTO.setGender(customer.isGender());
         customerDTO.setDateOfBirth(customer.getDateOfBirth());
