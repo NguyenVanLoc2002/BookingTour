@@ -1,13 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="DataSourceManagerImpl" format="xml" multifile-model="true">
-    <data-source source="LOCAL" name="user@localhost" uuid="dce732b7-afa6-4a64-b154-326d7c4f9fc9">
+    <data-source source="LOCAL" name="authentication@localhost" uuid="885856d0-7d73-43c1-a5e5-1dc8423384c5">
       <driver-ref>mariadb</driver-ref>
       <synchronize>true</synchronize>
       <imported>true</imported>
-      <remarks>$PROJECT_DIR$/UserService/src/main/resources/application.properties</remarks>
       <jdbc-driver>org.mariadb.jdbc.Driver</jdbc-driver>
-      <jdbc-url>jdbc:mariadb://localhost:3306/user?createDatabaseIfNotExist=true</jdbc-url>
+      <jdbc-url>jdbc:mariadb://localhost:3306/authentication?createDatabaseIfNotExist=true</jdbc-url>
       <jdbc-additional-properties>
         <property name="com.intellij.clouds.kubernetes.db.host.port" />
         <property name="com.intellij.clouds.kubernetes.db.enabled" value="false" />
