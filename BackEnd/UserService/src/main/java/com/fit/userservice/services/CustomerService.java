@@ -1,10 +1,13 @@
 package com.fit.userservice.services;
 
+import com.fit.commonservice.utils.Constant;
 import com.fit.userservice.dtos.CustomerDTO;
+import com.fit.userservice.event.EventProducer;
 import com.fit.userservice.models.Customer;
 import com.fit.userservice.models.User;
 import com.fit.userservice.repositories.CustomerRepository;
 import com.fit.userservice.repositories.UserRepository;
+import com.google.gson.Gson;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -12,6 +15,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.time.LocalDate;
+import java.util.Objects;
 
 @Service
 @Slf4j
@@ -21,6 +25,11 @@ public class CustomerService {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private EventProducer eventProducer;
+    @Autowired
+    private Gson gson;
 
     public Flux<CustomerDTO> getAllCustomers() {
         return customerRepository.findAll()
@@ -65,7 +74,15 @@ public class CustomerService {
                     customer.setUserId(savedUser.getUserId());
                     return customerRepository.save(customer);
                 })
-                .map(CustomerDTO::convertToDto);
+                .map(CustomerDTO::convertToDto)
+                .doOnError(throwable -> log.error(throwable.getMessage()))
+                .doOnSuccess(dto -> {
+                    // Gửi thông tin đến Kafka khi tạo thành công
+                    if (Objects.nonNull(dto)) {
+                        eventProducer.send(Constant.USER_ONBOARDING_TOPIC, gson.toJson(dto)) // Gửi message đến Kafka topic
+                                .subscribe(result -> log.info("Message sent to Kafka: " + result));
+                    }
+                });
     }
 
 
