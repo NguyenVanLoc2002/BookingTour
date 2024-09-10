@@ -15,15 +15,6 @@
             <column name="password" type="varchar(255)">
                 <constraints nullable="false"/>
             </column>
-            <column name="token" type="varchar(255)">
-                <constraints nullable="false"/>
-            </column>
-            <column name="expiration_date" type="date">
-                <constraints nullable="false"/>
-            </column>
-            <column name="created_date" type="date">
-                <constraints nullable="false"/>
-            </column>
             <column name="role" type="varchar(10)">
                 <constraints nullable="false"/>
             </column>

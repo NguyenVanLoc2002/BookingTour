@@ -14,7 +14,7 @@ import org.springframework.data.relational.core.mapping.Table;
 @Setter
 @ToString
 @Table(name = "admins")
-public class Admin extends User {
+public class Admin {
     @Column("user_id")
     private Long userId;
     private AdminPermission permission;

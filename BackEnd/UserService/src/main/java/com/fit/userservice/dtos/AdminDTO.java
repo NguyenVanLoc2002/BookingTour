@@ -21,8 +21,6 @@ public class AdminDTO {
     public static Admin convertToEntity(AdminDTO adminDTO) {
         Admin admin = new Admin();
         admin.setUserId(adminDTO.getUserId());
-        admin.setEmail(adminDTO.getEmail());
-        admin.setRegistrationDate(adminDTO.getRegistrationDate());
         admin.setPermission(adminDTO.getPermission());
         return admin;
     }
@@ -30,8 +28,6 @@ public class AdminDTO {
     public static AdminDTO convertToDto(Admin admin) {
         AdminDTO adminDTO = new AdminDTO();
         adminDTO.setUserId(admin.getUserId());
-        adminDTO.setEmail(admin.getEmail());
-        adminDTO.setRegistrationDate(admin.getRegistrationDate());
         adminDTO.setPermission(admin.getPermission());
         return adminDTO;
     }

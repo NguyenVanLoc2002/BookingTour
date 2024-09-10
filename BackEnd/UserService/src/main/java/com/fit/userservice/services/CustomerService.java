@@ -72,9 +72,15 @@ public class CustomerService {
                 .flatMap(savedUser -> {
                     Customer customer = CustomerDTO.convertToEntity(customerDTO);
                     customer.setUserId(savedUser.getUserId());
-                    return customerRepository.save(customer);
+                    return customerRepository.save(customer)
+                            .map(savedCustomer->{
+                                CustomerDTO dto = CustomerDTO.convertToDto(savedCustomer);
+                                dto.setName(savedUser.getName());
+                                dto.setEmail(savedUser.getEmail());
+                                dto.setRegistrationDate(savedUser.getRegistrationDate());
+                                return dto;
+                            });
                 })
-                .map(CustomerDTO::convertToDto)
                 .doOnError(throwable -> log.error(throwable.getMessage()))
                 .doOnSuccess(dto -> {
                     // Gửi thông tin đến Kafka khi tạo thành công
