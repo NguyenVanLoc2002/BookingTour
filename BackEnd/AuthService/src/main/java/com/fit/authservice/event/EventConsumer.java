@@ -1,11 +1,15 @@
 package com.fit.authservice.event;
 
+import com.fit.authservice.dtos.AuthUserDTO;
+import com.fit.authservice.dtos.CustomerDTO;
+import com.fit.authservice.enums.Role;
 import com.fit.authservice.models.AuthUser;
 import com.fit.authservice.services.AuthService;
 import com.fit.commonservice.utils.Constant;
 import com.google.gson.Gson;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import reactor.kafka.receiver.KafkaReceiver;
 import reactor.kafka.receiver.ReceiverOptions;
@@ -25,6 +29,9 @@ public class EventConsumer {
     private final KafkaReceiver<String, String> kafkaReceiver;
 
     @Autowired
+    private Gson gson;
+
+    @Autowired
     public EventConsumer(ReceiverOptions<String, String> options) {
         log.info("userOnboarding");
         this.kafkaReceiver = KafkaReceiver.create(options.subscription(Collections.singleton(Constant.USER_ONBOARDING_TOPIC)));
@@ -32,7 +39,17 @@ public class EventConsumer {
     }
 
     public void userOnboarding(ReceiverRecord<String, String> receiverRecord) {
-        log.info("userOnboarding {}", receiverRecord.value());
+        log.info("Customer Onboarding event");
+        CustomerDTO customerDTO = gson.fromJson(receiverRecord.value(), CustomerDTO.class);
+        log.info(customerDTO.toString());
+        AuthUserDTO authUserDTO = new AuthUserDTO();
+        authUserDTO.setEmail(customerDTO.getEmail());
+        authUserDTO.setPassword("123456");
+        authUserDTO.setRole(Role.USER);
+        log.info(authUserDTO.toString());
+        authService.createAuthUser(authUserDTO)
+                .subscribe();
+
     }
 
 }

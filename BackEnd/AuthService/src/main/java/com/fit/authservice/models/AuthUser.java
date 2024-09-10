@@ -20,9 +20,7 @@ public class AuthUser {
     @Id
     @Column("auth_id")
     private Long id;
-    private String token;
-    private LocalDate expirationDate;
-    private LocalDate createdDate;
+    private String email;
     private String password;
     private Role role;
 }
