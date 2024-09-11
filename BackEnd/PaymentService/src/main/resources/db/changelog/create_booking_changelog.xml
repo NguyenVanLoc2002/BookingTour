@@ -1,0 +1,34 @@
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                            http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <!-- ChangeSet để tạo bảng booking -->
+    <changeSet id="create-booking" author="NguyenVanLoc2002">
+        <createTable tableName="booking">
+            <column name="booking_id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="customer_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="tour_id" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="booking_date" type="DATE">
+                <constraints nullable="false"/>
+            </column>
+            <column name="status_booking" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="total_amount" type="DECIMAL(20, 0)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="quantity" type="INT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+</databaseChangeLog>
