@@ -1,0 +1,42 @@
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                            http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <!-- ChangeSet để tạo bảng tour -->
+    <changeSet id="create-tour" author="NguyenVanLoc2002">
+        <createTable tableName="tours">
+            <column name="tour_id" type="bigint" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="name" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="duration" type="int">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="destination" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="departure_location" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="available_slot" type="int">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="url_image" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <!-- ChangeSet để thêm cột includePromotions và price -->
+    <changeSet id="add-columns-includePromotions-and-price-to-tours" author="NguyenVanLoc2002">
+        <addColumn tableName="tours">
+            <column name="include_promotions" type="boolean"/>
+            <column name="price" type="double"/>
+        </addColumn>
+    </changeSet>
+
+</databaseChangeLog>
