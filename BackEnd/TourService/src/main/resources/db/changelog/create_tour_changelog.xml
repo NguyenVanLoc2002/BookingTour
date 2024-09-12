@@ -13,8 +13,11 @@
             <column name="name" type="varchar(255)">
                 <constraints nullable="false"/>
             </column>
-            <column name="duration" type="int">
-                <constraints nullable="false" unique="true"/>
+            <column name="day" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="night" type="int">
+                <constraints nullable="false"/>
             </column>
             <column name="destination" type="varchar(255)">
                 <constraints nullable="false"/>
@@ -37,6 +40,12 @@
             <column name="include_promotions" type="boolean"/>
             <column name="price" type="double"/>
         </addColumn>
+    </changeSet>
+
+
+<!--    Thêm 10 data-->
+    <changeSet id="table-tours-init" author="NguyenVanLoc2002">
+        <sqlFile path="db/sql/table-tours-init.sql"/>
     </changeSet>
 
 </databaseChangeLog>

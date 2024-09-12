@@ -12,7 +12,8 @@ public class TourDTO {
     private Long tourId;
     private String name;
     private double price;
-    private int duration;
+    private int day;
+    private int night;
     private String destination;
     private String departureLocation;
     private int availableSlot;
@@ -24,7 +25,8 @@ public class TourDTO {
         tour.setTourId(tourDTO.getTourId());
         tour.setName(tourDTO.getName());
         tour.setPrice(tourDTO.getPrice());
-        tour.setDuration(tourDTO.getDuration());
+        tour.setDay(tourDTO.getDay());
+        tour.setNight(tourDTO.getNight());
         tour.setDestination(tourDTO.getDestination());
         tour.setDepartureLocation(tourDTO.getDepartureLocation());
         tour.setAvailableSlot(tourDTO.getAvailableSlot());
@@ -38,7 +40,8 @@ public class TourDTO {
         tourDTO.setTourId(tour.getTourId());
         tourDTO.setName(tour.getName());
         tourDTO.setPrice(tour.getPrice());
-        tourDTO.setDuration(tour.getDuration());
+        tourDTO.setDay(tour.getDay());
+        tourDTO.setNight(tour.getNight());
         tourDTO.setDestination(tour.getDestination());
         tourDTO.setDepartureLocation(tour.getDepartureLocation());
         tourDTO.setAvailableSlot(tour.getAvailableSlot());

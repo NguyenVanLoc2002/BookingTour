@@ -18,8 +18,9 @@ public class Tour {
     private Long tourId;
     private String name;
     private double price;
-//    Khoảng thời gian
-    private int duration;
+//    Khoảng thời gian 3 ngay 2 dem
+    private int day;
+    private int night;
     //Điểm den
     private String destination;
 //    Dia diem khoi hanh

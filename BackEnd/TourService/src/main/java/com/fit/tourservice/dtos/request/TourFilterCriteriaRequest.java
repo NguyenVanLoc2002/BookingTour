@@ -16,11 +16,27 @@ import java.time.LocalDate;
 @AllArgsConstructor
 public class TourFilterCriteriaRequest {
     private double maxCost;
-    private int duration;
     private LocalDate startDate;
+    private int maxDuration;
     private TypeTour typeTour;
     private AccommodationQuality accommodationQuality;
     private Region region;
     private TransportationMode transportationMode;
     private boolean includePromotions;
+
+    public Integer getTypeTourValue() {
+        return typeTour != null ? typeTour.getValue() : null;
+    }
+
+    public Integer getAccommodationQualityValue() {
+        return accommodationQuality != null ? accommodationQuality.getValue() : null;
+    }
+
+    public Integer getRegionValue() {
+        return region != null ? region.getValue() : null;
+    }
+
+    public Integer getTransportationModeValue() {
+        return transportationMode != null ? transportationMode.getValue() : null;
+    }
 }
