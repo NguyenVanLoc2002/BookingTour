@@ -41,4 +41,8 @@
                                  constraintName="fk_tour_feature_tours"/>
     </changeSet>
 
+<!--    Add data-->
+    <changeSet id="table-tour_feature-init" author="NguyenVanLoc2002">
+        <sqlFile path="db/sql/table-tour_feature_init.sql"/>
+    </changeSet>
 </databaseChangeLog>

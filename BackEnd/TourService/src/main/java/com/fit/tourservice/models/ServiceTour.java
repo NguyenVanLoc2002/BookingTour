@@ -12,7 +12,7 @@ import org.springframework.data.relational.core.mapping.Table;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "tour_service")
-public class TourService {
+public class ServiceTour {
     @Id
     private Long serviceId;
     private Long tourId;
