@@ -15,18 +15,19 @@ const ChuongTrinh = ({ navigation, route }) => {
             [index]: !prevExpanded[index], // Đảo ngược trạng thái của ngày hiện tại
         }));
     };
-    
+
     return (
         <ScrollView style={styles.container}>
             <View >
                 {tour?.chuongTrinh?.map((ct, index) => (
                     <View style={styles.detailBox} key={index}>
-                       <View style={styles.rowBetween}><Text style={styles.tieuDe}>Ngày {index + 1}: {ct?.title}</Text>
-                        <Pressable style={{paddingRight:10}} onPress={() => toggleDetail(index)}>
-                            {expanded[index] ? (
-                                <Ionicons name="arrow-down-circle" size={24} color="black" />
-                            ) : (<Ionicons name="arrow-up-circle" size={24} color="black" />)}
-                        </Pressable></View>
+                        <Pressable style={{ paddingRight: 10 }} onPress={() => toggleDetail(index)}>
+                            <View style={styles.rowBetween}><Text style={styles.tieuDe}>Ngày {index + 1}: {ct?.title}</Text>
+                                {expanded[index] ? (
+                                    <Ionicons name="arrow-down-circle" size={24} color="black" />
+                                ) : (<Ionicons name="arrow-up-circle" size={24} color="black" />)}
+                            </View>  
+                            </Pressable>
                         {expanded[index] && (
                             <Text style={{ fontSize: 13, paddingTop: 15, }}>{ct?.detail}</Text>
                         )}
