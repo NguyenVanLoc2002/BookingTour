@@ -15,54 +15,61 @@ const DieuKien = ({ navigation, route }) => {
             [key]: !prevExpanded[key] // Đảo ngược trạng thái của mục hiện tại
         }));
     };
-    
+
     return (
         <ScrollView style={styles.container}>
             <View >
                 <View style={styles.detailBox}>
-                    <View style={styles.rowBetween}><Text style={styles.tieuDe}>Bao gồm</Text>
-                        <Pressable style={{ paddingRight: 10 }} onPress={() => toggleDetail('baoGom')}>
+                    <Pressable style={{ paddingRight: 10 }} onPress={() => toggleDetail('baoGom')}>
+                        <View style={styles.rowBetween}>
+                            <Text style={styles.tieuDe}>Bao gồm</Text>
                             {expanded.baoGom ? (
                                 <Ionicons name="arrow-down-circle" size={24} color="black" />
                             ) : (<Ionicons name="arrow-up-circle" size={24} color="black" />)}
-                        </Pressable></View>
+                        </View>
+                    </Pressable>
                     {expanded.baoGom && <Text style={{ fontSize: 13, paddingTop: 15, }}>{tour?.dieuKien?.baoGom}</Text>}
                 </View>
                 <View style={styles.detailBox}>
-                    <View style={styles.rowBetween}><Text style={styles.tieuDe}>Không bao gồm</Text>
-                        <Pressable style={{ paddingRight: 10 }} onPress={() => toggleDetail('khongBaoGom')}>
+                    <Pressable style={{ paddingRight: 10 }} onPress={() => toggleDetail('khongBaoGom')}>
+                        <View style={styles.rowBetween}><Text style={styles.tieuDe}>Không bao gồm</Text>
                             {expanded.khongBaoGom ? (
                                 <Ionicons name="arrow-down-circle" size={24} color="black" />
                             ) : (<Ionicons name="arrow-up-circle" size={24} color="black" />)}
-                        </Pressable></View>
+                        </View>
+                    </Pressable>
                     {expanded.khongBaoGom && <Text style={{ fontSize: 13, paddingTop: 15, }}>{tour?.dieuKien?.khongBaoGom}</Text>}
                 </View>
 
                 <View style={styles.detailBox}>
-                    <View style={styles.rowBetween}><Text style={styles.tieuDe}>Giá vé trẻ em</Text>
-                        <Pressable style={{ paddingRight: 10 }} onPress={() => toggleDetail('giaveTreEm')}>
+                    <Pressable style={{ paddingRight: 10 }} onPress={() => toggleDetail('giaveTreEm')}>
+                        <View style={styles.rowBetween}><Text style={styles.tieuDe}>Giá vé trẻ em</Text>
                             {expanded.giaveTreEm ? (
                                 <Ionicons name="arrow-down-circle" size={24} color="black" />
                             ) : (<Ionicons name="arrow-up-circle" size={24} color="black" />)}
-                        </Pressable></View>
+                        </View>
+                    </Pressable>
                     {expanded.giaveTreEm && <Text style={{ fontSize: 13, paddingTop: 15, }}>{tour?.dieuKien?.giaveTreEm}</Text>}
                 </View>
                 <View style={styles.detailBox}>
-                    <View style={styles.rowBetween}><Text style={styles.tieuDe}>Hủy Tour</Text>
-                        <Pressable style={{ paddingRight: 10 }} onPress={() => toggleDetail('huyTour')}>
+                    <Pressable style={{ paddingRight: 10 }} onPress={() => toggleDetail('huyTour')}>
+                        <View style={styles.rowBetween}>
+                            <Text style={styles.tieuDe}>Hủy Tour</Text>
                             {expanded.huyTour ? (
                                 <Ionicons name="arrow-down-circle" size={24} color="black" />
                             ) : (<Ionicons name="arrow-up-circle" size={24} color="black" />)}
-                        </Pressable></View>
+                        </View>
+                    </Pressable>
                     {expanded.huyTour && <Text style={{ fontSize: 13, paddingTop: 15, }}>{tour?.dieuKien?.huyTour}</Text>}
                 </View>
                 <View style={styles.detailBox}>
-                    <View style={styles.rowBetween}><Text style={styles.tieuDe}>Thanh Toán</Text>
-                        <Pressable style={{ paddingRight: 10 }} onPress={() => toggleDetail('thanhToan')}>
+                    <Pressable style={{ paddingRight: 10 }} onPress={() => toggleDetail('thanhToan')}>
+                        <View style={styles.rowBetween}><Text style={styles.tieuDe}>Thanh Toán</Text>
                             {expanded.thanhToan ? (
                                 <Ionicons name="arrow-down-circle" size={24} color="black" />
                             ) : (<Ionicons name="arrow-up-circle" size={24} color="black" />)}
-                        </Pressable></View>
+                        </View>
+                    </Pressable>
                     {expanded.thanhToan && <Text style={{ fontSize: 13, paddingTop: 15, }}>{tour?.dieuKien?.thanhToan}</Text>}
                 </View>
 

@@ -3,14 +3,14 @@ import { View, Text, StyleSheet, Pressable, Image, ScrollView } from 'react-nati
 import AntDesign from '@expo/vector-icons/AntDesign';
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 
-const TourComponent = ({ navigation,route,listTour }) => {
+const TourComponent = ({ navigation, route, listTour }) => {
     return (
         <ScrollView horizontal style={styles.tourContainer}>
             {listTour.map((tour, index) => (
                 <View key={index} style={styles.tourRow}>
                     <Pressable
                         style={styles.itemTour}
-                        onPress={() => {navigation.navigate("DetailTour", { tour: tour });}}
+                        onPress={() => { navigation.navigate("DetailTour", { tour: tour }); }}
                     >
                         <View style={styles.tour}>
                             <Image
@@ -30,9 +30,9 @@ const TourComponent = ({ navigation,route,listTour }) => {
                                         <Text style={{ textDecorationLine: "line-through", fontSize: 14, fontWeight: "500", color: "gray" }}>{Number(tour.originalPrice).toLocaleString('vi-VN')} đ</Text>
 
                                     </View>
-                                    <View style={[styles.row,{paddingRight:10, alignItems:"center"}]}>
-                                    <FontAwesome6 style={{ paddingRight:10}}  name="bus-simple" size={16} color="black" />
-                                    <FontAwesome6 name="plane" size={16} color="black" />
+                                    <View style={[styles.row, { paddingRight: 10, alignItems: "center" }]}>
+                                        <FontAwesome6 style={{ paddingRight: 10 }} name="bus-simple" size={16} color="black" />
+                                        <FontAwesome6 name="plane" size={16} color="black" />
                                     </View>
                                 </View>
                                 <View style={styles.row}><AntDesign name="calendar" size={16} color="black" /><Text style={{ fontSize: 12 }}>Khởi hành: {tour.ngayKhoiHanh}</Text></View>
@@ -56,23 +56,23 @@ const styles = StyleSheet.create({
     },
     tourRow: {
         borderRadius: 10,
-        backgroundColor: '#fff',
-        shadowColor: "black",
-        shadowOffset: { width: 1, height: 2 },
-        shadowOpacity: 0.8,
-        shadowRadius: 4,
-        elevation: 10, // Android
-        // height: 250,
         width: 220,
-        margin: 3
+        // margin: 5,
+        padding:5,
+        paddingBottom:10,
+        paddingRight:7
     },
     itemTour: {
-        // flexDirection: "row",
-        // justifyContent: "space-between",
+        backgroundColor: '#fff',
+        shadowColor: "black", 
+        shadowOffset: { width: 1, height: 3 }, 
+        shadowOpacity: 0.3, 
+        shadowRadius: 3, 
+        elevation: 5, 
+        borderRadius: 10,
     },
     tour: {
         flexDirection: "col",
-        // alignItems: "center",
     },
     tourAvt: {
         width: '100%',
@@ -80,8 +80,6 @@ const styles = StyleSheet.create({
         backgroundColor: "red",
         borderTopLeftRadius: 10,
         borderTopRightRadius: 10,
-        // marginRight: 10,
-        // alignItems: "center",
     },
     detailTour: {
         paddingLeft: 5

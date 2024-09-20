@@ -8,6 +8,7 @@ import SavedListComponent from "../components/SavedListComponent/SavedListCompon
 import DetailTour from "../components/TourComponent/DetailTour"
 import Tour from "../components/HomeComponent/component/TourComponent"
 import ListTour from "../components/TourComponent/ListTour"
+import SetCriteria from "../components/HomeComponent/component/SetCriteria"
 
 const Stack = createNativeStackNavigator();
 
@@ -30,6 +31,7 @@ export default function RootComponent() {
        <Stack.Screen name="DetailTour" component={DetailTour} />
        <Stack.Screen name="ListTour" component={ListTour} />
        <Stack.Screen name="Tour" component={Tour} />
+       <Stack.Screen name="SetCriteria" component={SetCriteria} />
     </Stack.Navigator>
   ) 
 }

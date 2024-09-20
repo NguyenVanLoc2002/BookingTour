@@ -1,13 +1,11 @@
 import React, { useEffect, useRef, useState } from "react";
 import { View, Text, ImageBackground, Pressable, Button, StyleSheet, TextInput, TouchableOpacity, Image, ScrollView, Dimensions } from "react-native";
+import { Picker } from '@react-native-picker/picker';
 import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
-import MaterialIcons from '@expo/vector-icons/MaterialIcons';
-import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
-// import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
-import TourComponent from "./component/TourComponent"
-// const Tab = createMaterialTopTabNavigator();
-
-const HomeComponent = ({ navigation }) => {
+import DateTimePicker from '@react-native-community/datetimepicker';
+import AntDesign from '@expo/vector-icons/AntDesign';
+import TourComponent from "./TourComponent";
+const SetCriteria = ({ navigation }) => {
 
     const [listMienBac, setListMienBac] = useState([
         {
@@ -337,223 +335,241 @@ const HomeComponent = ({ navigation }) => {
         ,
 
     ]);
-    const images = [
-        "https://res.cloudinary.com/doqbelkif/image/upload/v1726605769/9ae475e5-ab3e-4762-acd8-82a7a6e05086.png",
-        "https://res.cloudinary.com/doqbelkif/image/upload/v1726605783/077dc171-f2ed-48e2-a4b4-2c20b5fa4bc7.png",
-        "https://res.cloudinary.com/doqbelkif/image/upload/v1726605800/0c0179e2-43ac-447e-a579-d2a1fbcc61e0.png",
-        "https://res.cloudinary.com/doqbelkif/image/upload/v1726605810/62c96cbc-6b19-4a94-a180-b0d16ac5a9b4.png",
-        "https://res.cloudinary.com/doqbelkif/image/upload/v1726605834/fb61f333-e383-44d1-b1d6-7727f04c7ad1.png",
-        "https://res.cloudinary.com/doqbelkif/image/upload/v1726605863/968c81c7-7e7b-447c-962c-7f2c62af98c5.png",
-        "https://res.cloudinary.com/doqbelkif/image/upload/v1726605866/35784823-5c44-4f7e-b095-ec45a2d129ec.png"
-    ];
-    const [listDiemDenYeuThich, setListDiemDenYeuThich] = useState([
-        {
-            url: "https://res.cloudinary.com/doqbelkif/image/upload/v1726605863/968c81c7-7e7b-447c-962c-7f2c62af98c5.png",
-            local: "Đà Lạt"
-        },
-        {
-            url: "https://res.cloudinary.com/doqbelkif/image/upload/v1726605834/fb61f333-e383-44d1-b1d6-7727f04c7ad1.png",
-            local: "Hà Nội"
-        },
-        {
-            url: "https://res.cloudinary.com/doqbelkif/image/upload/v1726605810/62c96cbc-6b19-4a94-a180-b0d16ac5a9b4.png",
-            local: "Ninh Bình"
-        },
-        {
-            url: "https://res.cloudinary.com/doqbelkif/image/upload/v1726605783/077dc171-f2ed-48e2-a4b4-2c20b5fa4bc7.png",
-            local: "Phú Quốc"
-        }, {
-            url: "https://res.cloudinary.com/doqbelkif/image/upload/v1726605866/35784823-5c44-4f7e-b095-ec45a2d129ec.png",
-            local: "Vịnh Hạ Long"
-        },
-        ,
+    const listKhoiHanh = [
+        { label: 'Hồ Chí Minh', value: 'hcm' },
+        { label: 'Long An', value: 'la' },
+        { label: 'Tây Ninh', value: 'tani' },
+    ]
 
-    ]);
+    const [selectedNoiKhoiHanh, setSelectedNoiKhoiHanh] = useState(listKhoiHanh[0].value);
 
-
-    // Animation for banner
-    const scrollViewRef = useRef(null);
-    const [scrollPosition, setScrollPosition] = useState(0); // Lưu vị trí cuộn hiện tại
-    const scrollStep = 150;
-    const screenWidth = Dimensions.get('window').width;
-    const contentWidth = images.length * (153 + 20);
-
-    // dành cho mục đề xuất & dành cho bạn
-    const [choosedMuc, setChoosedMuc] = useState(0);
     const [choosedMien, setChoosedMien] = useState(0);
     const [choosedOption, setChoosedOption] = useState(0);
-    useEffect(() => {
-        const interval = setInterval(() => {
-            if (scrollViewRef.current) {
-                // Cuộn tới vị trí mới
-                scrollViewRef.current.scrollTo({ x: scrollPosition, animated: true });
 
-                // Cập nhật vị trí cuộn mới
-                setScrollPosition(prevPosition => {
-                    const newPosition = prevPosition + scrollStep;
-                    // Kiểm tra nếu đã cuộn hết, quay về vị trí 0
-                    return newPosition > contentWidth - screenWidth ? 0 : newPosition;
-                });
-            }
-        }, 5000); // Cuộn mỗi 3 giây
-
-        return () => clearInterval(interval); // Dọn dẹp interval khi component unmount
-    }, [scrollPosition, contentWidth, screenWidth]);
-
-    const clickDeXuat = () => {
-        setChoosedMuc(0);
-    };
-    const clickDanhChoBan = () => {
-        setChoosedMuc(1);
-    };
     const chooseMien = (a) => {
         setChoosedMien(a);
     };
     const chooseOption = (a) => {
         setChoosedOption(a);
     };
+    const [dateBD, setDateBD] = useState(new Date());
+    const [showBD, setShowBD] = useState(false);
 
+    const onChangeBD = (event, selectedDate) => {
+        const currentDate = selectedDate || date;
+        // setShow(Platform.OS === 'ios'); // Ẩn lịch nếu không phải iOS
+        setDateBD(currentDate); // Cập nhật ngày đã chọn
+        setShowBD(false);
+    };
+
+    const showDatePickerBD = () => {
+        setShowBD(true);
+    };
+    const [dateKT, setDateKT] = useState(new Date());
+    const [showKT, setShowKT] = useState(false);
+
+    const onChangeKT = (event, selectedDate) => {
+        const currentDate = selectedDate || date;
+        // setShow(Platform.OS === 'ios'); // Ẩn lịch nếu không phải iOS
+        setDateKT(currentDate); // Cập nhật ngày đã chọn
+        setShowKT(false);
+    };
+
+    const showDatePickerKT = () => {
+        setShowKT(true);
+    };
 
     return (
         <ScrollView style={{ backgroundColor: "#fafafa", height: "100%" }}>
 
             <ImageBackground source={{
-                uri: "https://res.cloudinary.com/doqbelkif/image/upload/v1726601540/656c046a-02ef-4286-8f9f-34ca7ef6e82a.png"
+                uri: "https://res.cloudinary.com/doqbelkif/image/upload/v1726870188/484010f3-2134-4820-b713-511f1e106f22.png"
             }} resizeMode="cover" style={styles.imageBia}>
                 <View style={styles.header}>
                     <FontAwesome5 name={"search"} size={24} color={"black"} />
                     <TextInput placeholder="Nhập vào đây để tìm kiếm" style={styles.buttonSearch}>
-
                     </TextInput>
                 </View>
             </ImageBackground>
-
-            <View style={styles.viewBox}>
-                {/* Main Options */}
-                <View style={styles.optionsRow}>
-                    <TouchableOpacity style={styles.optionButton}>
-                        <Image
-                            source={require('../../../assets/mountain.png')}
-                            style={{ width: 24, height: 24 }}
-                        />
-                        <Text style={styles.textBox}>Tour mạo hiểm</Text>
-                    </TouchableOpacity>
-
-                    <TouchableOpacity style={styles.optionButton}>
-                        <Image
-                            source={require('../../../assets/river.png')}
-                            style={{ width: 24, height: 24 }}
-                        />
-                        <Text style={styles.textBox}>Tour tham quan</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity style={styles.optionButton}>
-                        <Image
-                            source={require('../../../assets/buddhist.png')}
-                            style={{ width: 24, height: 24 }}
-                        />
-                        <Text style={styles.textBox}>Tour văn hóa</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity style={styles.optionButton}>
-                        <Image
-                            source={require('../../../assets/jungle.png')}
-                            style={{ width: 24, height: 24 }}
-                        />
-                        <Text style={styles.textBox}>Tour sinh thái</Text>
-                    </TouchableOpacity>
-
-                </View>
-                <View style={styles.optionsRow}>
-
-                    <TouchableOpacity style={styles.optionButton}>
-                        <Image
-                            source={require('../../../assets/resort.png')}
-                            style={{ width: 24, height: 24 }}
-                        />
-                        <Text style={styles.textBox}>Tour nghỉ dưỡng</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity style={styles.optionButton}>
-                        <Image
-                            source={require('../../../assets/target.png')}
-                            style={{ width: 24, height: 24 }}
-                        />
-                        <Text style={styles.textBox}>Tour teambuilding</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity style={styles.optionButton} onPress={() => { navigation.navigate("SetCriteria") }}>
-                        <Image
-                            source={require('../../../assets/setting.png')}
-                            style={{ width: 24, height: 24 }}
-                        />
-                        <Text style={styles.textBox}>Thiết lập tiêu chí</Text>
-                    </TouchableOpacity>
-                </View>
-
-
-
-            </View>
-            <View style={styles.banner}>
-                <Text style={styles.tieuDe}>Trải nghiệm những chuyến đi tuyệt vời với những khung cảnh tuyệt đẹp</Text>
-                <ScrollView horizontal style={styles.bannerContainer}
-                    ref={scrollViewRef}
-                    showsHorizontalScrollIndicator={false} >
-                    {images.map((image, index) => (
-                        <Pressable key={index} style={styles.bannerRow}>
-                            <Image
-                                source={{
-                                    uri: image
-                                }}
-                                style={styles.bannerAvt}
-                                resizeMode="cover"
-                            />
+            <View style={styles.boxContent}>
+                <Text style={[styles.textTitle, { paddingBottom: 100 }]}>Trải nghiệm kì nghỉ tuyệt vời</Text>
+                <Text style={styles.textTitle}>Thiết lập tiêu chí chọn tour của bạn</Text>
+                <View style={styles.viewBox}>
+                    <View style={styles.optionsRow}>
+                        <TouchableOpacity style={styles.optionButtonTieuChi}>
+                            <Text style={styles.textTieuChi}>Điểm khởi hành</Text>
+                            <View style={styles.formPicker}>
+                                <Picker
+                                    selectedValue={selectedNoiKhoiHanh}
+                                    onValueChange={(itemValue) => setSelectedNoiKhoiHanh(itemValue)}
+                                >
+                                    {listKhoiHanh.map((item, index) => (
+                                        <Picker.Item key={index} label={item.label} value={item.value} style={styles.textPicker} />
+                                    ))}
+                                </Picker>
+                            </View>
+                        </TouchableOpacity>
+                        <TouchableOpacity style={styles.optionButtonTieuChi}>
+                            <Text style={styles.textTieuChi}>Mức giá tối đa</Text>
+                            <View style={styles.formPicker}>
+                                <Picker
+                                    selectedValue={selectedNoiKhoiHanh}
+                                    onValueChange={(itemValue) => setSelectedNoiKhoiHanh(itemValue)}
+                                >
+                                    {listKhoiHanh.map((item, index) => (
+                                        <Picker.Item key={index} label={item.label} value={item.value} style={styles.textPicker} />
+                                    ))}
+                                </Picker>
+                            </View>
+                        </TouchableOpacity>
+                    </View>
+                    <View style={styles.optionsRow}>
+                        <TouchableOpacity style={styles.optionButtonTieuChi}>
+                            <Text style={styles.textTieuChi}>Phương tiện di chuyển</Text>
+                            <View style={styles.formPicker}>
+                                <Picker
+                                    selectedValue={selectedNoiKhoiHanh}
+                                    onValueChange={(itemValue) => setSelectedNoiKhoiHanh(itemValue)}
+                                >
+                                    {listKhoiHanh.map((item, index) => (
+                                        <Picker.Item key={index} label={item.label} value={item.value} style={styles.textPicker} />
+                                    ))}
+                                </Picker>
+                            </View>
+                        </TouchableOpacity>
+                        <TouchableOpacity style={styles.optionButtonTieuChi}>
+                            <Text style={styles.textTieuChi}>Loại tour</Text>
+                            <View style={styles.formPicker}>
+                                <Picker
+                                    selectedValue={selectedNoiKhoiHanh}
+                                    onValueChange={(itemValue) => setSelectedNoiKhoiHanh(itemValue)}
+                                >
+                                    {listKhoiHanh.map((item, index) => (
+                                        <Picker.Item key={index} label={item.label} value={item.value} style={styles.textPicker} />
+                                    ))}
+                                </Picker>
+                            </View>
+                        </TouchableOpacity>
+                    </View>
+                    <View style={styles.optionsRow}>
+                        <TouchableOpacity style={styles.optionButtonTieuChi}>
+                            <Text style={styles.textTieuChi}>Chất lượng chổ ở</Text>
+                            <View style={styles.formPicker}>
+                                <Picker
+                                    selectedValue={selectedNoiKhoiHanh}
+                                    onValueChange={(itemValue) => setSelectedNoiKhoiHanh(itemValue)}
+                                >
+                                    {listKhoiHanh.map((item, index) => (
+                                        <Picker.Item key={index} label={item.label} value={item.value} style={styles.textPicker} />
+                                    ))}
+                                </Picker>
+                            </View>
+                        </TouchableOpacity>
+                        <TouchableOpacity style={styles.optionButtonTieuChi}>
+                            <Text style={styles.textTieuChi}>Số lượng người</Text>
+                            <View style={styles.formPicker}>
+                                <Picker
+                                    selectedValue={selectedNoiKhoiHanh}
+                                    onValueChange={(itemValue) => setSelectedNoiKhoiHanh(itemValue)}
+                                >
+                                    {listKhoiHanh.map((item, index) => (
+                                        <Picker.Item key={index} label={item.label} value={item.value} style={styles.textPicker} />
+                                    ))}
+                                </Picker>
+                            </View>
+                        </TouchableOpacity>
+                    </View>
+                    <View style={styles.optionsRow}>
+                        <TouchableOpacity style={styles.optionButtonTieuChi}>
+                            <Text style={styles.textTieuChi}>Ngày bắt đầu</Text>
+                            <Pressable style={styles.formPicker} onPress={showDatePickerBD}>
+                                <View style={[styles.rowOption, { alignContent: "center", paddingLeft: 15 }]}><AntDesign name="calendar" size={20} color="black" />
+                                    <Text style={[styles.textPicker, { paddingLeft: 15 }]}>{dateBD.toLocaleDateString()}</Text></View>
+                                {showBD && (
+                                    <DateTimePicker
+                                        value={dateBD}
+                                        mode="date" // Chỉ hiển thị ngày
+                                        display="default" // Kiểu hiển thị của lịch (default, spinner, calendar)
+                                        onChange={onChangeBD}
+                                    />
+                                )}
+                            </Pressable>
+                        </TouchableOpacity>
+                        <TouchableOpacity style={styles.optionButtonTieuChi}>
+                            <Text style={styles.textTieuChi}>Ngày kết thúc</Text>
+                            <Pressable style={styles.formPicker} onPress={showDatePickerKT}>
+                                <View style={[styles.rowOption, { alignContent: "center", paddingLeft: 15 }]}><AntDesign name="calendar" size={20} color="black" />
+                                    <Text style={[styles.textPicker, { paddingLeft: 15 }]}>{dateKT.toLocaleDateString()}</Text></View>
+                                {showKT && (
+                                    <DateTimePicker
+                                        value={dateKT}
+                                        mode="date" // Chỉ hiển thị ngày
+                                        display="default" // Kiểu hiển thị của lịch (default, spinner, calendar)
+                                        onChange={onChangeKT}
+                                    />
+                                )}
+                            </Pressable>
+                        </TouchableOpacity>
+                    </View>
+                    <View style={styles.viewHoanThanh}>
+                        <Pressable style={styles.buttonHoanThanh}>
+                            <Text style={styles.textHoanThanh}>HOÀN THÀNH</Text>
                         </Pressable>
+                    </View>
 
-                    ))}
-                </ScrollView>
-            </View>
 
-            <View style={styles.mucContainer}>
-                <View style={[styles.mucContent, { borderBottomWidth: choosedMuc == 0 ? 4 : 0 }]}>
-                    <Pressable style={[styles.buttonMuc, { backgroundColor: choosedMuc == 0 ? "#3FD0D4" : "#fff" }]} onPress={clickDeXuat}>
-                        <Text style={styles.textMuc}>Đề xuất</Text>
-                    </Pressable>
+
+                </View>
+                <View style={styles.RowChoice}>
+                    <TouchableOpacity style={styles.optionButton}>
+                        <Image
+                            source={require('../../../../assets/new.png')}
+                            style={{ width: 24, height: 24 }}
+                        />
+                        <Text style={styles.textBox}>Mới nhất</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity style={styles.optionButton}>
+                        <Image
+                            source={require('../../../../assets/arrows.png')}
+                            style={{ width: 24, height: 24, transform: [{ rotate: '90deg' }] }}
+                        />
+                        <Text style={styles.textBox}>Giá cao nhất</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity style={styles.optionButton}>
+                        <Image
+                            source={require('../../../../assets/arrows.png')}
+                            style={{ width: 24, height: 24, transform: [{ rotate: '270deg' }] }}
+                        />
+                        <Text style={styles.textBox}>Giá thấp nhất</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity style={styles.optionButton}>
+                        <Image
+                            source={require('../../../../assets/early.png')}
+                            style={{ width: 24, height: 24 }}
+                        />
+                        <Text style={styles.textBox}>Khởi hành sớm nhất</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity style={styles.optionButton}>
+                        <Image
+                            source={require('../../../../assets/after.png')}
+                            style={{ width: 24, height: 24 }}
+                        />
+                        <Text style={styles.textBox}>Khởi hành muộn nhất</Text>
+                    </TouchableOpacity>
                 </View>
 
-                <View style={[styles.mucContent, { borderBottomWidth: choosedMuc == 0 ? 0 : 4 }]}>
-                    <Pressable style={[styles.buttonMuc, { backgroundColor: choosedMuc == 1 ? "#3FD0D4" : "#fff" }]} onPress={clickDanhChoBan}>
-                        <Text style={styles.textMuc}>Dành cho bạn</Text>
-                    </Pressable>
-                </View>
             </View>
-            <View style={styles.banner}>
+
+
+             <View style={styles.banner}>
                 <View style={styles.rowBetween}>
-                    <Text style={styles.tieuDe}>Ưu đãi tour giờ chót</Text>
-                    <Pressable onPress={() => { navigation.navigate("ListTour", { listTour: listMienBac, title: "TOUR GIỜ CHÓT" }); }}><Text style={styles.xemTatCa}>Xem tất cả</Text></Pressable>
+                    <Text style={styles.tieuDe}>Dành cho bạn</Text>
+                    <Pressable onPress={() => { navigation.navigate("ListTour", { listTour: listMienBac, title: "TOUR DÀNH CHO BẠN" }); }}><Text style={styles.xemTatCa}>Xem tất cả</Text></Pressable>
                 </View>
 
                 <TourComponent listTour={listMienBac} navigation={navigation} />
             </View>
 
-            <View style={styles.banner}>
-                <Text style={styles.tieuDe}>Điểm đến được yêu thích</Text>
-                <Text style={{ fontSize: 12, paddingLeft: 20, fontStyle: "italic" }}>Các điểm đến du lịch được đặt nhiều nhất trong năm</Text>
-                <ScrollView horizontal style={styles.bannerContainer}
-                >
-                    {listDiemDenYeuThich.map((image, index) => (
-                        <Pressable key={index} style={styles.bannerRow}>
-
-                            <Image
-                                source={{
-                                    uri: image.url
-                                }}
-                                style={styles.bannerAvt}
-                                resizeMode="cover"
-                            />
-                            <Text style={{ marginTop: "-80%", textAlign: "center", fontSize: 24, color: "#fff" }}>{image.local}</Text>
-                        </Pressable>
-
-
-                    ))}
-                </ScrollView>
-            </View>
             <View style={styles.banner}>
                 <View style={styles.rowBetween}>
                     <Pressable style={[styles.buttonMucMien, { backgroundColor: choosedMien == 0 ? "#3FD0D4" : "#fff" }]} onPress={() => chooseMien(0)}>
@@ -588,26 +604,8 @@ const HomeComponent = ({ navigation }) => {
                     <TourComponent listTour={listMienTay} navigation={navigation} />
                 </View>
             </View>
-            <View style={styles.banner}>
-                <View style={styles.rowOption}>
-                    <Pressable style={[styles.buttonOption, { backgroundColor: choosedOption == 0 ? "#3FD0D4" : "#fff" }]} onPress={() => chooseOption(0)}>
-                        <Text style={styles.textMucMien}>Đang hot</Text>
-                    </Pressable>
-                    <Pressable style={[styles.buttonOption, { backgroundColor: choosedOption == 1 ? "#3FD0D4" : "#fff" }]} onPress={() => chooseOption(1)}>
-                        <Text style={styles.textMucMien}>Đang giảm giá</Text>
-                    </Pressable>
-                </View>
-                <View style={{ display: choosedOption == 0 ? "block" : "none" }}>
-                    <Pressable onPress={() => { navigation.navigate("ListTour", { listTour: listMienNam, title: "TOUR ĐANG HOT" }); }}>
-                        <Text style={styles.xemTatCaOption}>Xem tất cả</Text></Pressable>
-                    <TourComponent listTour={listMienNam} navigation={navigation} />
-                </View>
-                <View style={{ display: choosedOption == 1 ? "block" : "none" }}>
-                    <Pressable onPress={() => { navigation.navigate("ListTour", { listTour: listMienTay, title: "TOUR ĐANG GIẢM GIÁ" }); }}>
-                        <Text style={styles.xemTatCaOption}>Xem tất cả</Text></Pressable>
-                    <TourComponent listTour={listMienTay} navigation={navigation} />
-                </View>
-            </View>
+
+          
 
         </ScrollView >
     );
@@ -631,24 +629,18 @@ const styles = StyleSheet.create({
         flex: 1,
         paddingLeft: 5
     },
-    iconSearch: {
-        marginRight: 10,
-    },
     optionsRow: {
         flexDirection: 'row',
-        marginVertical: 10,
+        justifyContent: 'space-between',
+        padding: 3
     },
-    optionButton: {
-        alignItems: 'center',
-        justifyContent: 'center',
-        width: 85,
-        height: 80,
+    optionButtonTieuChi: {
+        paddingLeft: 5,
+        width: '48%',
         borderRadius: 8,
-        width: '25%'
 
     },
     viewBox: {
-        marginTop: -100,
         backgroundColor: "#fff",
         marginLeft: "5%",
         borderRadius: 10,
@@ -658,7 +650,39 @@ const styles = StyleSheet.create({
         shadowRadius: 4,
         elevation: 10, // Android
         width: "90%",
+        marginBottom:25
 
+    },
+    RowChoice: {
+        display: "flex",
+        justifyContent: "space-around",
+        flexDirection: "row",
+        paddingTop: 25,
+        paddingBottom:25
+    },
+    optionButton: {
+        alignItems: 'center',
+        justifyContent: 'center',
+        width: 85,
+        height: 80,
+        backgroundColor: '#fff',
+        borderRadius: 8,
+        width: "18%",
+        shadowColor: "black",
+        shadowOffset: { width: 1, height: 2 },
+        shadowOpacity: 0.8,
+        shadowRadius: 4,
+        elevation: 10, // Android,
+    },
+    boxContent: {
+        marginTop: -350,
+    },
+    textTitle: {
+        fontSize: 16,
+        fontWeight: "500",
+        paddingLeft: 30,
+        paddingBottom: 10,
+        fontStyle:"italic"
     },
 
     textBox: {
@@ -668,33 +692,32 @@ const styles = StyleSheet.create({
     },
     imageBia: {
         width: '100%',
-        height: 250,
+        height: 450,
         marginRight: 10,
         alignItems: "center",
+        opacity: 0.8
     },
     bannerContainer: {
-        height: 180,
+        backgroundColor: '#fff',
+        shadowColor: "black",
+        shadowOffset: { width: 1, height: 2 },
+        shadowOpacity: 0.8,
+        shadowRadius: 4,
+        elevation: 10, // Android
+        margin: 10
     },
     bannerRow: {
         borderRadius: 10,
-        height: 150,
+        height: 156,
         width: 150,
-        marginRight: 5,
-        borderRadius: 10,
-        overflow: 'hidden', 
-        backgroundColor: '#fff', 
-        shadowColor: '#3FD0D4',
-        shadowOffset: { width: 0, height: 10 },
-        shadowOpacity: 0.3, 
-        shadowRadius: 8,
-        elevation: 12, 
-        marginLeft:5
     },
 
     bannerAvt: {
         height: 150,
+        margin: 3,
         alignItems: "center",
-        borderRadius: 10,
+        backgroundColor: "black",
+        borderRadius: 15
     },
     banner: {
         marginTop: 20
@@ -779,5 +802,46 @@ const styles = StyleSheet.create({
         textAlign: "right",
         padding: 10
     },
-})
-export default HomeComponent;
+    textPicker: {
+        fontSize: 12,
+    },
+    textTieuChi: {
+        fontSize: 13,
+        fontWeight: "500",
+        paddingLeft: 5,
+        padding: 5
+    },
+    formPicker: {
+        borderWidth: 1,
+        borderColor: "#3FD0D4",
+        borderRadius: 10,
+        height: 40,
+        display: "flex",
+        justifyContent: "center",
+        marginLeft:5,
+        marginRight:5
+
+    },
+    viewHoanThanh:{
+        alignItems:"center",
+        marginBottom:-25,
+        marginTop:15
+    },
+    buttonHoanThanh:{
+        backgroundColor:"#3FD0D4",
+        width:200,
+        height:50,
+        justifyContent:'center',      
+        borderRadius:15
+    },
+    textHoanThanh:{
+        fontSize:16,
+        fontWeight:"500",
+        color:"#fff",
+        textAlign:"center"
+    }
+
+});
+
+
+export default SetCriteria;
