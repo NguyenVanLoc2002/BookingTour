@@ -12,7 +12,6 @@ const TongQuan = ({ navigation, route }) => {
                 <View style={styles.row}><AntDesign name="clockcircleo" size={20} color="black" /><Text style={{ fontSize: 14, paddingLeft: 10 }}>Thời gian: {tour?.thoiGian}</Text></View>
                 <View style={styles.row}><AntDesign name="team" size={20} color="black" /><Text style={{ fontSize: 14, paddingLeft: 10 }}>Số chổ còn nhận: {Number(tour?.soLuongVe - tour?.soVeDaDat)}/{tour?.soLuongVe}</Text></View>
                 <View style={styles.row}><FontAwesome6 name="location-dot" size={20} color="black" /><Text style={{ fontSize: 14, paddingLeft: 10 }}>Số chổ còn nhận: {Number(tour?.soLuongVe - tour?.soVeDaDat)}/{tour?.soLuongVe}</Text></View>
-
             </View>
 
             <View style={styles.detailBox}>
@@ -44,7 +43,7 @@ const TongQuan = ({ navigation, route }) => {
                 <Text style={styles.tieuDe}>Những địa điểm tham quan</Text>
                 <ScrollView horizontal style={styles.bannerContainer}
                 >
-                    {tour?.listAnh.map((image, index) => (
+                    {tour?.listAnh?.map((image, index) => (
                         <Pressable key={index} style={styles.bannerRow}>
 
                             <Image

@@ -15,11 +15,12 @@ const ChuongTrinh = ({ navigation, route }) => {
             [index]: !prevExpanded[index], // Đảo ngược trạng thái của ngày hiện tại
         }));
     };
+    
     return (
         <ScrollView style={styles.container}>
             <View >
-                {tour?.chuongTrinh.map((ct, index) => (
-                    <View style={styles.detailBox}>
+                {tour?.chuongTrinh?.map((ct, index) => (
+                    <View style={styles.detailBox} key={index}>
                        <View style={styles.rowBetween}><Text style={styles.tieuDe}>Ngày {index + 1}: {ct?.title}</Text>
                         <Pressable style={{paddingRight:10}} onPress={() => toggleDetail(index)}>
                             {expanded[index] ? (

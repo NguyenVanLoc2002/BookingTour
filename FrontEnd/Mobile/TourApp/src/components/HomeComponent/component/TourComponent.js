@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { View, Text, StyleSheet, Pressable, Image, ScrollView } from 'react-native';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
+
 const TourComponent = ({ navigation,route,listTour }) => {
     return (
         <ScrollView horizontal style={styles.tourContainer}>

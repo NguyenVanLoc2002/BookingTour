@@ -7,7 +7,7 @@ import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import TourComponent from "./component/TourComponent"
 // const Tab = createMaterialTopTabNavigator();
 
-const HomeComponent = ({ navigation, route }) => {
+const HomeComponent = ({ navigation }) => {
 
     const [listMienBac, setListMienBac] = useState([
         {
@@ -42,13 +42,20 @@ const HomeComponent = ({ navigation, route }) => {
                 detail: "Quý khách dùng bữa tối. Sau đó tự do nghỉ ngơi hoặc dạo biển đêm Mũi"
             }
             ],
-            thongTinTapTrung:{
-                ngay:"05-09-2024",
+            thongTinTapTrung: {
+                ngay: "05-09-2024",
                 noi: "Sân bay tân sơn nhất, HCM"
             },
-            thongTinHuongDanVien:{
-                doan:"Bảo Trúc",
-                tien:"Mai"
+            thongTinHuongDanVien: {
+                doan: "Bảo Trúc",
+                tien: "Mai"
+            },
+            dieuKien: {
+                baoGom: "Khách sạn: Phòng tiện nghi điều hoà, tivi, nóng lạnh khép kín 02-03 người/phòng.Phương tiện: 01 xe ô tô chỗ du lịch hiện đại, điều hòa, đời mới đưa ",
+                khongBaoGom: "Bữa chính: 03 bữa sáng + 03 bữa trưa + 02 bữa tối.Vé thắng cảnh vào cổng các điểm du lịch theo chương trình.",
+                giaveTreEm: "Mỗi gia đình chỉ có tiêu chuẩn là 1 trẻ em, trẻ em thứ 2 tính như người lớn, tính 100% giá tour.Dưới 05 tuổi: Miễn phí giá tour. Bố Mẹ tự lo ăn, nghỉ, vé thăm quan - nếu có.",
+                huyTour: "+ Quy định hủy đối với ngày lễ, tết - Hủy trước 10 ngày khởi hành hoàn 50% phí tour - Hủy trước 03-09 ngày khởi hành hoàn 25% phí  .",
+                thanhToan: "Quý khách nộp hồ sơ và đặt cọc 50% chi phí dịch vụ và 100% chi phí phát sinh (nếu có) khi đặt chổ."
             }
         },
         {
@@ -83,12 +90,12 @@ const HomeComponent = ({ navigation, route }) => {
                 detail: "Quý khách dùng bữa tối. Sau đó tự do nghỉ ngơi hoặc dạo biển đêm Mũi"
             }
             ],
-            thongTinTapTrung:{
-                ngay:"05-09-2024",
+            thongTinTapTrung: {
+                ngay: "05-09-2024",
                 noi: "Sân bay tân sơn nhất, HCM"
             },
-            thongTinHuongDanVien:{
-                doan:"Bảo Trúc",
+            thongTinHuongDanVien: {
+                doan: "Bảo Trúc",
             }
         },
         {
@@ -374,6 +381,7 @@ const HomeComponent = ({ navigation, route }) => {
     // dành cho mục đề xuất & dành cho bạn
     const [choosedMuc, setChoosedMuc] = useState(0);
     const [choosedMien, setChoosedMien] = useState(0);
+    const [choosedOption, setChoosedOption] = useState(0);
     useEffect(() => {
         const interval = setInterval(() => {
             if (scrollViewRef.current) {
@@ -400,6 +408,9 @@ const HomeComponent = ({ navigation, route }) => {
     };
     const chooseMien = (a) => {
         setChoosedMien(a);
+    };
+    const chooseOption = (a) => {
+        setChoosedOption(a);
     };
 
 
@@ -508,7 +519,7 @@ const HomeComponent = ({ navigation, route }) => {
             <View style={styles.banner}>
                 <View style={styles.rowBetween}>
                     <Text style={styles.tieuDe}>Ưu đãi tour giờ chót</Text>
-                    <Text style={styles.xemTatCa}>Xem tất cả</Text>
+                    <Pressable onPress={() => { navigation.navigate("ListTour", { listTour: listMienBac, title: "TOUR GIỜ CHÓT" }); }}><Text style={styles.xemTatCa}>Xem tất cả</Text></Pressable>
                 </View>
 
                 <TourComponent listTour={listMienBac} navigation={navigation} />
@@ -552,12 +563,43 @@ const HomeComponent = ({ navigation, route }) => {
                     </Pressable>
                 </View>
 
-                <View style={{ display: choosedMien == 0 ? "block" : "none" }}><TourComponent listTour={listMienBac} navigation={navigation} /></View>
-                <View style={{ display: choosedMien == 1 ? "block" : "none" }}><TourComponent listTour={listMienTrung} navigation={navigation} /></View>
-                <View style={{ display: choosedMien == 2 ? "block" : "none" }}><TourComponent listTour={listMienNam} navigation={navigation} /></View>
-                <View style={{ display: choosedMien == 3 ? "block" : "none" }}><TourComponent listTour={listMienTay} navigation={navigation} /></View>
+                <View style={{ display: choosedMien == 0 ? "block" : "none" }}>
+                    <Pressable onPress={() => { navigation.navigate("ListTour", { listTour: listMienBac, title: "TOUR MIỀN BẮC" }); }}><Text style={styles.xemTatCaOption}>Xem tất cả</Text></Pressable>
+                    <TourComponent listTour={listMienBac} navigation={navigation} />
+                </View>
+                <View style={{ display: choosedMien == 1 ? "block" : "none" }}>
+                    <Pressable onPress={() => { navigation.navigate("ListTour", { listTour: listMienTrung, title: "TOUR MIỀN TRUNG" }); }}><Text style={styles.xemTatCaOption}>Xem tất cả</Text></Pressable>
 
-
+                    <TourComponent listTour={listMienTrung} navigation={navigation} />
+                </View>
+                <View style={{ display: choosedMien == 2 ? "block" : "none" }}>
+                    <Pressable onPress={() => { navigation.navigate("ListTour", { listTour: listMienNam, title: "TOUR MIỀN NAM" }); }}><Text style={styles.xemTatCaOption}>Xem tất cả</Text></Pressable>
+                    <TourComponent listTour={listMienNam} navigation={navigation} />
+                </View>
+                <View style={{ display: choosedMien == 3 ? "block" : "none" }}>
+                    <Pressable onPress={() => { navigation.navigate("ListTour", { listTour: listMienTay, title: "TOUR MIỀN TÂY" }); }}><Text style={styles.xemTatCaOption}>Xem tất cả</Text></Pressable>
+                    <TourComponent listTour={listMienTay} navigation={navigation} />
+                </View>
+            </View>
+            <View style={styles.banner}>
+                <View style={styles.rowOption}>
+                    <Pressable style={[styles.buttonOption, { backgroundColor: choosedOption == 0 ? "#3FD0D4" : "#fff" }]} onPress={() => setChoosedOption(0)}>
+                        <Text style={styles.textMucMien}>Đang hot</Text>
+                    </Pressable>
+                    <Pressable style={[styles.buttonOption, { backgroundColor: choosedOption == 1 ? "#3FD0D4" : "#fff" }]} onPress={() => setChoosedOption(1)}>
+                        <Text style={styles.textMucMien}>Đang giảm giá</Text>
+                    </Pressable>
+                </View>
+                <View style={{ display: choosedOption == 0 ? "block" : "none" }}>
+                    <Pressable onPress={() => { navigation.navigate("ListTour", { listTour: listMienNam, title: "TOUR ĐANG HOT" }); }}>
+                        <Text style={styles.xemTatCaOption}>Xem tất cả</Text></Pressable>
+                    <TourComponent listTour={listMienNam} navigation={navigation} />
+                </View>
+                <View style={{ display: choosedOption == 1 ? "block" : "none" }}>
+                    <Pressable onPress={() => { navigation.navigate("ListTour", { listTour: listMienTay, title: "TOUR ĐANG GIẢM GIÁ" }); }}>
+                        <Text style={styles.xemTatCaOption}>Xem tất cả</Text></Pressable>
+                    <TourComponent listTour={listMienTay} navigation={navigation} />
+                </View>
             </View>
 
         </ScrollView >
@@ -709,7 +751,26 @@ const styles = StyleSheet.create({
         fontSize: 13,
         fontWeight: "500"
     },
-
-
-});
+    rowOption: {
+        display: "flex",
+        flexDirection: "row",
+    },
+    buttonOption: {
+        height: 40,
+        backgroundColor: "#bbb",
+        justifyContent: "center",
+        width: "30%",
+        alignItems: "center",
+        borderRadius: 20,
+        marginLeft: 15
+    },
+    xemTatCaOption: {
+        fontSize: 13,
+        color: "#3FD0D4",
+        fontStyle: "italic",
+        paddingRight: 20,
+        textAlign: "right",
+        padding: 10
+    },
+})
 export default HomeComponent;

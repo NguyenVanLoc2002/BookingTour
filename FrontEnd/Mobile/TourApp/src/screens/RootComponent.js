@@ -7,6 +7,8 @@ import NotificationComponent from "../components/NotificationComponent/Notificat
 import SavedListComponent from "../components/SavedListComponent/SavedListComponent"
 import DetailTour from "../components/TourComponent/DetailTour"
 import Tour from "../components/HomeComponent/component/TourComponent"
+import ListTour from "../components/TourComponent/ListTour"
+
 const Stack = createNativeStackNavigator();
 
 export default function RootComponent() {
@@ -19,7 +21,6 @@ export default function RootComponent() {
         options={{
           headerShown: false,
         }}
-    
       />
        <Stack.Screen name="HomeTour" component={HomeTour} />
        <Stack.Screen name="AccountComponent" component={AccountComponent} />
@@ -27,6 +28,7 @@ export default function RootComponent() {
        <Stack.Screen name="NotificationComponent" component={NotificationComponent} />
        <Stack.Screen name="SavedListComponent" component={SavedListComponent} />
        <Stack.Screen name="DetailTour" component={DetailTour} />
+       <Stack.Screen name="ListTour" component={ListTour} />
        <Stack.Screen name="Tour" component={Tour} />
     </Stack.Navigator>
   ) 
