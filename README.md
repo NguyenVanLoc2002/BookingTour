@@ -13,15 +13,15 @@
    
   a. Tổng quan:
    
-      <img src="https://github.com/user-attachments/assets/f670a516-109f-4547-8147-cec63e3ebf27" alt="Example Image" width="300">
+<img src="https://github.com/user-attachments/assets/f670a516-109f-4547-8147-cec63e3ebf27" alt="Example Image" width="300">
       
   b. Chương trình:
   
-      <img src="https://github.com/user-attachments/assets/c1727441-4145-45bf-a354-122b6011d6b0" alt="Example Image" width="300">
+<img src="https://github.com/user-attachments/assets/c1727441-4145-45bf-a354-122b6011d6b0" alt="Example Image" width="300">
       
   c. Điều kiện:
   
-        <img src="https://github.com/user-attachments/assets/28dae48b-4a09-4f55-8d6a-7e1fa0793ad1" alt="Example Image" width="300">
+<img src="https://github.com/user-attachments/assets/28dae48b-4a09-4f55-8d6a-7e1fa0793ad1" alt="Example Image" width="300">
         
 3. List tour:
    
