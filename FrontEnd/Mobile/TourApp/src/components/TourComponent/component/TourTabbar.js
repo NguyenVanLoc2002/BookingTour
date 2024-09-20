@@ -8,7 +8,6 @@ import DieuKien from "./DieuKien";
 const Tab = createMaterialTopTabNavigator();
 const TourTabbar = ({ navigation, tour }) => {
 
-
   return (
     <Tab.Navigator initialRouteName="Tổng quan" tabBarPosition="top"
       screenOptions={{

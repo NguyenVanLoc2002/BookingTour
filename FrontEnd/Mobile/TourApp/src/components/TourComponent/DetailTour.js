@@ -1,19 +1,11 @@
 import React, { useEffect, useRef, useState } from "react";
-import { View, Text, ImageBackground, Pressable, Button, StyleSheet, TextInput, TouchableOpacity, Image, ScrollView, Dimensions } from "react-native";
+import { View, Text, ImageBackground, Pressable, StyleSheet, TextInput } from "react-native";
 import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
-import MaterialIcons from '@expo/vector-icons/MaterialIcons';
-import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import TourTabbar from "./component/TourTabbar";
-// import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
-// const Tab = createMaterialTopTabNavigator();
 
 const DetailTour = ({ navigation, route }) => {
     const { tour } = route.params
-
-
-
     return (
-        // <ScrollView style={{flex:1 , backgroundColor: "#fafafa", }}>
         <View style={{ flex: 1, backgroundColor: "#fafafa", }}>
             <ImageBackground source={{
                 uri: tour.url
@@ -21,7 +13,6 @@ const DetailTour = ({ navigation, route }) => {
                 <View style={styles.header}>
                     <FontAwesome5 name={"search"} size={24} color={"black"} />
                     <TextInput placeholder="Nhập vào đây để tìm kiếm" style={styles.buttonSearch}>
-
                     </TextInput>
                 </View>
             </ImageBackground>
@@ -42,10 +33,6 @@ const DetailTour = ({ navigation, route }) => {
             </View>
 
         </View>
-
-
-
-        //  {/* </ScrollView > */}
     );
 };
 

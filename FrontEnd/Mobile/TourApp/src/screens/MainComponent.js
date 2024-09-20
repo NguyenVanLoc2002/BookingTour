@@ -7,7 +7,6 @@ import BookingComponent from "../components/BookingComponent/ListBookingComponen
 import NotificationComponent from "../components/NotificationComponent/NotificationComponent"
 import SavedListComponent from "../components/SavedListComponent/SavedListComponent"
 
-
 const Tab = createBottomTabNavigator();
 
 const MainComponent = () => {
