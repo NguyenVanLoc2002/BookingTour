@@ -18,6 +18,16 @@
 3. List tour:
    
       <img src="https://github.com/user-attachments/assets/b579d7e3-b170-4cc7-bffe-a05a4dc0d695" alt="Example Image" width="200">
+4. Set Criteria:
+   
+   <img src="https://github.com/user-attachments/assets/b0c01c1c-8293-4076-be26-5ef2ece46c7e" alt="Example Image" width="200">
+       <img src="https://github.com/user-attachments/assets/cb1bd659-f52d-430b-8998-08a6ad8b68b8" alt="Example Image" width="200">
+       <img src="https://github.com/user-attachments/assets/a5f5fa57-2a1c-43a3-a7d0-ac58d1568425" alt="Example Image" width="200">
+
+
+
+
+
 
 
 
