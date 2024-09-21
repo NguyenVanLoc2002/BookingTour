@@ -7,6 +7,8 @@ import com.fit.userservice.models.Customer;
 import com.fit.userservice.models.User;
 import com.fit.userservice.repositories.CustomerRepository;
 import com.fit.userservice.repositories.UserRepository;
+
+
 import com.google.gson.Gson;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;

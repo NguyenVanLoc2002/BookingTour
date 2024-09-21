@@ -22,7 +22,6 @@ public class TourFilterCriteriaRequest {
     private AccommodationQuality accommodationQuality;
     private Region region;
     private TransportationMode transportationMode;
-    private boolean includePromotions;
 
     public Integer getTypeTourValue() {
         return typeTour != null ? typeTour.getValue() : null;
