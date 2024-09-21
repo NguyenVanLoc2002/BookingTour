@@ -631,9 +631,6 @@ const styles = StyleSheet.create({
         flex: 1,
         paddingLeft: 5
     },
-    iconSearch: {
-        marginRight: 10,
-    },
     optionsRow: {
         flexDirection: 'row',
         marginVertical: 10,
