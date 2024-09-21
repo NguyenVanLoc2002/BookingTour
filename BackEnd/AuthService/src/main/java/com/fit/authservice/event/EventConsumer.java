@@ -21,7 +21,7 @@ import java.util.Collections;
 @Slf4j
 public class EventConsumer {
     @Autowired
-    AuthService authService;
+    private AuthService authService;
 
 //    @Autowired
 //    private EventProducer eventProducer;
@@ -49,7 +49,5 @@ public class EventConsumer {
         log.info(authUserDTO.toString());
         authService.createAuthUser(authUserDTO)
                 .subscribe();
-
     }
-
 }

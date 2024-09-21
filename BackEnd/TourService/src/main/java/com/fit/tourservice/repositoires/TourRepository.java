@@ -12,6 +12,7 @@ import org.springframework.data.repository.reactive.ReactiveCrudRepository;
 import reactor.core.publisher.Flux;
 
 import java.time.LocalDate;
+import java.util.List;
 
 public interface TourRepository extends ReactiveCrudRepository<Tour, Long> {
 
@@ -24,8 +25,8 @@ public interface TourRepository extends ReactiveCrudRepository<Tour, Long> {
             "(:typeTour IS NULL OR TF.type_tour = :typeTour) AND " +
             "(:accommodationQuality IS NULL OR TF.accommodation_quality = :accommodationQuality) AND " +
             "(:region IS NULL OR TF.region = :region) AND " +
-            "(:transportationMode IS NULL OR TF.transportation_mode = :transportationMode) AND " +
-            "(:includePromotions IS NULL OR T.include_promotions = :includePromotions)"
+            "(:transportationMode IS NULL OR TF.transportation_mode = :transportationMode) "
+
     )
     Flux<TourDTO> findToursByCriteria(@Param("maxCost") double maxCost,
                                       @Param("maxDuration") int maxDuration,
@@ -33,6 +34,8 @@ public interface TourRepository extends ReactiveCrudRepository<Tour, Long> {
                                       @Param("typeTour") Integer typeTour, // Sử dụng Integer
                                       @Param("accommodationQuality") Integer accommodationQuality, // Sử dụng Integer
                                       @Param("region") Integer region, // Sử dụng Integer
-                                      @Param("transportationMode") Integer transportationMode, // Sử dụng Integer
-                                      @Param("includePromotions") Boolean includePromotions);
+                                      @Param("transportationMode") Integer transportationMode // Sử dụng Integer
+                                     );
+
+    Flux<Tour> findByTourIdIn (List<Long> tourIds);
 }
