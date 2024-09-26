@@ -13,7 +13,7 @@
             <column name="customer_id" type="BIGINT">
                 <constraints nullable="false"/>
             </column>
-            <column name="tour_id" type="VARCHAR(255)">
+            <column name="tour_id" type="BIGINT">
                 <constraints nullable="false"/>
             </column>
             <column name="booking_date" type="DATE">

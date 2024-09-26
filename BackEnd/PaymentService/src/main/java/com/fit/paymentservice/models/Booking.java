@@ -1,6 +1,6 @@
 package com.fit.paymentservice.models;
 
-import com.fit.tourservice.enums.StatusBooking;
+import com.fit.paymentservice.enums.StatusBooking;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -19,7 +19,7 @@ public class Booking {
     @Id
     private Long bookingId;
     private Long customerId;
-    private String tourId;
+    private Long tourId;
     private LocalDate bookingDate;
     private StatusBooking statusBooking;
     private double totalAmount;

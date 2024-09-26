@@ -15,9 +15,9 @@ public class EventProducer {
     @Autowired
     private KafkaSender<String, String> kafkaSender;
 
-    public Mono<String> send(String topic, String message) {
+    public Mono<String> send(String topic,String key, String message) {
         return kafkaSender.
-                send(Mono.just(SenderRecord.create(new ProducerRecord<>(topic, message), message)))
+                send(Mono.just(SenderRecord.create(new ProducerRecord<>(topic, key,message), message)))
                 .then()
                 .thenReturn("OK");
     }

@@ -12,6 +12,10 @@ public class Constant {
     //Topic Tour
     public static final String REQUEST_RECOMMENDATION_TOPIC = "requestRecommendation";
 
+    //Topic Booking
+    public static final String REQUEST_CHECK_AVAILABLE_SLOT_TOPIC = "checkAvailableSlot";
+    public static final String RESPONSE_BOOKING_TOPIC = "responseBooking";
+
     public static final String NOTIFICATION_CREATED_USER_TOPIC = "notificationCreatedUser";
     public static final String  JSON_REQ_CREATE_USER= "validator/createUser.schema.json";
 }
