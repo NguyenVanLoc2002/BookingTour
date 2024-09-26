@@ -1,15 +1,13 @@
 package com.fit.tourservice.repositoires;
 
 import com.fit.tourservice.dtos.response.TourDTO;
-import com.fit.tourservice.enums.AccommodationQuality;
-import com.fit.tourservice.enums.Region;
-import com.fit.tourservice.enums.TransportationMode;
-import com.fit.tourservice.enums.TypeTour;
 import com.fit.tourservice.models.Tour;
+import org.reactivestreams.Publisher;
 import org.springframework.data.r2dbc.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.data.repository.reactive.ReactiveCrudRepository;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -38,4 +36,9 @@ public interface TourRepository extends ReactiveCrudRepository<Tour, Long> {
                                      );
 
     Flux<Tour> findByTourIdIn (List<Long> tourIds);
+
+
+    @Override
+    Mono<Tour> findById(Long tourId);
+
 }

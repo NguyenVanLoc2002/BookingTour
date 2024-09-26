@@ -1,4 +1,4 @@
-package com.fit.tourservice.events;
+package com.fit.paymentservice.events;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.producer.ProducerRecord;
@@ -12,11 +12,11 @@ import reactor.kafka.sender.SenderRecord;
 @Slf4j
 public class EventProducer {
     @Autowired
-    private KafkaSender<String, String> kafkaSender;
+    private KafkaSender<String, String> sender;
 
     public Mono<String> send(String topic, String key,String message) {
-        return kafkaSender
-                .send(Mono.just(SenderRecord.create(new ProducerRecord<>(topic,key,message),message)))
+        return sender
+                .send(Mono.just(SenderRecord.create(new ProducerRecord<>(topic,key,message), message)))
                 .then()
                 .thenReturn("OK");
     }

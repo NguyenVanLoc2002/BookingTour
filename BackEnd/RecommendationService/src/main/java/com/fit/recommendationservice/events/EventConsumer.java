@@ -16,6 +16,7 @@ import reactor.kafka.receiver.ReceiverOptions;
 import reactor.kafka.receiver.ReceiverRecord;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -54,8 +55,11 @@ public class EventConsumer {
                 List<Long> recommendedTourIds = mahoutRecommendationService.recommendToursForUser(customerId);
                 log.info("Tour Ids: {}", recommendedTourIds);
                 // Send the recommendations to Kafka
-                String message = gson.toJson(recommendedTourIds);
-                eventProducer.send(Constant.RECOMMEND_INTERACTED_TOPIC, message)
+                Map<String, Object> messageMap = new HashMap<>();
+                messageMap.put("customerId", customerId);
+                messageMap.put("recommendedTourIds", recommendedTourIds);
+                String message = gson.toJson(messageMap);
+                eventProducer.send(Constant.RECOMMEND_INTERACTED_TOPIC, String.valueOf(customerId),message)
                         .doOnSuccess(success -> log.info("Message sent to topic {} successfully", Constant.RECOMMEND_INTERACTED_TOPIC))
                         .doOnError(error -> log.error("Error sending message to topic {}", Constant.RECOMMEND_INTERACTED_TOPIC, error))
                         .subscribe();;
@@ -81,8 +85,12 @@ public class EventConsumer {
                 // Lấy tiêu chí gợi ý từ CustomerPreferenceService
                 customerPreferenceService.getCommonPreferences(customerId)
                         .flatMap(commonPreferences -> {
-                            String message = gson.toJson(commonPreferences);
-                            return eventProducer.send(Constant.RECOMMEND_PREFERENCES_TOPIC, message)
+                            // Tạo message chứa cả customerId và commonPreferences
+                            Map<String, Object> messageMap = new HashMap<>();
+                            messageMap.put("customerId", customerId);  // Thêm customerId vào message
+                            messageMap.put("commonPreferences", commonPreferences);  // Thêm commonPreferences vào message
+                            String message = gson.toJson(messageMap);
+                            return eventProducer.send(Constant.RECOMMEND_PREFERENCES_TOPIC, String.valueOf(customerId),message)
                                     .thenReturn(commonPreferences);
                         })
                         .subscribe(
@@ -95,7 +103,6 @@ public class EventConsumer {
         } catch (JsonSyntaxException e) {
             log.error("Error parsing JSON message: {}", receiverRecord.value(), e);
         }
-
     }
 
 

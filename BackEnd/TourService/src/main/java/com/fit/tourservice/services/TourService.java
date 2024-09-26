@@ -47,9 +47,9 @@ public class TourService {
         return findToursByCriteria(criteriaRequest);
     }
 
-    public Mono<Boolean> checkAvailableSlot(Long tourId){
+    public Mono<Boolean> checkAvailableSlot(Long tourId) {
         return tourRepository.findById(tourId)
-                .map(tour -> tour.getAvailableSlot()>0);
+                .map(tour -> tour.getAvailableSlot() > 0);
     }
 
     public Flux<TourDTO> findToursByCriteria(TourFilterCriteriaRequest criteria) {
@@ -70,12 +70,27 @@ public class TourService {
         // Tạo thông điệp yêu cầu tiêu chí từ TourService
         String requestMessage = gson.toJson(Map.of("customerId", customerId));
         // Trả về Mono<Void> để giữ cho việc gửi message bất đồng bộ
-        return eventProducer.send(Constant.REQUEST_RECOMMENDATION_TOPIC, requestMessage).then();
+        return eventProducer.send(Constant.REQUEST_RECOMMENDATION_TOPIC, String.valueOf(customerId), requestMessage).then();
     }
 
 
     public Flux<TourDTO> findToursByIds(List<Long> tourIds) {
         return tourRepository.findByTourIdIn(tourIds)
                 .map(TourDTO::convertoDTO);
+    }
+
+    public Mono<Boolean> checkAvailableSlot(Long tourId, int numberOfGuests) {
+        return tourRepository.findById(tourId)
+                .map(tour -> {
+                    if (tour.getAvailableSlot() >= numberOfGuests)
+                        return true;
+                    else
+                        return false;
+                }).defaultIfEmpty(false);
+    }
+
+    public Mono<Double> calcTotalAmountTicket(Long tourId, int numberOfGuests) {
+        return tourRepository.findById(tourId)
+                .map(tour -> tour.getPrice() * numberOfGuests); // Tính tổng tiền trực tiếp trong luồng
     }
 }
