@@ -215,14 +215,14 @@ const BookingComponent = ({ navigation, route }) => {
             <View style={styles.viewBox}>
                 {/* Main Options */}
                 <View style={styles.optionsCol}>
-                <TouchableOpacity style={styles.optionButton} onPress={() => setSelectTrangThai(0)}>
+                <TouchableOpacity style={[styles.optionButton, {backgroundColor:selectTrangThai==0? "#3FD0D4":"#fff"}]} onPress={() => setSelectTrangThai(0)}>
                         <Image
                             source={require('../../../assets/history.png')}
                             style={{ width: 24, height: 24 }}
                         />
                         <Text style={styles.textBox}>Gần đây</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity style={styles.optionButton} onPress={() => setSelectTrangThai(1)}>
+                    <TouchableOpacity style={[styles.optionButton, {backgroundColor:selectTrangThai==1? "#3FD0D4":"#fff"}]}onPress={() => setSelectTrangThai(1)}>
                         <Image
                             source={require('../../../assets/choThanhToan.png')}
                             style={{ width: 24, height: 24 }}
@@ -230,21 +230,21 @@ const BookingComponent = ({ navigation, route }) => {
                         <Text style={styles.textBox}>Chờ thanh toán</Text>
                     </TouchableOpacity>
 
-                    <TouchableOpacity style={styles.optionButton} onPress={() => setSelectTrangThai(2)}>
+                    <TouchableOpacity style={[styles.optionButton, {backgroundColor:selectTrangThai==2? "#3FD0D4":"#fff"}]} onPress={() => setSelectTrangThai(2)}>
                         <Image
                             source={require('../../../assets/daDat.png')}
                             style={{ width: 24, height: 24 }}
                         />
                         <Text style={styles.textBox}>Đã đặt</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity style={styles.optionButton} onPress={() => setSelectTrangThai(3)}>
+                    <TouchableOpacity style={[styles.optionButton, {backgroundColor:selectTrangThai==3? "#3FD0D4":"#fff"}]} onPress={() => setSelectTrangThai(3)}>
                         <Image
                             source={require('../../../assets/check.png')}
                             style={{ width: 24, height: 24 }}
                         />
                         <Text style={styles.textBox}>Đã hoàn thành</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity style={styles.optionButton} onPress={() => setSelectTrangThai(4)}>
+                    <TouchableOpacity style={[styles.optionButton, {backgroundColor:selectTrangThai==4? "#3FD0D4":"#fff"}]} onPress={() => setSelectTrangThai(4)}>
                         <Image
                             source={require('../../../assets/listing.png')}
                             style={{ width: 24, height: 24 }}
@@ -287,15 +287,16 @@ const styles = StyleSheet.create({
     },
     optionsCol: {
         flexDirection: 'column',
-        marginVertical: 10,
+        // marginVertical: 10,
+        
     },
     optionButton: {
         alignItems: 'center',
         justifyContent: 'flex-start',
         flexDirection: "row",
         height: 40,
-        borderRadius: 8,
-        paddingLeft: 20
+        paddingLeft: 20,
+        
 
     },
     viewBox: {
