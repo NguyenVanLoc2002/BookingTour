@@ -415,7 +415,7 @@ const HomeComponent = ({ navigation }) => {
 
 
     return (
-        <ScrollView style={{ backgroundColor: "#fafafa", height: "100%" }}>
+        <ScrollView style={{ backgroundColor: "#c", height: "100%" }}>
 
             <ImageBackground source={{
                 uri: "https://res.cloudinary.com/doqbelkif/image/upload/v1726601540/656c046a-02ef-4286-8f9f-34ca7ef6e82a.png"
