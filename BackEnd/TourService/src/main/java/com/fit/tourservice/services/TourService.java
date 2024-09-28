@@ -81,16 +81,25 @@ public class TourService {
 
     public Mono<Boolean> checkAvailableSlot(Long tourId, int numberOfGuests) {
         return tourRepository.findById(tourId)
-                .map(tour -> {
-                    if (tour.getAvailableSlot() >= numberOfGuests)
-                        return true;
-                    else
-                        return false;
-                }).defaultIfEmpty(false);
+                .map(tour -> tour.getAvailableSlot() >= numberOfGuests)
+                .defaultIfEmpty(false);
     }
 
     public Mono<Double> calcTotalAmountTicket(Long tourId, int numberOfGuests) {
         return tourRepository.findById(tourId)
                 .map(tour -> tour.getPrice() * numberOfGuests); // Tính tổng tiền trực tiếp trong luồng
+    }
+
+    public Mono<Tour> updateAvailableSlot(Long tourId, int numberOfGuests) {
+        return tourRepository.findById(tourId)
+                .flatMap(tour -> {
+                    int updatedSlot = tour.getAvailableSlot() - numberOfGuests;
+                    if (updatedSlot < 0) {
+                        return Mono.error(new IllegalArgumentException("Not enough slots available"));
+                    }
+                    tour.setAvailableSlot(updatedSlot);
+                    return tourRepository.save(tour);
+                })
+                .switchIfEmpty(Mono.error(new Exception("Tour not found!")));
     }
 }

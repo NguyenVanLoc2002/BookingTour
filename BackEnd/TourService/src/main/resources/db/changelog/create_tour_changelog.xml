@@ -26,7 +26,7 @@
                 <constraints nullable="false"/>
             </column>
             <column name="available_slot" type="int">
-                <constraints nullable="false" unique="true"/>
+                <constraints nullable="false"/>
             </column>
             <column name="url_image" type="varchar(255)">
                 <constraints nullable="false"/>
@@ -43,9 +43,10 @@
     </changeSet>
 
 
-<!--    Thêm 10 data-->
+    <!--    Thêm 10 data-->
     <changeSet id="table-tours-init" author="NguyenVanLoc2002">
         <sqlFile path="db/sql/table-tours-init.sql"/>
     </changeSet>
+
 
 </databaseChangeLog>

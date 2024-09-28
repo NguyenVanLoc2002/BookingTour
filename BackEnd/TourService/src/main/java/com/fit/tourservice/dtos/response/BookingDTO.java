@@ -10,7 +10,7 @@ import java.time.LocalDate;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-public class BookingResponseDTO {
+public class BookingDTO {
     private Long customerId;
     private Long tourId;
     private LocalDate bookingDate;

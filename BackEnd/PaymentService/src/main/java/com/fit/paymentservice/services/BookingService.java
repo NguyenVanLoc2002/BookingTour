@@ -3,7 +3,6 @@ package com.fit.paymentservice.services;
 import com.fit.commonservice.utils.Constant;
 import com.fit.paymentservice.dtos.BookingDTO;
 import com.fit.paymentservice.dtos.BookingRequest;
-import com.fit.paymentservice.dtos.BookingResponseDTO;
 import com.fit.paymentservice.events.EventConsumer;
 import com.fit.paymentservice.events.EventProducer;
 import com.fit.paymentservice.repositories.BookingRepository;
@@ -11,14 +10,10 @@ import com.google.gson.Gson;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
-import reactor.kafka.receiver.KafkaReceiver;
-import reactor.kafka.receiver.ReceiverOptions;
 
-import java.time.Duration;
-import java.time.LocalDate;
-import java.util.Collections;
 import java.util.NoSuchElementException;
 
 @Service
@@ -30,22 +25,21 @@ public class BookingService {
     @Autowired
     private EventProducer eventProducer;
 
-    @Autowired
-    private ReceiverOptions<String, String> receiverOptions;
     @Qualifier("gson")
     @Autowired
     private Gson gson;
     @Autowired
+    @Lazy
     private EventConsumer eventConsumer;
 
 
-    public Mono<BookingDTO> bookTour(BookingRequest bookingRequest) {
+    public Mono<BookingDTO> createBookingTour(BookingRequest bookingRequest) {
 //        Kiem tra thong tin truoc khi gui
-        if (bookingRequest.getCustomerId() == null || bookingRequest.getCustomerId().equals("")) {
+        if (bookingRequest.getCustomerId() == null) {
             return Mono.error(new IllegalArgumentException("Customer ID is required"));
         }
 
-        if (bookingRequest.getTourId() == null || bookingRequest.getTourId().equals("")) {
+        if (bookingRequest.getTourId() == null) {
             return Mono.error(new IllegalArgumentException("Tour ID is required"));
         }
 
@@ -61,5 +55,18 @@ public class BookingService {
                     log.error("Error occurred: {}", throwable.getMessage());
                     return Mono.just(new BookingDTO()); // Trả măc dinh ve doi tuong rong
                 });
+    }
+
+    public Mono<BookingDTO> saveBookingTour(BookingDTO bookingDTO) {
+        return Mono.just(bookingDTO)
+                .map(BookingDTO::convertToEntity)
+                .flatMap(booking -> bookingRepository.save(booking))
+                .map(BookingDTO::convertToDto)
+                .doOnError(throwable -> log.info(throwable.getMessage(),throwable));
+    }
+
+    public Mono<BookingDTO> findById(Long bookingId){
+        return bookingRepository.findById(bookingId)
+                .map(BookingDTO::convertToDto);
     }
 }
