@@ -48,7 +48,7 @@ const FormEditPassenger = ({ navigation, route }) => {
     const showDatePickerBD = () => {
         setShowBD(true);
     };
-// ngày cấp passpore
+    // ngày cấp passpore
     const [datePP, setDatePP] = useState(new Date(2022, 5, 6));
     const [showPP, setShowPP] = useState(false);
 
@@ -105,9 +105,9 @@ const FormEditPassenger = ({ navigation, route }) => {
                     </View>
                     <View style={styles.onlyOne}>
 
-                        <Text style={styles.textTitle}>Họ và tên<Text style={[styles.textTitle,{color:"red"}]}> *</Text></Text>
+                        <Text style={styles.textTitle}>Họ và tên<Text style={[styles.textTitle, { color: "red" }]}> *</Text></Text>
                         <TextInput
-                            style={[styles.formPicker,{paddingLeft:15}]}
+                            style={[styles.formPicker, { paddingLeft: 15 }]}
                             value={name}
                             onChangeText={setName}
                         />
@@ -122,25 +122,25 @@ const FormEditPassenger = ({ navigation, route }) => {
                         <View style={styles.col}>
                             <Text style={styles.textTitle}>ZipCode</Text>
                             <TextInput
-                            style={[styles.formPicker,{paddingLeft:15}]}
-                            value={zipCode}
-                            onChangeText={setZipCode}
-                        />
+                                style={[styles.formPicker, { paddingLeft: 15 }]}
+                                value={zipCode}
+                                onChangeText={setZipCode}
+                            />
                         </View>
                         <View style={styles.col}>
                             <Text style={styles.textTitle}>Số điện thoại</Text>
                             <TextInput
-                            style={[styles.formPicker,{paddingLeft:15}]}
-                            value={phone}
-                            onChangeText={setPhone}
-                        />
+                                style={[styles.formPicker, { paddingLeft: 15 }]}
+                                value={phone}
+                                onChangeText={setPhone}
+                            />
                         </View>
                     </View>
                     <View style={styles.onlyOne}>
 
-                        <Text style={styles.textTitle}>Email<Text style={[styles.textTitle,{color:"red"}]}> *</Text></Text>
+                        <Text style={styles.textTitle}>Email<Text style={[styles.textTitle, { color: "red" }]}> *</Text></Text>
                         <TextInput
-                            style={[styles.formPicker,{paddingLeft:15}]}
+                            style={[styles.formPicker, { paddingLeft: 15 }]}
                             value={email}
                             onChangeText={setEmail}
                         />
@@ -152,13 +152,13 @@ const FormEditPassenger = ({ navigation, route }) => {
                 <Text style={styles.textTieuDe}>Hộ chiếu</Text>
                 <View style={styles.box}>
                     <View style={styles.rowBe}>
-                    <View style={styles.col}>
+                        <View style={styles.col}>
                             <Text style={styles.textTitle}>Số hộ chiếu</Text>
                             <TextInput
-                            style={[styles.formPicker,{paddingLeft:15}]}
-                            value={passportNumber}
-                            onChangeText={setPassportNumber}
-                        />
+                                style={[styles.formPicker, { paddingLeft: 15 }]}
+                                value={passportNumber}
+                                onChangeText={setPassportNumber}
+                            />
                         </View>
                         <View style={styles.col}>
                             <Text style={styles.textTitle}>Quốc gia cấp</Text>
@@ -173,10 +173,10 @@ const FormEditPassenger = ({ navigation, route }) => {
                                 </Picker>
                             </View>
                         </View>
-                        
+
                     </View>
                     <View style={styles.rowBe}>
-                      
+
                         <View style={styles.col}>
                             <Text style={styles.textTitle}>Ngày hết hạn</Text>
                             <View style={styles.formPicker}>
@@ -208,20 +208,20 @@ const FormEditPassenger = ({ navigation, route }) => {
                             </View>
                         </View>
                     </View>
-                    
+
                 </View>
             </View>
             <View style={styles.viewBox}>
                 <Text style={styles.textTieuDe}>Căn cước công dân</Text>
                 <View style={styles.box}>
                     <View style={styles.rowBe}>
-                    <View style={styles.col}>
+                        <View style={styles.col}>
                             <Text style={styles.textTitle}>Số hộ chiếu</Text>
                             <TextInput
-                            style={[styles.formPicker,{paddingLeft:15}]}
-                            value={passportNumber}
-                            onChangeText={setPassportNumber}
-                        />
+                                style={[styles.formPicker, { paddingLeft: 15 }]}
+                                value={passportNumber}
+                                onChangeText={setPassportNumber}
+                            />
                         </View>
                         <View style={styles.col}>
                             <Text style={styles.textTitle}>Quốc gia cấp</Text>
@@ -236,10 +236,10 @@ const FormEditPassenger = ({ navigation, route }) => {
                                 </Picker>
                             </View>
                         </View>
-                        
+
                     </View>
                     <View style={styles.rowBe}>
-                      
+
                         <View style={styles.col}>
                             <Text style={styles.textTitle}>Ngày hết hạn</Text>
                             <View style={styles.formPicker}>
@@ -271,7 +271,7 @@ const FormEditPassenger = ({ navigation, route }) => {
                             </View>
                         </View>
                     </View>
-                    
+
                 </View>
             </View>
 
@@ -372,8 +372,8 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderColor: '#3FD0D4',
         borderRadius: 5,
-      },
-      onlyOne: {
+    },
+    onlyOne: {
         padding: 8,
     },
 })

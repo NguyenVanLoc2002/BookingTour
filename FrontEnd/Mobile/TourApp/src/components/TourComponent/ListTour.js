@@ -49,7 +49,7 @@ const ListTour = ({ navigation, route }) => {
                     <Text style={styles.textBox}>Khởi hành muộn nhất</Text>
                 </TouchableOpacity>
             </View>
-            {listTour.map((tour, index) => (
+            {listTour?.map((tour, index) => (
                 <View key={index} style={styles.tourList}>
                     <Pressable
                         style={styles.itemTour}
@@ -60,24 +60,24 @@ const ListTour = ({ navigation, route }) => {
                                 source={{
                                     uri: tour.url
                                 }}
-                                style={styles.tourAvt}
+                                style={styles?.tourAvt}
                                 resizeMode="cover"
                             />
                             <View style={styles.detailTour}>
-                                <Text style={{ fontSize: 16, fontWeight: "500" }}>{tour.title}</Text>
+                                <Text style={{ fontSize: 16, fontWeight: "500" }}>{tour?.title}</Text>
                                 <View style={styles.rowAround}>
                                     <View>
-                                        <Text style={{ fontSize: 14, fontWeight: "500", color: "red" }}>{Number(tour.price).toLocaleString('vi-VN')} đ</Text>
-                                        <Text style={{ textDecorationLine: "line-through", fontSize: 14, fontWeight: "500", color: "gray" }}>{Number(tour.originalPrice).toLocaleString('vi-VN')} đ</Text>
+                                        <Text style={{ fontSize: 14, fontWeight: "500", color: "red" }}>{Number(tour?.price).toLocaleString('vi-VN')} đ</Text>
+                                        <Text style={{ textDecorationLine: "line-through", fontSize: 14, fontWeight: "500", color: "gray" }}>{Number(tour?.originalPrice).toLocaleString('vi-VN')} đ</Text>
                                     </View>
                                     <View style={[styles.row, { paddingRight: 10, alignItems: "center" }]}>
                                         <FontAwesome6 style={{ paddingRight: 10 }} name="bus-simple" size={20} color="black" />
                                         <FontAwesome6 name="plane" size={20} color="black" />
                                     </View>
                                 </View>
-                                <View style={styles.row}><AntDesign name="calendar" size={20} color="black" /><Text style={{ fontSize: 14 }}>Khởi hành: {tour.ngayKhoiHanh}</Text></View>
-                                <View style={styles.row}><AntDesign name="clockcircleo" size={20} color="black" /><Text style={{ fontSize: 14 }}>Thời gian: {tour.thoiGian}</Text></View>
-                                <View style={styles.row}><AntDesign name="team" size={20} color="black" /><Text style={{ fontSize: 14 }}>Số chổ còn nhận: {Number(tour.soLuongVe - tour.soVeDaDat)}/{tour.soLuongVe}</Text></View>
+                                <View style={styles.row}><AntDesign name="calendar" size={20} color="black" /><Text style={{ fontSize: 14 }}>Khởi hành: {tour?.ngayKhoiHanh}</Text></View>
+                                <View style={styles.row}><AntDesign name="clockcircleo" size={20} color="black" /><Text style={{ fontSize: 14 }}>Thời gian: {tour?.thoiGian}</Text></View>
+                                <View style={styles.row}><AntDesign name="team" size={20} color="black" /><Text style={{ fontSize: 14 }}>Số chổ còn nhận: {Number(tour?.soLuongVe - tour?.soVeDaDat)}/{tour?.soLuongVe}</Text></View>
 
                             </View>
                         </View>
