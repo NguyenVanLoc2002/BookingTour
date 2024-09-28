@@ -3,7 +3,7 @@ package com.fit.tourservice.events;
 import com.fit.commonservice.utils.Constant;
 import com.fit.tourservice.dtos.request.BookingRequest;
 import com.fit.tourservice.dtos.request.TourFilterCriteriaRequest;
-import com.fit.tourservice.dtos.response.BookingResponseDTO;
+import com.fit.tourservice.dtos.response.BookingDTO;
 import com.fit.tourservice.dtos.response.TourDTO;
 import com.fit.tourservice.enums.*;
 import com.fit.tourservice.repositoires.TourRepository;
@@ -88,15 +88,17 @@ public class EventConsumer {
 
         return tourService.checkAvailableSlot(bookingRequest.getTourId(), bookingRequest.getQuantity())
                 .flatMap(isAvailable -> {
-                    BookingResponseDTO bookingResponseDTO = new BookingResponseDTO();
+                    BookingDTO bookingResponseDTO = new BookingDTO();
                     bookingResponseDTO.setCustomerId(bookingRequest.getCustomerId());
                     bookingResponseDTO.setTourId(bookingRequest.getTourId());
                     bookingResponseDTO.setQuantity(bookingRequest.getQuantity());
                     bookingResponseDTO.setAvailable(isAvailable);
                     if (isAvailable) {
+                        bookingResponseDTO.setBookingDate(LocalDate.now());
                         bookingResponseDTO.setStatusBooking(StatusBooking.PENDING_CONFIRMATION);
-
-                        return tourService.calcTotalAmountTicket(bookingRequest.getTourId(), bookingRequest.getQuantity())
+                        log.info("bookingResponseDTO demo: {}",bookingResponseDTO);
+                        return tourService.updateAvailableSlot(bookingRequest.getTourId(), bookingRequest.getQuantity())
+                                .then(tourService.calcTotalAmountTicket(bookingRequest.getTourId(), bookingRequest.getQuantity()))
                                 .flatMap(amount -> {
                                     bookingResponseDTO.setTotalAmount(amount);
                                     log.info("Total amount: {}", amount);

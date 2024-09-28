@@ -1,4 +1,4 @@
-package com.fit.paymentservice.dtos;
+package com.fit.notificationservice.dtos;
 
 import lombok.*;
 
