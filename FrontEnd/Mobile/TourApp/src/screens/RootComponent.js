@@ -9,6 +9,7 @@ import BookingComponent from "../components/BookingComponent/ListBookingComponen
 import NotificationComponent from "../components/NotificationComponent/NotificationComponent"
 import SavedListComponent from "../components/SavedListComponent/SavedListComponent"
 import DetailTour from "../components/TourComponent/DetailTour"
+import DatTour from "../components/TourComponent/DatTour"
 import Tour from "../components/HomeComponent/component/TourComponent"
 import ListTour from "../components/TourComponent/ListTour"
 import SetCriteria from "../components/HomeComponent/component/SetCriteria"
@@ -35,6 +36,7 @@ export default function RootComponent() {
        <Stack.Screen name="NotificationComponent" component={NotificationComponent} />
        <Stack.Screen name="SavedListComponent" component={SavedListComponent} />
        <Stack.Screen name="DetailTour" component={DetailTour} />
+       <Stack.Screen name="DatTour" component={DatTour} />
        <Stack.Screen name="ListTour" component={ListTour} />
        <Stack.Screen name="Tour" component={Tour} />
        <Stack.Screen name="SetCriteria" component={SetCriteria} />
