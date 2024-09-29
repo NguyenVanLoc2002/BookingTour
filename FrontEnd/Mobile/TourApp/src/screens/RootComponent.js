@@ -13,13 +13,16 @@ import DatTour from "../components/TourComponent/DatTour"
 import Tour from "../components/HomeComponent/component/TourComponent"
 import ListTour from "../components/TourComponent/ListTour"
 import SetCriteria from "../components/HomeComponent/component/SetCriteria"
+import Login from "../components/LoginComponent/Login"
+import Register from "../components/LoginComponent/Register"
+import Authentic from "../components/LoginComponent/Authentic"
 
 const Stack = createNativeStackNavigator();
 
 export default function RootComponent() {
 
   return  (
-    <Stack.Navigator initialRouteName="TourComponent">
+    <Stack.Navigator initialRouteName="Login">
       <Stack.Screen
         name="TourComponent"
         component={MainComponent}
@@ -27,6 +30,9 @@ export default function RootComponent() {
           headerShown: false,
         }}
       />
+       <Stack.Screen name="Login" component={Login} />
+       <Stack.Screen name="Register" component={Register} />
+       <Stack.Screen name="Authentic" component={Authentic} />
        <Stack.Screen name="HomeTour" component={HomeTour} />
        <Stack.Screen name="AccountComponent" component={AccountComponent} />
        <Stack.Screen name="AccountDetail" component={AccountDetail} />
