@@ -93,7 +93,6 @@ const ListBooking = ({ navigation, route, listBooking, trangThai }) => {
                         </View>
                     )
                     }
-
                 </View>
             ))}
         </ScrollView>
