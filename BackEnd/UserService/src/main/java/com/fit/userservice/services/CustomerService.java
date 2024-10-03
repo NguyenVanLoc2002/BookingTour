@@ -87,12 +87,9 @@ public class CustomerService {
                 .doOnSuccess(dto -> {
                     // Gửi thông tin đến Kafka khi tạo thành công
                     if (Objects.nonNull(dto)) {
-                        eventProducer.send(Constant.USER_ONBOARDING_TOPIC, gson.toJson(dto)) // Gửi message đến Kafka topic
+                        eventProducer.send(Constant.NOTIFICATION_CREATED_USER_TOPIC,String.valueOf(dto.getUserId()), gson.toJson(dto)) // Gửi message đến Kafka topic
                                 .subscribe(result -> log.info("Message sent to Kafka: " + result));
                     }
                 });
     }
-
-
-
 }

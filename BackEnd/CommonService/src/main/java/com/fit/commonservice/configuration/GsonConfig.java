@@ -1,6 +1,5 @@
-package com.fit.commonservice.config;
+package com.fit.commonservice.configuration;
 
-import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
 import com.fit.commonservice.utils.LocalDateAdapter;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;

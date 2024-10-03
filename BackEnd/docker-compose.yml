@@ -1,8 +1,20 @@
 version: '3'
 services:
+  zipkin:
+    image: ghcr.io/openzipkin/zipkin-slim:${TAG:-latest}
+    container_name: zipkin
+    ports:
+      - "9411:9411"
+    environment:
+      - STORAGE_TYPE = mem
+    restart: always
+    networks:
+      - gateway
+
   zookeeper:
     image: confluentinc/cp-zookeeper:7.4.4
     container_name: zookeeper
+    restart: always
     environment:
       ZOOKEEPER_CLIENT_PORT: 2181
       ZOOKEEPER_TICK_TIME: 2000
@@ -14,6 +26,7 @@ services:
   kafka:
     image: confluentinc/cp-kafka:7.4.4
     container_name: kafka
+    restart: always
     depends_on:
       - zookeeper
     ports:
@@ -45,6 +58,55 @@ services:
     networks:
       - kafka-network
 
+
+  redis:
+    image: redis:latest
+    container_name: redis-container
+    restart: always
+    ports:
+      - "6379:6379"
+    volumes:
+      - ./redis-data:/data  # Dữ liệu Redis lưu tại thư mục ./redis-data
+    environment:
+      - REDIS_PASSWORD=123456
+      - REDIS_PORT=6379
+      - REDIS_DATABASES=16
+    networks:
+      - kafka-network
+
+
+      # ================================== Authenticate-DB & AuthService ==================================
+
+#  AuthenticateService:
+#    build:
+#      context: AuthService
+#      dockerfile: Dockerfile
+#    container_name: Authenticate_Service
+#    image: authenticate-service:1.0
+#    ports:
+#      - "8010:8010"
+#    environment:
+#      - SPRING_PROFILES_ACTIVE=prod
+#    env_file:
+#      - environments/authenticate.env
+#    restart: always
+#    depends_on:
+#      zipkin:
+#        condition: service_started
+#      config-server:
+#        condition: service_started
+#      discovery-server:
+#        condition: service_started
+#      api_gateway:
+#        condition: service_started
+#      kafka:
+#        condition: service_started
+#    networks:
+#      - gateway
+#      - kafka-network
+
 networks:
+  gateway:
+    driver: bridge
   kafka-network:
     driver: bridge

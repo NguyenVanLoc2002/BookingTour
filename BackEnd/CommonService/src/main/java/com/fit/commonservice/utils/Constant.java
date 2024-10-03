@@ -1,8 +1,10 @@
 package com.fit.commonservice.utils;
 
 public class Constant {
+    //Topic Auth
     public static final String USER_ONBOARDING_TOPIC = "userOnboarding";
     public static final String USER_ONBOARDED_TOPIC = "userOnboarded";
+    public static final String VERIFY_ACCOUNT_TOPIC = "verifyAccount";
 
     //Topic Recommendation
     public static final String RECOMMEND_PREFERENCES_TOPIC = "recommendByPreferences";

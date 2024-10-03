@@ -1,4 +1,4 @@
-package com.fit.notificationservice.dtos;
+package com.fit.notificationservice.dtos.request;
 
 import lombok.*;
 
