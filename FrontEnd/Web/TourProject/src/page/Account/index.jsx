@@ -12,7 +12,7 @@ function Account() {
     ngaySinh: "06/05/2002",
     email: "baotruc123@gmail.com",
     phone: "0338030541",
-    city:"Hồ Chí Minh"
+    city: "Hồ Chí Minh"
   }
 
   const [isDisabled, setIsDisabled] = useState('true');
@@ -94,35 +94,33 @@ function Account() {
                 <a class="pb-2 text-gray-600" href="#">
                   Mật khẩu &amp; Bảo mật
                 </a>
-
               </div>
-
               <div class="mt-4 pr-8 pl-4">
-               <div class="flex justify-between"> 
-                <h3 class="text-xl font-bold">
-                  Dữ liệu cá nhân
-                </h3>
-                <button class="text-xl font-bold " onClick={handleChinhSua}>
-                  THAY ĐỔI
-                </button>
+                <div class="flex justify-between">
+                  <h3 class="text-xl font-bold">
+                    Dữ liệu cá nhân
+                  </h3>
+                  <button class="text-xl font-bold " onClick={handleChinhSua}>
+                    THAY ĐỔI
+                  </button>
                 </div>
                 <div class="mt-4 space-y-4">
                   <div>
                     <label class="block text-gray-600">
                       Tên đầy đủ
                     </label>
-                    <input class={isDisabled?"block appearance-none w-full bg-slate-200 border border-textColorCustom text-gray-700 py-2 px-3 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500":"block appearance-none w-full bg-white border border-textColorCustom text-gray-700 py-2 px-3 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500"} type="text" value={user.name} disabled={isDisabled}/>
+                    <input class={isDisabled ? "block appearance-none w-full bg-slate-200 border border-textColorCustom text-gray-700 py-2 px-3 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500" : "block appearance-none w-full bg-white border border-textColorCustom text-gray-700 py-2 px-3 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500"} type="text" value={user.name} disabled={isDisabled} />
                   </div>
                   <div class="flex space-x-4 mb-4">
                     <div class="flex-1">
                       <label class="block text-gray-700 text-sm font-medium mb-2">Giới tính</label>
                       <div class="relative">
-                        <select 
-                        disabled={isDisabled}
+                        <select
+                          disabled={isDisabled}
                           name="gioiTinh"
                           value={gioiTinh} // Lấy giá trị giới tính từ state
                           onChange={handleGenderChange}
-                           class={isDisabled?"block appearance-none w-full bg-slate-300 border border-textColorCustom text-gray-700 py-2 px-3 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500":"block appearance-none w-full bg-white border border-textColorCustom text-gray-700 py-2 px-3 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500"}>
+                          class={isDisabled ? "block appearance-none w-full bg-slate-300 border border-textColorCustom text-gray-700 py-2 px-3 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500" : "block appearance-none w-full bg-white border border-textColorCustom text-gray-700 py-2 px-3 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500"}>
                           <option value={1}>Nữ</option>
                           <option value={2}>Nam</option>
                           <option value={3}>Chưa có dữ liệu</option>
@@ -133,10 +131,10 @@ function Account() {
                       <label class="block text-gray-700 text-sm font-medium mb-2">Ngày sinh</label>
                       <div class="relative">
                         <select
-                        disabled={isDisabled}
+                          disabled={isDisabled}
                           value={day}
                           onChange={(e) => setDay(e.target.value)}
-                          class={isDisabled?"block appearance-none w-full bg-slate-300 border border-textColorCustom text-gray-700 py-2 px-3 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500":"block appearance-none w-full bg-white border border-textColorCustom text-gray-700 py-2 px-3 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500"}
+                          class={isDisabled ? "block appearance-none w-full bg-slate-300 border border-textColorCustom text-gray-700 py-2 px-3 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500" : "block appearance-none w-full bg-white border border-textColorCustom text-gray-700 py-2 px-3 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500"}
                         >
                           {days.map((d) => (
                             <option key={d} value={d}>{d}</option>
@@ -148,10 +146,10 @@ function Account() {
                       <label class="block text-gray-700 text-sm font-medium mb-2">Chọn tháng</label>
                       <div class="relative">
                         <select
-                        disabled={isDisabled}
+                          disabled={isDisabled}
                           value={month}
                           onChange={(e) => setMonth(e.target.value)}
-                          class={isDisabled?"block appearance-none w-full bg-slate-300 border border-textColorCustom text-gray-700 py-2 px-3 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500":"block appearance-none w-full bg-white border border-textColorCustom text-gray-700 py-2 px-3 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500"}     >
+                          class={isDisabled ? "block appearance-none w-full bg-slate-300 border border-textColorCustom text-gray-700 py-2 px-3 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500" : "block appearance-none w-full bg-white border border-textColorCustom text-gray-700 py-2 px-3 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500"}     >
                           {months.map((m) => (
                             <option key={m} value={m}>{m}</option>
                           ))}
@@ -162,10 +160,10 @@ function Account() {
                       <label class="block text-gray-700 text-sm font-medium mb-2">Chọn năm</label>
                       <div class="relative">
                         <select
-                        disabled={isDisabled}
+                          disabled={isDisabled}
                           value={year}
                           onChange={(e) => setYear(e.target.value)}
-                          class={isDisabled?"block appearance-none w-full bg-slate-300 border border-textColorCustom text-gray-700 py-2 px-3 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500":"block appearance-none w-full bg-white border border-textColorCustom text-gray-700 py-2 px-3 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500"}>
+                          class={isDisabled ? "block appearance-none w-full bg-slate-300 border border-textColorCustom text-gray-700 py-2 px-3 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500" : "block appearance-none w-full bg-white border border-textColorCustom text-gray-700 py-2 px-3 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500"}>
                           {years.map((y) => (
                             <option key={y} value={y}>{y}</option>
                           ))}
@@ -175,7 +173,7 @@ function Account() {
                   </div>
                   <div class="mb-4">
                     <label class="block text-gray-700 text-sm font-medium mb-2">Thành phố bạn đang ở</label>
-                    <input disabled={isDisabled} class={isDisabled?"block appearance-none w-full bg-slate-200 border border-textColorCustom text-gray-700 py-2 px-3 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500":"block appearance-none w-full bg-white border border-textColorCustom text-gray-700 py-2 px-3 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500"} type="text" value={user?.city? user.city :""} />
+                    <input disabled={isDisabled} class={isDisabled ? "block appearance-none w-full bg-slate-200 border border-textColorCustom text-gray-700 py-2 px-3 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500" : "block appearance-none w-full bg-white border border-textColorCustom text-gray-700 py-2 px-3 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500"} type="text" value={user?.city ? user.city : ""} />
                   </div>
                   <div class="flex justify-end space-x-4">
                     <button class="bg-gray-200 text-gray-500 py-2 px-4 rounded" onClick={handleHuy} >Hủy</button>
@@ -193,7 +191,7 @@ function Account() {
                       <p class="text-green-600 text-sm">Nơi nhận thông báo</p>
                     </div>
                     <button class="bg-white border border-gray-300 text-gray-700 py-2 px-4 rounded flex items-center">
-                      <i class="fas fa-plus mr-2"></i> Thêm email
+                      Thêm email
                     </button>
                   </div>
                 </div>
@@ -208,7 +206,7 @@ function Account() {
                       <p class="text-green-600 text-sm">Nơi nhận thông báo</p>
                     </div>
                     <button class="bg-white border border-gray-300 text-gray-700 py-2 px-4 rounded flex items-center">
-                      <i class="fas fa-plus mr-2"></i> Thêm số điện thoại
+                      Thêm số điện thoại
                     </button>
                   </div>
                 </div>
