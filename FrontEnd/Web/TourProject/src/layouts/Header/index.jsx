@@ -4,6 +4,7 @@ import { FaPhone, FaYoutube } from "react-icons/fa6";
 import { FaFacebook, FaMapMarkerAlt, FaRegEyeSlash, FaRegEye } from "react-icons/fa";
 import { RxAvatar } from "react-icons/rx";
 import { Modal, Button } from 'antd';
+import { useNavigate } from 'react-router-dom';
 function Header() {
   const [isOpenLogin, setIsOpenLogin] = useState(false);
 
@@ -18,6 +19,12 @@ function Header() {
   // Hàm để toggle giữa hiển thị và ẩn mật khẩu
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
+  };
+  const navigate = useNavigate();
+
+
+  const handleNavigateAccount = () => {
+    navigate('/Account'); 
   };
   return (
     <div className="hidden md:flex w-full bg-black text-white text-sm">
@@ -56,6 +63,9 @@ function Header() {
           </li>
           <li>
             <button onClick={openModalLogin}>Đăng nhập</button>
+          </li>
+          <li>
+            <button onClick={handleNavigateAccount}>Thông tin cá nhân</button>
           </li>
 
         </ul>
