@@ -55,10 +55,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-redis-reactive'
     implementation 'io.lettuce:lettuce-core:6.5.0.RC1'
 
-
     //Security JWT
-    implementation 'org.springframework.boot:spring-boot-starter-security'
-    implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
     implementation 'io.jsonwebtoken:jjwt:0.12.6'
 
     testImplementation 'org.springframework.kafka:spring-kafka-test'

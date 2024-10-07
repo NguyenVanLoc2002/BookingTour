@@ -1,7 +1,7 @@
 package com.fit.paymentservice.events;
 
 import com.fit.commonservice.utils.Constant;
-import com.fit.paymentservice.dtos.BookingDTO;
+import com.fit.paymentservice.dtos.response.BookingDTO;
 import com.fit.paymentservice.enums.StatusBooking;
 import com.fit.paymentservice.services.BookingService;
 import com.google.gson.Gson;
@@ -15,7 +15,6 @@ import reactor.kafka.receiver.KafkaReceiver;
 import reactor.kafka.receiver.ReceiverOptions;
 import reactor.kafka.receiver.ReceiverRecord;
 
-import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;

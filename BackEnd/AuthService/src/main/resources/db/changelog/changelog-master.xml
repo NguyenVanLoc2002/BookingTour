@@ -21,4 +21,13 @@
         </createTable>
     </changeSet>
 
+    <!-- ChangeSet để thêm cột isActive vào bảng auth_users -->
+    <changeSet id="add-isActive-to-auth_users" author="NguyenVanLoc2002">
+        <addColumn tableName="auth_users">
+            <column name="is_active" type="boolean" defaultValueBoolean="false">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+    </changeSet>
+
 </databaseChangeLog>

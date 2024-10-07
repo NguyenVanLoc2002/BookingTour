@@ -33,12 +33,34 @@ public interface TourRepository extends ReactiveCrudRepository<Tour, Long> {
                                       @Param("accommodationQuality") Integer accommodationQuality, // Sử dụng Integer
                                       @Param("region") Integer region, // Sử dụng Integer
                                       @Param("transportationMode") Integer transportationMode // Sử dụng Integer
-                                     );
+    );
 
-    Flux<Tour> findByTourIdIn (List<Long> tourIds);
+    Flux<Tour> findByTourIdIn(List<Long> tourIds);
 
 
-    @Override
-    Mono<Tour> findById(Long tourId);
+    Flux<Tour> findToursByNameContainingIgnoreCase(String name);
+
+    @Query("SELECT * FROM tours T " +
+            "JOIN tour_feature TF ON T.tour_id = TF.tour_id " +
+            "WHERE TF.start_date >= :startDate AND "+
+             "TF.end_date <= :endDate"
+    )
+    Flux<Tour> findToursByDayBetween(@Param("startDate") LocalDate startDate,@Param("endDate") LocalDate endDate);
+
+    Flux<Tour> findToursByPriceBetween(Double minPrice, Double maxPrice);
+
+    @Query("SELECT * FROM tours T " +
+            "JOIN tour_feature TF ON T.tour_id = TF.tour_id " +
+            "WHERE TF.type_tour = :startDate "
+    )
+    Flux<Tour> findToursByTypeTour(@Param("typeTour") int typeTour);
+
+
+    @Query("SELECT * FROM tours T " +
+            "JOIN tour_feature TF ON T.tour_id = TF.tour_id " +
+            "WHERE TF.end_date >= CURRENT_DATE " +
+            "AND T.available_slot > 0"
+    )
+    Flux<Tour> findAvailableTours();
 
 }

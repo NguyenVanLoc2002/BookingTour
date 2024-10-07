@@ -2,8 +2,8 @@ package com.fit.paymentservice.controllers;
 
 
 import com.fit.commonservice.utils.Constant;
-import com.fit.paymentservice.dtos.BookingDTO;
-import com.fit.paymentservice.dtos.BookingRequest;
+import com.fit.paymentservice.dtos.response.BookingDTO;
+import com.fit.paymentservice.dtos.request.BookingRequest;
 import com.fit.paymentservice.events.EventProducer;
 import com.fit.paymentservice.services.BookingService;
 import com.google.gson.Gson;

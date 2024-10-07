@@ -1,4 +1,4 @@
-package com.fit.paymentservice.dtos;
+package com.fit.paymentservice.dtos.response;
 
 import com.fit.paymentservice.enums.StatusBooking;
 import com.fit.paymentservice.models.Booking;

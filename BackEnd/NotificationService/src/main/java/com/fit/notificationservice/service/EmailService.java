@@ -1,9 +1,10 @@
 package com.fit.notificationservice.service;
 
-import com.fit.commonservice.utils.JwtUtils;
+
 import com.fit.notificationservice.dtos.reponse.CustomerResponse;
 import com.fit.notificationservice.dtos.request.BookingRequest;
 import com.fit.notificationservice.entity.Email;
+import com.fit.notificationservice.utils.JwtUtils;
 import jakarta.mail.internet.MimeMessage;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;

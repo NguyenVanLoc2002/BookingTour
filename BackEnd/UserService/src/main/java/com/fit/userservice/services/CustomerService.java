@@ -7,8 +7,6 @@ import com.fit.userservice.models.Customer;
 import com.fit.userservice.models.User;
 import com.fit.userservice.repositories.CustomerRepository;
 import com.fit.userservice.repositories.UserRepository;
-
-
 import com.google.gson.Gson;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,7 +31,7 @@ public class CustomerService {
     @Autowired
     private Gson gson;
 
-    public Flux<CustomerDTO> getAllCustomers() {
+    public Flux<CustomerDTO> getAllCustomers(int page, int size) {
         return customerRepository.findAll()
                 .flatMap(customer -> userRepository.findById(customer.getUserId())
                         .map(user -> {
@@ -43,7 +41,8 @@ public class CustomerService {
                             customerDTO.setRegistrationDate(user.getRegistrationDate());
                             return customerDTO;
                         }))
-
+                .skip((long) (page - 1) * size)
+                .take(size)
                 .switchIfEmpty(Mono.error(new Exception("Customer list empty!")));
     }
 
@@ -74,8 +73,10 @@ public class CustomerService {
                 .flatMap(savedUser -> {
                     Customer customer = CustomerDTO.convertToEntity(customerDTO);
                     customer.setUserId(savedUser.getUserId());
+                    log.info("Customer: {}",customer);
                     return customerRepository.save(customer)
-                            .map(savedCustomer->{
+                            .map(savedCustomer -> {
+                                log.info("savedCustomer: {}",savedCustomer);
                                 CustomerDTO dto = CustomerDTO.convertToDto(savedCustomer);
                                 dto.setName(savedUser.getName());
                                 dto.setEmail(savedUser.getEmail());
@@ -87,9 +88,24 @@ public class CustomerService {
                 .doOnSuccess(dto -> {
                     // Gửi thông tin đến Kafka khi tạo thành công
                     if (Objects.nonNull(dto)) {
-                        eventProducer.send(Constant.NOTIFICATION_CREATED_USER_TOPIC,String.valueOf(dto.getUserId()), gson.toJson(dto)) // Gửi message đến Kafka topic
+                        eventProducer.send(Constant.NOTIFICATION_CREATED_USER_TOPIC, String.valueOf(dto.getUserId()), gson.toJson(dto)) // Gửi message đến Kafka topic
                                 .subscribe(result -> log.info("Message sent to Kafka: " + result));
                     }
                 });
+    }
+
+    public Mono<CustomerDTO> getInfoByEmail(String email) {
+        return userRepository.findByEmail(email)
+                .flatMap(user ->
+                        customerRepository.findByUserId(user.getUserId())
+                                .map(customer -> {
+                                    CustomerDTO customerDTO = CustomerDTO.convertToDto(customer);
+                                    customerDTO.setName(user.getName());
+                                    customerDTO.setEmail(user.getEmail());
+                                    customerDTO.setRegistrationDate(user.getRegistrationDate());
+                                    return customerDTO;
+                                })
+                )
+                .switchIfEmpty(Mono.error(new Exception("Customer list empty!")));
     }
 }

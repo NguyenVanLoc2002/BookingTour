@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.time.LocalDate;
+
 @RestController
 @RequestMapping("/api/v1/tours")
 @Slf4j
@@ -21,10 +23,73 @@ public class TourController {
     @Autowired
     private EventConsumer eventConsumer;
 
+
+    @PostMapping("/add")
+    public Mono<ResponseEntity<TourDTO>> addTour(@RequestBody TourDTO tourDTO) {
+        return tourService.addTour(tourDTO)
+                .map(savedTour -> ResponseEntity.status(HttpStatus.CREATED).body(savedTour))
+                .defaultIfEmpty(ResponseEntity.status(HttpStatus.BAD_REQUEST).build());
+    }
+
+    @PutMapping("/{tourId}")
+    public Mono<ResponseEntity<TourDTO>> updateTour(@PathVariable Long tourId, @RequestBody TourDTO tourDTO) {
+        return tourService.updateTour(tourDTO, tourId)
+                .map(updatedTour -> ResponseEntity.ok(updatedTour))
+                .defaultIfEmpty(ResponseEntity.status(HttpStatus.NOT_FOUND).build());
+    }
+
+    @DeleteMapping("/{tourId}")
+    public Mono<ResponseEntity<String>> deleteTour(@PathVariable Long tourId) {
+        return tourService.deleteTour(tourId)
+                .then(Mono.just(ResponseEntity.ok("Tour with ID " + tourId + " has been deleted."))) // Trả về thông báo xác nhận
+                .onErrorResume(error -> {
+                    log.error("Error while deleting tour {}: {}", tourId, error.getMessage());
+                    return Mono.just(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build());
+                });
+    }
+
+
+    @GetMapping
+    public ResponseEntity<Flux<TourDTO>> getAllTours(@RequestParam int page, @RequestParam int size) {
+        return ResponseEntity.ok(tourService.getAllTours(page, size));
+    }
+
+    @GetMapping("/by-name")
+    public ResponseEntity<Flux<TourDTO>> getToursByNameContainingIgnoreCase(@RequestParam String name,@RequestParam int page, @RequestParam int size) {
+        return ResponseEntity.ok(tourService.getToursByNameContainingIgnoreCase(name, page, size));
+    }
+
+    //Lay DS theo khoang ngay
+    @GetMapping("/by-date")
+    public ResponseEntity<Flux<TourDTO>> getToursByDayBetween(@RequestParam LocalDate startDate, @RequestParam LocalDate endDate, @RequestParam int page, @RequestParam int size) {
+        return ResponseEntity.ok(tourService.getToursByDayBetween(startDate, endDate, page, size));
+    }
+
+    //Lay DS theo gia nam trong khoảng yêu cau
+    @GetMapping("/by-price-between")
+    public ResponseEntity<Flux<TourDTO>> getToursByPriceBetween(@RequestParam Double minPrice, @RequestParam Double maxPrice, @RequestParam int page, @RequestParam int size) {
+        return ResponseEntity.ok(tourService.getToursByPriceBetween(minPrice, maxPrice, page, size));
+    }
+
+
+    //Lay DS theo loai  tour
+    @GetMapping("/by-type")
+    public ResponseEntity<Flux<TourDTO>> getToursByTypeTour(@RequestParam int typeTour, @RequestParam int page, @RequestParam int size) {
+        return ResponseEntity.ok(tourService.getToursByTypeTour(typeTour, page, size));
+    }
+
+    @GetMapping("/available")
+    public ResponseEntity<Flux<TourDTO>> getAvailableTours(@RequestParam int page, @RequestParam int size) {
+        return ResponseEntity.ok(tourService.getAvailableTours(page, size));
+    }
+
+
     @PostMapping(value = "/getFilteredTours")
     public ResponseEntity<Flux<TourDTO>> getLstTourByCriteria(@RequestBody TourFilterCriteriaRequest tourFilterCriteriaRequest) {
         return ResponseEntity.ok(tourService.findToursByCriteria(tourFilterCriteriaRequest));
     }
+
+
 
     @GetMapping(value = "/recommendations-preferences/{customerId}")
     public Mono<ResponseEntity<Flux<TourDTO>>> getRecommendedTourByCriteria(@PathVariable("customerId") Long customerId) {

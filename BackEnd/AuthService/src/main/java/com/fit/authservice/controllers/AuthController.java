@@ -1,11 +1,11 @@
 package com.fit.authservice.controllers;
 
+import com.fit.authservice.utils.JwtUtils;
 import com.fit.authservice.dtos.AuthUserDTO;
 import com.fit.authservice.dtos.request.AccountRequest;
 import com.fit.authservice.dtos.response.LoginResponse;
 import com.fit.authservice.enums.Role;
 import com.fit.authservice.services.AuthService;
-import com.fit.commonservice.utils.JwtUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -43,10 +43,10 @@ public class AuthController {
     public Mono<ResponseEntity<LoginResponse>> login(@RequestBody AccountRequest accountRequest){
         return authService.login(accountRequest)
                 .map(loginResponse -> ResponseEntity.ok().body(loginResponse))
-                .onErrorResume(e-> {
+                .onErrorResume(e -> {
+                    log.error("Error during login", e);
                     LoginResponse defaultResponse = null;
-                    return Mono.just(ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                            .body(defaultResponse));
+                    return Mono.just(ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(defaultResponse));
                 });
     }
 }

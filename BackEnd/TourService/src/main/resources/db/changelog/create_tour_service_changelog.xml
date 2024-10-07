@@ -29,4 +29,8 @@
                                  constraintName="fk_tour_service_tours"/>
     </changeSet>
 
+    <changeSet id="table-service_tour-init" author="NguyenVanLoc2002">
+        <sqlFile path="db/sql/table-service_tour-init.sql"/>
+    </changeSet>
+
 </databaseChangeLog>

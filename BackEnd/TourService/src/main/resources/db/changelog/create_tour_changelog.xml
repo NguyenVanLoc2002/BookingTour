@@ -34,10 +34,10 @@
         </createTable>
     </changeSet>
 
-    <!-- ChangeSet để thêm cột includePromotions và price -->
+    <!-- ChangeSet để thêm cột includePromotions và price defaultValueBoolean="false"-->
     <changeSet id="add-columns-includePromotions-and-price-to-tours" author="NguyenVanLoc2002">
         <addColumn tableName="tours">
-            <column name="include_promotions" type="boolean"/>
+            <column name="include_promotions" type="boolean" />
             <column name="price" type="double"/>
         </addColumn>
     </changeSet>

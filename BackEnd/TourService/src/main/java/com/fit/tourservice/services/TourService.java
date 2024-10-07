@@ -14,9 +14,9 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 @Service
 @Slf4j
@@ -30,26 +30,71 @@ public class TourService {
     @Autowired
     private Gson gson;
 
-    private final Map<Long, TourFilterCriteriaRequest> customerPreferences = new ConcurrentHashMap<>();
-
-    // Lưu tiêu chí vào map tạm thời
-    public Mono<Void> saveCustomerPreferences(Long customerId, TourFilterCriteriaRequest criteriaRequest) {
-        customerPreferences.put(customerId, criteriaRequest);
-        return Mono.empty();
+    public Mono<TourDTO> addTour(TourDTO tourDTO){
+        return Mono.just(tourDTO)
+                .map(TourDTO::convertoEnity)
+                .flatMap(tour -> tourRepository.save(tour))
+                .map(TourDTO::convertoDTO);
     }
 
-    // Trả về các tour dựa trên tiêu chí đã lưu
-    public Flux<TourDTO> getRecommendedTours(Long customerId) {
-        TourFilterCriteriaRequest criteriaRequest = customerPreferences.get(customerId);
-        if (criteriaRequest == null) {
-            return Flux.empty(); // Trả về Flux.empty() nếu không có tiêu chí
-        }
-        return findToursByCriteria(criteriaRequest);
-    }
-
-    public Mono<Boolean> checkAvailableSlot(Long tourId) {
+    // Xóa Tour theo ID
+    public Mono<Void> deleteTour(Long tourId) {
         return tourRepository.findById(tourId)
-                .map(tour -> tour.getAvailableSlot() > 0);
+                .flatMap(tour -> tourRepository.delete(tour));
+    }
+
+    public Mono<TourDTO> updateTour(TourDTO tourDTO, Long tourId) {
+        return tourRepository.findById(tourId)
+                .flatMap(existTour->{
+                    Tour updateTour = TourDTO.convertoEnity(tourDTO);
+                    updateTour.setTourId(existTour.getTourId());
+                    return tourRepository.save(updateTour);
+                })
+                .map(TourDTO::convertoDTO);
+    }
+
+    public Flux<TourDTO> getAllTours(int page, int size) {
+        return tourRepository.findAll()
+                .map(TourDTO::convertoDTO)
+                .skip((long) (page -1) *size)
+                .take(size);
+    }
+
+    public Flux<TourDTO> getToursByNameContainingIgnoreCase(String name ,int page, int size) {
+        return tourRepository.findToursByNameContainingIgnoreCase(name)
+                .map(TourDTO::convertoDTO)
+                .skip((long) (page -1) *size)
+                .take(size);
+    }
+
+    public Flux<TourDTO> getToursByDayBetween(LocalDate startDate,LocalDate endDate, int page, int size) {
+        return tourRepository.findToursByDayBetween(startDate,endDate)
+                .map(TourDTO::convertoDTO)
+                .skip((long) (page -1) *size)
+                .take(size);
+    }
+
+
+    public Flux<TourDTO> getToursByPriceBetween(Double minPrice, Double maxPrice, int page, int size) {
+        return tourRepository.findToursByPriceBetween(minPrice,maxPrice)
+                .map(TourDTO::convertoDTO)
+                .skip((long) (page -1) *size)
+                .take(size);
+    }
+
+    public Flux<TourDTO> getToursByTypeTour(int type, int page, int size) {
+        return tourRepository.findToursByTypeTour(type)
+                .map(TourDTO::convertoDTO)
+                .skip((long) (page -1) *size)
+                .take(size);
+    }
+
+    //Lay DS  Tour con han va con cho trong
+    public Flux<TourDTO> getAvailableTours(int page, int size) {
+        return tourRepository.findAvailableTours()
+                .map(TourDTO::convertoDTO)
+                .skip((long) (page -1) *size)
+                .take(size);
     }
 
     public Flux<TourDTO> findToursByCriteria(TourFilterCriteriaRequest criteria) {
