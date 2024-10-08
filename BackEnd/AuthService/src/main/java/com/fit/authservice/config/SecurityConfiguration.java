@@ -1,5 +1,7 @@
 package com.fit.authservice.config;
 
+import io.jsonwebtoken.io.Decoders;
+import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -31,16 +33,18 @@ public class SecurityConfiguration {
 
     @Bean
     public ReactiveJwtDecoder jwtDecoder() {
-        var secretKey = new SecretKeySpec(SECRET_KEY.getBytes(StandardCharsets.UTF_8), "HmacSHA256");
+        byte[] keyBytes = Decoders.BASE64.decode(SECRET_KEY); // Sử dụng cùng một cách giải mã
+        var secretKey = Keys.hmacShaKeyFor(keyBytes);
         return NimbusReactiveJwtDecoder.withSecretKey(secretKey).build();
     }
 
     @Bean
     public SecurityWebFilterChain securityFilterChain(ServerHttpSecurity http) {
         return http
-                .csrf(csrf -> csrf.disable())
+                .csrf(ServerHttpSecurity.CsrfSpec::disable)
+                .cors(ServerHttpSecurity.CorsSpec::disable)
                 .authorizeExchange(exchange -> exchange
-                        .pathMatchers("/api/v1/customers/addCustomer","/api/v1/auth/verify-account","/api/v1/auth/login").permitAll()
+                        .pathMatchers("/customers/addCustomer","/auth/verify-account","/auth/login","/auth/get-claims").permitAll()
                         .anyExchange().authenticated()
                 )
                 .exceptionHandling(exceptionHandling ->
@@ -50,8 +54,8 @@ public class SecurityConfiguration {
                 )
                 .authenticationManager(authenticationManager)
                 .securityContextRepository(new WebSessionServerSecurityContextRepository())
-                .addFilterAt(jwtAuthFilter,  SecurityWebFiltersOrder.AUTHENTICATION) // Chỉ áp dụng filter sau AUTHENTICATION
-                .logout(logout -> logout.logoutUrl("/api/v1/auth/logout").logoutHandler(logoutService))
+//                .addFilterAt(jwtAuthFilter,  SecurityWebFiltersOrder.AUTHENTICATION) // Chỉ áp dụng filter sau AUTHENTICATION
+//                .logout(logout -> logout.logoutUrl("/api/v1/auth/logout").logoutHandler(logoutService))
                 .build();
     }
 }
