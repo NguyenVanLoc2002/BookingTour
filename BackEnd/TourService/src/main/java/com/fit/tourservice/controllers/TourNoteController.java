@@ -11,7 +11,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @RestController
-@RequestMapping("/api/v1/tour-notes")
+@RequestMapping("/tour-notes")
 @Slf4j
 public class TourNoteController {
     @Autowired

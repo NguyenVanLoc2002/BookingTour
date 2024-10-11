@@ -15,7 +15,7 @@ import reactor.core.publisher.Mono;
 import java.time.LocalDate;
 
 @RestController
-@RequestMapping("/api/v1/tours")
+@RequestMapping("/tours")
 @Slf4j
 public class TourController {
     @Autowired

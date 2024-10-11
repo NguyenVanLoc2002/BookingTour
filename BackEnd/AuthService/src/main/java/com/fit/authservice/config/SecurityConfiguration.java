@@ -15,6 +15,7 @@ import org.springframework.security.oauth2.jwt.NimbusReactiveJwtDecoder;
 import org.springframework.security.oauth2.jwt.ReactiveJwtDecoder;
 import org.springframework.security.web.server.SecurityWebFilterChain;
 import org.springframework.security.web.server.context.WebSessionServerSecurityContextRepository;
+import reactor.core.publisher.Mono;
 
 import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.StandardCharsets;
@@ -55,7 +56,11 @@ public class SecurityConfiguration {
                 .authenticationManager(authenticationManager)
                 .securityContextRepository(new WebSessionServerSecurityContextRepository())
 //                .addFilterAt(jwtAuthFilter,  SecurityWebFiltersOrder.AUTHENTICATION) // Chỉ áp dụng filter sau AUTHENTICATION
-//                .logout(logout -> logout.logoutUrl("/api/v1/auth/logout").logoutHandler(logoutService))
+                .logout(logout -> logout
+                        .logoutUrl("/auth/logout") // URL đăng xuất
+                        .logoutHandler(logoutService) // Xử lý logic đăng xuất tùy chỉnh
+                        .logoutSuccessHandler((exchange, authentication) -> Mono.empty()) // Không chuyển hướng sau đăng xuất
+                )
                 .build();
     }
 }

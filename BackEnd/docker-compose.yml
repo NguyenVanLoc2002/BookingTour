@@ -58,6 +58,52 @@ services:
     networks:
       - kafka-network
 
+  config-server:
+    build:
+      context: ConfigurationService
+      dockerfile: Dockerfile
+    container_name: config-server
+    image: config-server:1.0
+    restart: always
+    ports:
+      - "8888:8888"
+
+
+  discovery-server:
+    build:
+      context: DiscoveryService
+      dockerfile: Dockerfile
+    container_name: discovery-server
+    image: discovery-server:1.0
+    ports:
+      - "8761:8761"
+    restart: always
+    depends_on:
+      - zipkin
+      - config-server
+    networks:
+      - gateway
+
+
+  api_gateway:
+    build:
+      context: ApiGateway
+      dockerfile: Dockerfile
+    container_name: api_gateway
+    image: api_gateway:1.0
+    ports:
+      - "8000:8000"
+    environment:
+      - SPRING_PROFILES_ACTIVE=prod
+    env_file:
+      - Environments/apigateway.env
+    restart: on-failure
+    depends_on:
+      - zipkin
+      - config-server
+      - discovery-server
+    networks:
+      - gateway
 
   redis:
     image: redis:latest
@@ -77,33 +123,54 @@ services:
 
       # ================================== Authenticate-DB & AuthService ==================================
 
-#  AuthenticateService:
-#    build:
-#      context: AuthService
-#      dockerfile: Dockerfile
-#    container_name: Authenticate_Service
-#    image: authenticate-service:1.0
-#    ports:
-#      - "8010:8010"
-#    environment:
-#      - SPRING_PROFILES_ACTIVE=prod
-#    env_file:
-#      - environments/authenticate.env
-#    restart: always
-#    depends_on:
-#      zipkin:
-#        condition: service_started
-#      config-server:
-#        condition: service_started
-#      discovery-server:
-#        condition: service_started
-#      api_gateway:
-#        condition: service_started
-#      kafka:
-#        condition: service_started
-#    networks:
-#      - gateway
-#      - kafka-network
+  AuthenticateService:
+    build:
+      context: AuthService
+      dockerfile: Dockerfile
+    container_name: Authenticate_Service
+    image: authenticate-service:1.0
+    ports:
+      - "9002:9002"
+    environment:
+      - SPRING_PROFILES_ACTIVE=prod
+    env_file:
+      - Environments/authentication.env
+    restart: always
+    depends_on:
+      - zipkin
+      - config-server
+      - discovery-server
+      - api_gateway
+      - kafka
+    networks:
+      - gateway
+      - kafka-network
+
+  # ================================== Authenticate-DB & AuthService ==================================
+
+  UserService:
+    build:
+      context: UserService
+      dockerfile: Dockerfile
+    container_name: User_Service
+    image: user-service:1.0
+    ports:
+      - "9001:9001"
+    environment:
+      - SPRING_PROFILES_ACTIVE=prod
+    env_file:
+      - Environments/user.env
+    restart: always
+    depends_on:
+      - zipkin
+      - config-server
+      - discovery-server
+      - api_gateway
+      - kafka
+      - AuthenticateService
+    networks:
+      - gateway
+      - kafka-network
 
 networks:
   gateway:

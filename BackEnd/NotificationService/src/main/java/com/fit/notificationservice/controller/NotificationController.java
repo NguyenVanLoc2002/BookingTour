@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Mono;
 
 @RestController
-@RequestMapping("/api/v1/notification")
+@RequestMapping("/notification")
 public class NotificationController {
 
     private final EventProducer eventProducer;

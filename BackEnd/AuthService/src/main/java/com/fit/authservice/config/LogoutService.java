@@ -1,6 +1,7 @@
 package com.fit.authservice.config;
 
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.ReactiveSecurityContextHolder;
 import org.springframework.security.web.server.WebFilterExchange;
@@ -14,16 +15,15 @@ public class LogoutService implements ServerLogoutHandler {
 
     @Override
     public Mono<Void> logout(WebFilterExchange exchange, Authentication authentication) {
-        // Lấy thông tin header Authorization
         String authHeader = exchange.getExchange().getRequest().getHeaders().getFirst(HttpHeaders.AUTHORIZATION);
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            return Mono.empty(); // Nếu không có header, trả về Mono.empty()
+            return Mono.error(new RuntimeException("Invalid token format")); // Xử lý lỗi rõ ràng
         }
 
-        // Xóa thông tin xác thực trong ReactiveSecurityContextHolder
         return Mono.fromRunnable(() -> {
-            // Xóa context xác thực
             ReactiveSecurityContextHolder.clearContext();
+            exchange.getExchange().getResponse().setStatusCode(HttpStatus.OK); // Đặt trạng thái 200 OK sau khi đăng xuất
         });
     }
+
 }
