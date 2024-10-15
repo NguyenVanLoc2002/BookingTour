@@ -18,8 +18,12 @@ public class ReviewController {
     private ReviewService reviewService;
 
     @GetMapping
-    public ResponseEntity<Flux<ReviewDTO>> getAllReviews(@RequestParam int page, @RequestParam int size) {
-        return ResponseEntity.ok(reviewService.getAll(page, size));
+    public Mono<ResponseEntity<Flux<ReviewDTO>>> getAllReviews(@RequestParam int page, @RequestParam int size) {
+        return Mono.just(ResponseEntity.ok(reviewService.getAll(page, size)))
+                .onErrorResume(e -> {
+                    log.error("Error fetching all reviews: {}", e.getMessage());
+                    return Mono.just(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build());
+                });
     }
 
     @PostMapping("/add")
@@ -47,8 +51,12 @@ public class ReviewController {
     }
 
     @GetMapping("/by-tour")
-    public ResponseEntity<Flux<ReviewDTO>> getReviewsByTour(@RequestParam Long tourId) {
-        return ResponseEntity.ok(reviewService.getReviewsByTourId(tourId));
+    public Mono<ResponseEntity<Flux<ReviewDTO>>> getReviewsByTour(@RequestParam Long tourId) {
+        return Mono.just(ResponseEntity.ok(reviewService.getReviewsByTourId(tourId)))
+                .onErrorResume(e -> {
+                    log.error("Error fetching reviews by tour ID: {}", e.getMessage());
+                    return Mono.just(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build());
+                });
     }
 }
 

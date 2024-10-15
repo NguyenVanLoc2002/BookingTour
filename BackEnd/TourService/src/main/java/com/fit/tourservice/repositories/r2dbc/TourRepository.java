@@ -1,13 +1,11 @@
-package com.fit.tourservice.repositoires;
+package com.fit.tourservice.repositories.r2dbc;
 
 import com.fit.tourservice.dtos.response.TourDTO;
 import com.fit.tourservice.models.Tour;
-import org.reactivestreams.Publisher;
 import org.springframework.data.r2dbc.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.data.repository.reactive.ReactiveCrudRepository;
 import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
 
 import java.time.LocalDate;
 import java.util.List;

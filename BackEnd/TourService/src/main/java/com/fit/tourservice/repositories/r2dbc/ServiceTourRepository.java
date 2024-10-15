@@ -1,4 +1,4 @@
-package com.fit.tourservice.repositoires;
+package com.fit.tourservice.repositories.r2dbc;
 
 import com.fit.tourservice.models.ServiceTour;
 import org.springframework.data.repository.reactive.ReactiveCrudRepository;

@@ -12,14 +12,14 @@ import java.util.regex.Pattern;
 public class RouterValidator {
 
     public static final List<Pattern> openApiEndpoints = List.of(
-            Pattern.compile("/api/v1/auth/login"),
+            Pattern.compile("/api/v1/auth/.*"),
+//            Pattern.compile("/api/v1/auth/login"),
             Pattern.compile("/api/v1/customers/addCustomer"),
-            Pattern.compile("/api/v1/auth/get-claims"),
+//            Pattern.compile("/api/v1/auth/get-claims"),
             Pattern.compile("/eureka")
     );
 
     public static final List<Pattern> internalApiEndpoints = List.of(
-            Pattern.compile("/api/v1/auth/.*")
 //          Pattern.compile("/api/v1/students/.*")
     );
 

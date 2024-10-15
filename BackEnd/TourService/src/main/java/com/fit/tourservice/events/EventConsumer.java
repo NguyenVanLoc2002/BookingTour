@@ -6,7 +6,7 @@ import com.fit.tourservice.dtos.request.TourFilterCriteriaRequest;
 import com.fit.tourservice.dtos.response.BookingDTO;
 import com.fit.tourservice.dtos.response.TourDTO;
 import com.fit.tourservice.enums.*;
-import com.fit.tourservice.repositoires.TourRepository;
+import com.fit.tourservice.repositories.r2dbc.TourRepository;
 import com.fit.tourservice.services.TourService;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;

@@ -19,9 +19,14 @@ public class TourNoteController {
 
     // Get all tour notes with pagination
     @GetMapping
-    public ResponseEntity<Flux<TourNoteDTO>> getTourNotes(@RequestParam int page, @RequestParam int size) {
-        return ResponseEntity.ok(tourNoteService.getAll(page, size));
+    public Mono<ResponseEntity<Flux<TourNoteDTO>>> getTourNotes(@RequestParam int page, @RequestParam int size) {
+        return Mono.just(ResponseEntity.ok(tourNoteService.getAll(page, size)))
+                .onErrorResume(e -> {
+                    log.error("Error fetching tour notes: {}", e.getMessage());
+                    return Mono.just(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build());
+                });
     }
+
 
     // Add a new tour note
     @PostMapping("/add")
@@ -52,7 +57,11 @@ public class TourNoteController {
 
     // Get tour notes by tour ID
     @GetMapping("/by-tour")
-    public ResponseEntity<Flux<TourNoteDTO>> getTourNotesByTour(@RequestParam Long tourId) {
-        return ResponseEntity.ok(tourNoteService.getTourNotesByTourId(tourId));
+    public Mono<ResponseEntity<Flux<TourNoteDTO>>> getTourNotesByTour(@RequestParam Long tourId) {
+        return Mono.just(ResponseEntity.ok(tourNoteService.getTourNotesByTourId(tourId)))
+                .onErrorResume(e -> {
+                    log.error("Error fetching tour notes by tour ID: {}", e.getMessage());
+                    return Mono.just(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build());
+                });
     }
 }

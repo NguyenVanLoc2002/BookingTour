@@ -95,13 +95,13 @@ public class EmailService {
 
     public String createVerificationLinkBookingTour(Long token) {
 //        String token = createToken(bookingRequest);
-        return "http://localhost:9008/api/v1/notification/verify-booking-tour?bookingId=" + token;
+        return "http://localhost:8000/api/v1/notification/verify-booking-tour?bookingId=" + token;
     }
 
     public String createVerificationLinkAccount(String email) {
         String token = jwtUtils.generateToken(email);
         log.info("token: {}", token);
-        return "http://localhost:9002/api/v1/auth/verify-account?token=" + token;
+        return "http://localhost:8000/api/v1/auth/verify-account?token=" + token;
     }
 
 

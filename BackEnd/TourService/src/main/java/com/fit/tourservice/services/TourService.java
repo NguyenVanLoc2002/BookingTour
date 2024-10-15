@@ -5,7 +5,7 @@ import com.fit.tourservice.dtos.request.TourFilterCriteriaRequest;
 import com.fit.tourservice.dtos.response.TourDTO;
 import com.fit.tourservice.events.EventProducer;
 import com.fit.tourservice.models.Tour;
-import com.fit.tourservice.repositoires.TourRepository;
+import com.fit.tourservice.repositories.r2dbc.TourRepository;
 import com.google.gson.Gson;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;

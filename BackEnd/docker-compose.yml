@@ -6,7 +6,7 @@ services:
     ports:
       - "9411:9411"
     environment:
-      - STORAGE_TYPE = mem
+      - STORAGE_TYPE=mem
     restart: always
     networks:
       - gateway
@@ -146,7 +146,7 @@ services:
       - gateway
       - kafka-network
 
-  # ================================== Authenticate-DB & AuthService ==================================
+  # ================================== USER-DB & UserService ==================================
 
   UserService:
     build:
@@ -171,6 +171,110 @@ services:
     networks:
       - gateway
       - kafka-network
+  # ================================== Tour-DB & TourService ==================================
+
+  TourService:
+    build:
+      context: TourService
+      dockerfile: Dockerfile
+    container_name: Tour_Service
+    image: tour-service:1.0
+    ports:
+      - "9003:9003"
+    environment:
+      - SPRING_PROFILES_ACTIVE=prod
+    env_file:
+      - Environments/tour.env
+    restart: always
+    depends_on:
+      - zipkin
+      - config-server
+      - discovery-server
+      - api_gateway
+      - kafka
+      - UserService
+    networks:
+      - gateway
+      - kafka-network
+
+  # ================================== Tour-DB & TourService ==================================
+
+  RecommendationService:
+    build:
+      context: RecommendationService
+      dockerfile: Dockerfile
+    container_name: Recommendation_Service
+    image: recommendation-service:1.0
+    ports:
+      - "9004:9004"
+    environment:
+      - SPRING_PROFILES_ACTIVE=prod
+    env_file:
+      - Environments/recommendation.env
+    restart: always
+    depends_on:
+      - zipkin
+      - config-server
+      - discovery-server
+      - api_gateway
+      - kafka
+      - UserService
+    networks:
+      - gateway
+      - kafka-network
+
+  # ================================== Payment-DB & PaymentService ==================================
+
+  PaymentService:
+    build:
+      context: PaymentService
+      dockerfile: Dockerfile
+    container_name: Payment_Service
+    image: payment-service:1.0
+    ports:
+      - "9005:9005"
+    environment:
+      - SPRING_PROFILES_ACTIVE=prod
+    env_file:
+      - Environments/payment.env
+    restart: always
+    depends_on:
+      - zipkin
+      - config-server
+      - discovery-server
+      - api_gateway
+      - kafka
+      - UserService
+    networks:
+      - gateway
+      - kafka-network
+
+  # ================================== Notification-DB & NotificationService ==================================
+
+  NotificationService:
+    build:
+      context: NotificationService
+      dockerfile: Dockerfile
+    container_name: NotificationService_Service
+    image: notification-service:1.0
+    ports:
+      - "9008:9008"
+    environment:
+      - SPRING_PROFILES_ACTIVE=prod
+    env_file:
+      - Environments/notification.env
+    restart: always
+    depends_on:
+      - zipkin
+      - config-server
+      - discovery-server
+      - api_gateway
+      - kafka
+      - UserService
+    networks:
+      - gateway
+      - kafka-network
+
 
 networks:
   gateway:

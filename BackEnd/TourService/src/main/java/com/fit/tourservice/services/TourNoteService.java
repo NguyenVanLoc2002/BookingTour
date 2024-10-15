@@ -2,7 +2,7 @@ package com.fit.tourservice.services;
 
 import com.fit.tourservice.dtos.response.TourNoteDTO;
 import com.fit.tourservice.models.TourNote;
-import com.fit.tourservice.repositoires.TourNoteRepository;
+import com.fit.tourservice.repositories.r2dbc.TourNoteRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

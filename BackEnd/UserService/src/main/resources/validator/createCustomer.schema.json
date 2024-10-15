@@ -42,9 +42,7 @@
   "required": [
     "email",
     "name",
-    "address",
     "gender",
-    "dateOfBirth",
-    "phoneNumber"
+    "dateOfBirth"
   ]
 }

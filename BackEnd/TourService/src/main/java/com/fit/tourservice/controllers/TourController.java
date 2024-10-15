@@ -50,45 +50,67 @@ public class TourController {
 
 
     @GetMapping
-    public ResponseEntity<Flux<TourDTO>> getAllTours(@RequestParam int page, @RequestParam int size) {
-        return ResponseEntity.ok(tourService.getAllTours(page, size));
+    public Mono<ResponseEntity<Flux<TourDTO>>> getAllTours(@RequestParam int page, @RequestParam int size) {
+        return Mono.just(ResponseEntity.ok(tourService.getAllTours(page, size)))
+                .onErrorResume(e -> {
+                    log.error("Error fetching tours: {}", e.getMessage());
+                    return Mono.just(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build());
+                });
     }
 
     @GetMapping("/by-name")
-    public ResponseEntity<Flux<TourDTO>> getToursByNameContainingIgnoreCase(@RequestParam String name,@RequestParam int page, @RequestParam int size) {
-        return ResponseEntity.ok(tourService.getToursByNameContainingIgnoreCase(name, page, size));
+    public Mono<ResponseEntity<Flux<TourDTO>>> getToursByNameContainingIgnoreCase(@RequestParam String name, @RequestParam int page, @RequestParam int size) {
+        return Mono.just(ResponseEntity.ok(tourService.getToursByNameContainingIgnoreCase(name, page, size)))
+                .onErrorResume(e -> {
+                    log.error("Error fetching tours by name: {}", e.getMessage());
+                    return Mono.just(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build());
+                });
     }
 
-    //Lay DS theo khoang ngay
     @GetMapping("/by-date")
-    public ResponseEntity<Flux<TourDTO>> getToursByDayBetween(@RequestParam LocalDate startDate, @RequestParam LocalDate endDate, @RequestParam int page, @RequestParam int size) {
-        return ResponseEntity.ok(tourService.getToursByDayBetween(startDate, endDate, page, size));
+    public Mono<ResponseEntity<Flux<TourDTO>>> getToursByDayBetween(@RequestParam LocalDate startDate, @RequestParam LocalDate endDate, @RequestParam int page, @RequestParam int size) {
+        return Mono.just(ResponseEntity.ok(tourService.getToursByDayBetween(startDate, endDate, page, size)))
+                .onErrorResume(e -> {
+                    log.error("Error fetching tours by date range: {}", e.getMessage());
+                    return Mono.just(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build());
+                });
     }
 
-    //Lay DS theo gia nam trong khoảng yêu cau
     @GetMapping("/by-price-between")
-    public ResponseEntity<Flux<TourDTO>> getToursByPriceBetween(@RequestParam Double minPrice, @RequestParam Double maxPrice, @RequestParam int page, @RequestParam int size) {
-        return ResponseEntity.ok(tourService.getToursByPriceBetween(minPrice, maxPrice, page, size));
+    public Mono<ResponseEntity<Flux<TourDTO>>> getToursByPriceBetween(@RequestParam Double minPrice, @RequestParam Double maxPrice, @RequestParam int page, @RequestParam int size) {
+        return Mono.just(ResponseEntity.ok(tourService.getToursByPriceBetween(minPrice, maxPrice, page, size)))
+                .onErrorResume(e -> {
+                    log.error("Error fetching tours by price range: {}", e.getMessage());
+                    return Mono.just(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build());
+                });
     }
 
-
-    //Lay DS theo loai  tour
     @GetMapping("/by-type")
-    public ResponseEntity<Flux<TourDTO>> getToursByTypeTour(@RequestParam int typeTour, @RequestParam int page, @RequestParam int size) {
-        return ResponseEntity.ok(tourService.getToursByTypeTour(typeTour, page, size));
+    public Mono<ResponseEntity<Flux<TourDTO>>> getToursByTypeTour(@RequestParam int typeTour, @RequestParam int page, @RequestParam int size) {
+        return Mono.just(ResponseEntity.ok(tourService.getToursByTypeTour(typeTour, page, size)))
+                .onErrorResume(e -> {
+                    log.error("Error fetching tours by type: {}", e.getMessage());
+                    return Mono.just(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build());
+                });
     }
 
     @GetMapping("/available")
-    public ResponseEntity<Flux<TourDTO>> getAvailableTours(@RequestParam int page, @RequestParam int size) {
-        return ResponseEntity.ok(tourService.getAvailableTours(page, size));
+    public Mono<ResponseEntity<Flux<TourDTO>>> getAvailableTours(@RequestParam int page, @RequestParam int size) {
+        return Mono.just(ResponseEntity.ok(tourService.getAvailableTours(page, size)))
+                .onErrorResume(e -> {
+                    log.error("Error fetching available tours: {}", e.getMessage());
+                    return Mono.just(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build());
+                });
     }
 
-
-    @PostMapping(value = "/getFilteredTours")
-    public ResponseEntity<Flux<TourDTO>> getLstTourByCriteria(@RequestBody TourFilterCriteriaRequest tourFilterCriteriaRequest) {
-        return ResponseEntity.ok(tourService.findToursByCriteria(tourFilterCriteriaRequest));
+    @PostMapping("/getFilteredTours")
+    public Mono<ResponseEntity<Flux<TourDTO>>> getLstTourByCriteria(@RequestBody TourFilterCriteriaRequest tourFilterCriteriaRequest) {
+        return Mono.just(ResponseEntity.ok(tourService.findToursByCriteria(tourFilterCriteriaRequest)))
+                .onErrorResume(e -> {
+                    log.error("Error fetching tours by criteria: {}", e.getMessage());
+                    return Mono.just(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build());
+                });
     }
-
 
 
     @GetMapping(value = "/recommendations-preferences/{customerId}")

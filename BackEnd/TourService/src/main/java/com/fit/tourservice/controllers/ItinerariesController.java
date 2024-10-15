@@ -1,11 +1,9 @@
 package com.fit.tourservice.controllers;
 
 import com.fit.tourservice.dtos.response.ItinerariesDTO;
-import com.fit.tourservice.dtos.response.TourDTO;
 import com.fit.tourservice.services.ItinerariesService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cloud.client.loadbalancer.Response;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -20,8 +18,12 @@ public class ItinerariesController {
     private ItinerariesService itinerariesService;
 
     @GetMapping
-    public ResponseEntity<Flux<ItinerariesDTO>> getItineraries(@RequestParam int page, @RequestParam int size){
-        return ResponseEntity.ok(itinerariesService.getAll(page, size));
+    public Mono<ResponseEntity<Flux<ItinerariesDTO>>> getItineraries(@RequestParam int page, @RequestParam int size){
+        return Mono.just(ResponseEntity.ok(itinerariesService.getAll(page, size)))
+                .onErrorResume(e->{
+                    log.error("Error fetching tour notes: {}", e.getMessage());
+                    return Mono.just(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build());
+                });
     }
 
     @PostMapping("/add")
@@ -49,8 +51,13 @@ public class ItinerariesController {
     }
 
     @GetMapping("/by-tour")
-    public ResponseEntity<Flux<ItinerariesDTO>> getItinerariesByTour(@RequestParam Long tourId) {
-        return ResponseEntity.ok(itinerariesService.getItinerariesByTourId(tourId));
+    public Mono<ResponseEntity<Flux<ItinerariesDTO>>> getItinerariesByTour(@RequestParam Long tourId) {
+        return Mono.just(ResponseEntity.ok(itinerariesService.getItinerariesByTourId(tourId)))
+                .onErrorResume(e -> {
+                    log.error("Error fetching itineraries by tour ID: {}", e.getMessage());
+                    return Mono.just(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build());
+                });
     }
+
 
 }

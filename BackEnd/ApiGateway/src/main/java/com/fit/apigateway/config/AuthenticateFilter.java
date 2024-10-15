@@ -42,14 +42,13 @@ public class AuthenticateFilter extends AbstractGatewayFilterFactory<Authenticat
                 return Mono.error(new AppException(ErrorCode.UNAUTHORIZED));
             }
 
-//            var Authorization = exchange.getRequest().getHeaders().get("Authorization");
             String authorizationHeader = exchange.getRequest().getHeaders().getFirst(HttpHeaders.AUTHORIZATION);
 
-            log.info("authorizationHeader 1: {}", authorizationHeader);
+
             if (authorizationHeader == null || authorizationHeader.isEmpty()) {
                 return Mono.error(new AppException(ErrorCode.UNAUTHENTICATED));
             }
-
+            log.info("authorizationHeader 1: {}", authorizationHeader);
             return authenticateService.getClaims(authorizationHeader)
                     .flatMap(claimsResponse -> {
                         // Kiểm tra vai trò người dùng (admin, student, ...).

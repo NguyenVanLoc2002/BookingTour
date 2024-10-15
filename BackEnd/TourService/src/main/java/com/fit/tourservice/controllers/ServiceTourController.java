@@ -18,8 +18,12 @@ public class ServiceTourController {
     private ServiceTourService serviceTourService;
 
     @GetMapping
-    public ResponseEntity<Flux<ServiceTourDTO>> getAllServiceTours(@RequestParam int page, @RequestParam int size) {
-        return ResponseEntity.ok(serviceTourService.getAll(page, size));
+    public Mono<ResponseEntity<Flux<ServiceTourDTO>>> getAllServiceTours(@RequestParam int page, @RequestParam int size) {
+        return Mono.just(ResponseEntity.ok(serviceTourService.getAll(page, size)))
+                .onErrorResume(e -> {
+                    log.error("Error fetching all service tours: {}", e.getMessage());
+                    return Mono.just(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build());
+                });
     }
 
     @PostMapping("/add")
@@ -47,8 +51,12 @@ public class ServiceTourController {
     }
 
     @GetMapping("/by-tour")
-    public ResponseEntity<Flux<ServiceTourDTO>> getServiceToursByTour(@RequestParam Long tourId) {
-        return ResponseEntity.ok(serviceTourService.getServiceTourByTourId(tourId));
+    public Mono<ResponseEntity<Flux<ServiceTourDTO>>> getServiceToursByTour(@RequestParam Long tourId) {
+        return Mono.just(ResponseEntity.ok(serviceTourService.getServiceTourByTourId(tourId)))
+                .onErrorResume(e -> {
+                    log.error("Error fetching service tours by tour ID: {}", e.getMessage());
+                    return Mono.just(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build());
+                });
     }
 }
 
