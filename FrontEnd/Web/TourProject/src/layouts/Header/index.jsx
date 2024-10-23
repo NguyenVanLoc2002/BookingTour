@@ -10,7 +10,7 @@ import {
 import { RxAvatar } from "react-icons/rx";
 import { Modal, Button } from "antd";
 import { useNavigate } from "react-router-dom";
-import axios from 'axios';
+import axios from "axios";
 
 function Header() {
   const navigate = useNavigate();
@@ -26,6 +26,7 @@ function Header() {
 
   const [email, setEmail] = useState("");
   const [name, setName] = useState("");
+  const [password, setPassword] = useState("");
   const [day, setDay] = useState(1);
   const [month, setMonth] = useState(1);
   const [year, setYear] = useState(new Date().getFullYear()); // Mặc định là năm hiện tại
@@ -53,28 +54,96 @@ function Header() {
     setDay(1); // Reset ngày về 1 khi năm thay đổi
   };
 
-
-  const handleSubmit = async(e) => {
+  const handleRefreshDataRegister= ()=>{
+    setEmail("");
+    setName("");
+    setDay(1);
+    setMonth(1);
+    setYear(new Date().getFullYear());
+  }
+  
+  const handleSubmitRegister = async (e) => {
     e.preventDefault(); // Ngăn chặn hành vi mặc định của form
-    const dateOfBirth = `${year}-${month < 10 ? '0' + month : month}-${day < 10 ? '0' + day : day}`;
+    const dateOfBirth = `${year}-${month < 10 ? "0" + month : month}-${
+      day < 10 ? "0" + day : day
+    }`;
+    // Tính tuổi từ ngày sinh
+    const birthDate = new Date(dateOfBirth);
+    const today = new Date();
+    let age = today.getFullYear() - birthDate.getFullYear();
+    const monthDiff = today.getMonth() - birthDate.getMonth();
+    if (
+      monthDiff < 0 ||
+      (monthDiff === 0 && today.getDate() < birthDate.getDate())
+    ) {
+      age--;
+    }
+
+    // Kiểm tra tuổi
+    if (age < 18) {
+      alert("Bạn phải từ 18 tuổi trở lên để đăng ký.");
+      return; // Dừng lại nếu không đủ tuổi
+    }
+
+    if (!email || !name) {
+      alert("Vui lòng điền đầy đủ thông tin!");
+      return;
+    }
+
     const data = {
       email,
       name,
-      address:"Quận 12",
-      gender:false,
+      address: "",
+      gender: gender === 0 ? false : true,
       dateOfBirth,
-      phoneNumber: "0986123123"
+      phoneNumber: "",
     };
     console.log(data);
-    
+
     try {
-      const response = await axios.post('http://localhost:8000/api/v1/customers/addCustomer', data);
-      console.log('Đăng ký thành công:', response.data);
-      closeModalRegister();
+      const response = await axios.post(
+        "http://localhost:8000/api/v1/customers/addCustomer",
+        data
+      );
+      console.log("Đăng ký thành công:", response.data);
+      if (response.status === 201) {
+        Modal.success({
+          content: "Bạn vui lòng kiểm tra email để xác thực tài khoản.",
+        });
+        closeModalRegister();
+        handleRefreshDataRegister();
+      }
     } catch (error) {
-      console.error('Đăng ký thất bại:', error);
+      console.error("Đăng ký thất bại:", error);
+      if (error.response && error.response.status === 400) {
+        Modal.error({
+          content: "Tài khoản đã tồn tại.",
+        });
+        handleRefreshDataRegister();
+      }
     }
   };
+
+  const handleSubmitLogin = async(e)=>{
+    e.preventDefault(); 
+    const data = {
+      email,
+      password,
+    }
+
+    console.log(data);
+    try {
+      const  response = await axios.post('http://localhost:8000/api/v1/auth/login',data);
+      console.log(response.data);
+      // Lưu token vào localStorage
+      localStorage.setItem('token', response.data.token);
+      closeModalLogin();
+
+    } catch (error) {
+      console.error("Đăng nhập không thành công:", error);
+      alert("Tài khoản hoặc mật khẩu không đúng!");
+    }
+  }
 
   // Hàm để toggle giữa hiển thị và ẩn mật khẩu
   const togglePasswordVisibility = () => {
@@ -158,7 +227,7 @@ function Header() {
               type="email"
               id="email"
               value={email}
-              onChange={(e)=> setEmail(e.target.value)}
+              onChange={(e) => setEmail(e.target.value)}
               className="mt-1 block w-full px-3 py-2 border border-textColorCustom rounded-md shadow-sm focus:outline-none focus:ring focus:border-blue-300"
               placeholder="Nhập email của bạn"
             />
@@ -174,7 +243,7 @@ function Header() {
               type="name"
               id="name"
               value={name}
-              onChange={(e)=>setName(e.target.value)}
+              onChange={(e) => setName(e.target.value)}
               className="mt-1 block w-full px-3 py-2 border border-textColorCustom rounded-md shadow-sm focus:outline-none focus:ring focus:border-blue-300"
               placeholder="Nhập họ tên của bạn"
             />
@@ -271,7 +340,7 @@ function Header() {
             <button
               type="submit"
               className="w-2/3 bg-customColor text-white py-2 rounded-md text-lg font-medium hover:bg-teal-600"
-              onClick={handleSubmit}
+              onClick={handleSubmitRegister}
             >
               ĐĂNG KÝ
             </button>
@@ -292,7 +361,7 @@ function Header() {
       </Modal>
 
       <Modal
-        visible={isOpenLogin}
+        open={isOpenLogin}
         onOk={closeModalLogin}
         onCancel={closeModalLogin}
         footer={null}
@@ -316,6 +385,8 @@ function Header() {
               <input
                 type="email"
                 id="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 className="mt-1 block w-full px-3 py-2 border border-textColorCustom rounded-md shadow-sm focus:outline-none focus:ring focus:border-blue-300"
                 placeholder="Nhập email của bạn"
               />
@@ -331,6 +402,8 @@ function Header() {
                 <input
                   type={showPassword ? "text" : "password"}
                   id="password"
+                  value={password}
+                  onChange={(e) =>  setPassword(e.target.value)}
                   className="mt-1 block w-full px-3 py-2 border border-textColorCustom rounded-md shadow-sm focus:outline-none focus:ring focus:border-blue-300"
                   placeholder="Mật khẩu"
                 />
@@ -356,6 +429,7 @@ function Header() {
             <button
               type="submit"
               className="w-2/3 bg-customColor text-white py-2 rounded-md text-lg font-medium hover:bg-teal-600"
+              onClick={handleSubmitLogin}
             >
               ĐĂNG NHẬP
             </button>

@@ -1,5 +1,6 @@
 package com.fit.authservice.controllers;
 
+import com.fit.authservice.dtos.request.CustomerDTO;
 import com.fit.authservice.dtos.response.ApiResponse;
 import com.fit.authservice.dtos.response.ClaimsResponse;
 import com.fit.authservice.utils.JwtUtils;
@@ -16,6 +17,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 
+import java.time.LocalDate;
+
 @RestController
 @RequestMapping("/auth")
 @Slf4j
@@ -27,7 +30,19 @@ public class AuthController {
 
     @GetMapping("/verify-account")
     public Mono<ResponseEntity<AuthUserDTO>> verifyAccount(@RequestParam("token") String token) {
-        String email = jwtUtils.extractUsername(token);
+        Claims claims = jwtUtils.extractAllClaims(token);
+        log.info("claims: {}",claims.toString());
+        String email = claims.get("email", String.class);
+        String name = claims.get("name", String.class);
+        boolean gender = claims.get("gender", Boolean.class);
+        LocalDate dateOfBirth = LocalDate.parse(claims.get("dateOfBirth", String.class));
+
+        CustomerDTO customerDTO = new CustomerDTO();
+        customerDTO.setEmail(email);
+        customerDTO.setName(name);
+        customerDTO.setGender(gender);
+        customerDTO.setDateOfBirth(dateOfBirth);
+        log.info("customerDTO: {}",customerDTO);
         if(email==null){
             return Mono.just(ResponseEntity.badRequest().build());
         }
@@ -38,7 +53,14 @@ public class AuthController {
         authUserDTO.setRole(Role.USER);
         log.info(authUserDTO.toString());
         return authService.createAuthUser(authUserDTO)
-                .map(authSaved-> ResponseEntity.ok().body(authSaved))
+                .flatMap(authSaved ->{
+                    return authService.registerUser(customerDTO)
+                            .map(customerResponse -> {
+                                log.info("Customer registered successfully: {}", customerResponse);
+                                return ResponseEntity.ok().body(authSaved);
+                            })
+                            .defaultIfEmpty(ResponseEntity.badRequest().build());
+                })
                 .defaultIfEmpty(ResponseEntity.badRequest().build());
     }
 

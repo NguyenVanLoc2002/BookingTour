@@ -15,8 +15,12 @@ public class RouterValidator {
             Pattern.compile("/api/v1/auth/.*"),
 //            Pattern.compile("/api/v1/auth/login"),
             Pattern.compile("/api/v1/customers/addCustomer"),
+            Pattern.compile("/api/v1/customers/register"),
 //            Pattern.compile("/api/v1/auth/get-claims"),
-            Pattern.compile("/eureka")
+            Pattern.compile("/eureka"),
+            //Tour
+            Pattern.compile("/api/v1/tours/region"),
+            Pattern.compile("/api/v1/itineraries/by-tour")
     );
 
     public static final List<Pattern> internalApiEndpoints = List.of(
@@ -29,9 +33,20 @@ public class RouterValidator {
     );
 
     public static final List<Pattern> customerApiEndpoints = List.of(
-            Pattern.compile("/api/v1/tours/user/*"),
             Pattern.compile("/api/v1/bookings/*"),
-            Pattern.compile("/api/v1/customers/by-email")
+            Pattern.compile("/api/v1/customers/by-email"),
+
+            //Tour
+            Pattern.compile("/api/v1/tours/region"),
+            Pattern.compile("/api/v1/tours/by-name"),
+            Pattern.compile("/api/v1/tours/by-date"),
+            Pattern.compile("/api/v1/tours/by-price-between"),
+            Pattern.compile("/api/v1/tours/by-type"),
+            Pattern.compile("/api/v1/tours/available"),
+            Pattern.compile("/api/v1/tours/getFilteredTours"),
+            Pattern.compile("/api/v1/tours/recommendations-preferences/*"),
+            Pattern.compile("/api/v1/tours/recommendations-interactions/*"),
+            Pattern.compile("/api/v1/tours/recommendations-preferences/request")
     );
 
     private Predicate<ServerHttpRequest> createPredicate(List<Pattern> patterns) {

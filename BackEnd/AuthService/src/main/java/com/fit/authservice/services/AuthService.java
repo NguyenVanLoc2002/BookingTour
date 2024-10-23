@@ -1,5 +1,6 @@
 package com.fit.authservice.services;
 
+import com.fit.authservice.dtos.request.CustomerDTO;
 import com.fit.authservice.utils.JwtUtils;
 import com.fit.authservice.dtos.AuthUserDTO;
 import com.fit.authservice.dtos.request.AccountRequest;
@@ -13,6 +14,7 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
 import java.util.*;
@@ -26,6 +28,8 @@ public class AuthService {
     private PasswordEncoder passwordEncoder;
     @Autowired
     private JwtUtils jwtUtils;
+    @Autowired
+    private WebClient.Builder loadBalancedWebClientBuilder;
 
     public Mono<AuthUserDTO> createAuthUser(AuthUserDTO authUserDTO) {
         return Mono.just(authUserDTO)
@@ -81,5 +85,19 @@ public class AuthService {
                 authUser.getPassword(),
                 authorities
         );
+    }
+
+    public Mono<CustomerDTO> registerUser(CustomerDTO customerDTO) {
+        String baseUrl = "http://USERSERVICE:9001/customers/register";
+        return loadBalancedWebClientBuilder.build()
+                .post()
+                .uri(baseUrl)
+                .bodyValue(customerDTO)
+                .retrieve()
+                .bodyToMono(CustomerDTO.class)
+                .onErrorResume(e -> {
+                    log.error("Error creating customer: {}", e.getMessage());
+                    return Mono.empty(); // Hoặc bạn có thể trả về một giá trị mặc định khác
+                });
     }
 }

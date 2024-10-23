@@ -28,35 +28,35 @@ function Introduce() {
         <Header />
         <Menu name="Introduce"/>
 
-        <div class="container mx-auto">
-          <div class="relative">
-            <img alt="Beautiful landscape with mountains and a boat on the water" class="w-full h-[600px]" src="https://res.cloudinary.com/doqbelkif/image/upload/v1726605866/35784823-5c44-4f7e-b095-ec45a2d129ec.png" />
+        <div className="container mx-auto">
+          <div className="relative">
+            <img alt="Beautiful landscape with mountains and a boat on the water" className="w-full h-[600px]" src="https://res.cloudinary.com/doqbelkif/image/upload/v1726605866/35784823-5c44-4f7e-b095-ec45a2d129ec.png" />
           </div>
-          <div class="p-8">
-            <div class="flex mb-[40px] mt-[40px]">
-              <div class="w-3/5">
-                <h2 class="text-2xl font-bold mb-4">
+          <div className="p-8">
+            <div className="flex mb-[40px] mt-[40px]">
+              <div className="w-3/5">
+                <h2 className="text-2xl font-bold mb-4">
                   Giới thiệu
                 </h2>
-                <p class="mb-4">
+                <p className="mb-4">
                   Lucky Panda Travel tự hào là đơn vị dẫn đầu trong công việc mang đến những hành trình khám phá tuyệt vời tại Việt Nam. Sứ mệnh của chúng tôi là đem lại sự trải nghiệm độc đáo và dịch vụ tuyệt hảo cho khách hàng. Chúng tôi hiểu rằng mỗi chuyến đi là một cơ hội để trải nghiệm, và chúng tôi luôn nỗ lực để mang đến những hành trình đáng nhớ.
                   Trang web của Lucky Panda Travel được xây dựng với sự chú trọng đến trải nghiệm của khách hàng. Chúng tôi cung cấp thông tin chi tiết về các điểm đến, loại hình du lịch và các dịch vụ liên quan. Bạn có thể dễ dàng tìm kiếm, lựa chọn và đặt tour du lịch phù hợp với nhu cầu của mình. Chúng tôi cam kết mang đến cho bạn những thông tin chính xác, cập nhật và hữu ích nhất. Đội ngũ nhân viên của chúng tôi luôn sẵn sàng hỗ trợ bạn trong mọi khâu của hành trình, từ việc lên kế hoạch cho đến khi bạn trở về nhà an toàn.
                   Lucky Panda Travel còn cung cấp các dịch vụ đặc biệt, như tổ chức sự kiện, hội nghị và các chương trình team building. Chúng tôi hiểu rằng mỗi chuyến đi đều là một trải nghiệm đặc biệt và chúng tôi luôn nỗ lực để mang đến cho bạn những trải nghiệm đáng nhớ.
                 </p>
               </div>
-              <div class="w-2/5 flex items-center ">
-                <img alt="Modern office space with desks and chairs" class="w-4/5  border-4 h-[300px] border-gray-500 ml-auto" src="https://storage.googleapis.com/a1aa/image/m1znoUXYPN7cE1fhWRnjr5IHexgt2EIUSHFpLlti2DXhRfGnA.jpg" />
+              <div className="w-2/5 flex items-center ">
+                <img alt="Modern office space with desks and chairs" className="w-4/5  border-4 h-[300px] border-gray-500 ml-auto" src="https://storage.googleapis.com/a1aa/image/m1znoUXYPN7cE1fhWRnjr5IHexgt2EIUSHFpLlti2DXhRfGnA.jpg" />
               </div>
             </div>
-            <div class="flex  justify-between items-center mb-[40px]" >
-              <div class="w-1/5 flex items-center">
-                <img alt="Hand holding a globe with a view of the earth" class="w-full rounded-full border-4 h-[300px] border-gray-500 ml-10" src="https://storage.googleapis.com/a1aa/image/XEXbe9hlSekLckzN7X54sUDsqsxJ7Zr20mexzjc2TcD9ieNOB.jpg" />
+            <div className="flex  justify-between items-center mb-[40px]" >
+              <div className="w-1/5 flex items-center">
+                <img alt="Hand holding a globe with a view of the earth" className="w-full rounded-full border-4 h-[300px] border-gray-500 ml-10" src="https://storage.googleapis.com/a1aa/image/XEXbe9hlSekLckzN7X54sUDsqsxJ7Zr20mexzjc2TcD9ieNOB.jpg" />
               </div>
-              <div class="w-3/5">
-                <h2 class="text-2xl font-bold mb-4 text-right mr-8">
+              <div className="w-3/5">
+                <h2 className="text-2xl font-bold mb-4 text-right mr-8">
                   Sứ mệnh
                 </h2>
-                <p class="mb-4">
+                <p className="mb-4">
                   Sứ mệnh của Lucky Panda Travel là mang đến những trải nghiệm ấn tượng, độc đáo, dễ dàng và đáng nhớ cho mỗi khách hàng.
                   Chúng tôi cam kết không ngừng cải thiện chất lượng, và chăm sóc từng chuyến đi của bạn từ khi bắt đầu đến khi kết thúc, giúp bạn khám phá và trải nghiệm những điều tuyệt vời nhất.
                   Với tinh thần trách nhiệm cao, Lucky Panda Travel luôn đề cao bảo vệ sự bền vững của môi trường, văn hóa, và nền kinh tế, và mong hành trình của bạn sẽ thật đầy ý nghĩa.
@@ -65,12 +65,12 @@ function Introduce() {
               </div>
 
             </div>
-            <div class="flex  items-center">
-              <div class="w-4/5">
-                <h2 class="text-2xl font-bold mb-4">
+            <div className="flex  items-center">
+              <div className="w-4/5">
+                <h2 className="text-2xl font-bold mb-4">
                   Tầm nhìn
                 </h2>
-                <ul class="list-disc list-inside mb-4">
+                <ul className="list-disc list-inside mb-4">
                   <li>
                     Trở thành thương hiệu du lịch được yêu thích nhất của người Việt Nam.
                   </li>
@@ -88,8 +88,8 @@ function Introduce() {
                   </li>
                 </ul>
               </div>
-              <div class="flex   w-2/5 ">
-                <img alt="Person holding a lens with a view of a beautiful landscape" class="w-full h-[250px]" src="https://storage.googleapis.com/a1aa/image/AQTcFe05ia3rcaXULHxCsqguJd4XrFrfCjkLVkPF57dfieNOB.jpg"/>
+              <div className="flex   w-2/5 ">
+                <img alt="Person holding a lens with a view of a beautiful landscape" className="w-full h-[250px]" src="https://storage.googleapis.com/a1aa/image/AQTcFe05ia3rcaXULHxCsqguJd4XrFrfCjkLVkPF57dfieNOB.jpg"/>
               </div>
             </div>
           </div>

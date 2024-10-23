@@ -2,6 +2,8 @@ package com.fit.tourservice.controllers;
 
 import com.fit.tourservice.dtos.request.TourFilterCriteriaRequest;
 import com.fit.tourservice.dtos.response.TourDTO;
+import com.fit.tourservice.dtos.response.TourFeatureDTO;
+import com.fit.tourservice.enums.Region;
 import com.fit.tourservice.events.EventConsumer;
 import com.fit.tourservice.services.TourService;
 import lombok.extern.slf4j.Slf4j;
@@ -57,6 +59,20 @@ public class TourController {
                     return Mono.just(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build());
                 });
     }
+
+    // API lấy danh sách tour theo region
+    @GetMapping("/region")
+    public Mono<ResponseEntity<Flux<TourDTO>>> getTourByRegion(@RequestParam Region region) {
+        return tourService.getTourByRegion(region)
+                .collectList() // Chuyển đổi Flux<TourDTO> thành Mono<List<TourDTO>>
+                .map(tourList -> {
+                    if (tourList.isEmpty()) {
+                        return ResponseEntity.notFound().build(); // Trả về 404 nếu không tìm thấy tour
+                    }
+                    return ResponseEntity.ok(Flux.fromIterable(tourList)); // Trả về 200 và danh sách tour
+                });
+    }
+
 
     @GetMapping("/by-name")
     public Mono<ResponseEntity<Flux<TourDTO>>> getToursByNameContainingIgnoreCase(@RequestParam String name, @RequestParam int page, @RequestParam int size) {

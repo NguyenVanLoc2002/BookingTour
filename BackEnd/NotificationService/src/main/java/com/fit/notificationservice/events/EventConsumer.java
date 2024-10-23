@@ -19,15 +19,15 @@ import java.util.Set;
 @Slf4j
 public class EventConsumer {
     private final KafkaReceiver<String, String> kafkaReceiver;
-    private final Gson gson;
+
+    @Autowired
+    private Gson gson;
 
     @Autowired
     private EmailService emailService;
 
     @Autowired
-    public EventConsumer(ReceiverOptions<String, String> options, Gson gson, EmailService emailService) {
-        this.gson = gson;
-
+    public EventConsumer(ReceiverOptions<String, String> options) {
         // KafkaReceiver luôn lắng nghe phản hồi từ Kafka
         this.kafkaReceiver = KafkaReceiver.create(
                 options.subscription(
@@ -53,18 +53,16 @@ public class EventConsumer {
     }
 
     private Mono<Void> sendEmailVerifyAccount(ReceiverRecord<String, String> receiverRecord) {
-        try {
-            log.info("Received message Verify Account: {}", receiverRecord.value());
-            // Chuyển đổi từ JSON sang BookingRequest
-            CustomerResponse customerReponse = gson.fromJson(receiverRecord.value(), CustomerResponse.class);
-            log.info("customerResponse : {}", customerReponse);
-
-            // Gọi phương thức gửi email
-            return emailService.sendEmailVerifyAccount(customerReponse);
-        } catch (Exception e) {
-            log.error("Error sending email Verify Account: {}", e.getMessage());
-            return Mono.error(e); // Ném ra lỗi nếu xảy ra lỗi trong quá trình gửi email
-        }
+        return Mono.fromCallable(() -> {
+                    log.info("Received message Verify Account: {}", receiverRecord.value());
+                    // Chuyển đổi từ JSON sang CustomerResponse
+                    CustomerResponse customerResponse = gson.fromJson(receiverRecord.value(), CustomerResponse.class);
+                    log.info("customerResponse : {}", customerResponse);
+                    return customerResponse;
+                })
+                .flatMap(customerResponse -> emailService.sendEmailVerifyAccount(customerResponse)) // Gọi phương thức gửi email
+                .doOnError(e -> log.error("Error sending email Verify Account: {}", e.getMessage())) // Log nếu có lỗi
+                .onErrorResume(e -> Mono.error(new RuntimeException("Error processing message", e))); // Xử lý lỗi và ném ngoại lệ
     }
 
     private Mono<Void> sendEmailVerifyBookingTour(ReceiverRecord<String, String> receiverRecord) {

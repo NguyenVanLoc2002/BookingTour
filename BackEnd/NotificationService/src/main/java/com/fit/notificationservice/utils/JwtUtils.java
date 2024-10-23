@@ -1,5 +1,6 @@
 package com.fit.notificationservice.utils;
 
+import com.fit.notificationservice.dtos.reponse.CustomerResponse;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -45,18 +46,30 @@ public class JwtUtils {
         return extractExpiration(token).before(new Date());
     }
 
-    public String generateToken(String username) {
+    public String generateToken(CustomerResponse customerResponse) {
         Map<String, Object> claims = new HashMap<>();
-        return createToken(claims, username);
+
+        // Đặt các thông tin cần thiết từ CustomerResponse vào trong claims
+        claims.put("userId", customerResponse.getUserId());
+        claims.put("email", customerResponse.getEmail());
+        claims.put("name", customerResponse.getName());
+        claims.put("registrationDate", customerResponse.getRegistrationDate());
+        claims.put("address", customerResponse.getAddress());
+        claims.put("gender", customerResponse.isGender());
+        claims.put("dateOfBirth", customerResponse.getDateOfBirth().toString());
+        claims.put("phoneNumber", customerResponse.getPhoneNumber());
+
+        // Tạo token với thông tin của customerResponse
+        return createToken(claims, customerResponse.getEmail());  // Email sẽ là subject của JWT
     }
 
     private String createToken(Map<String, Object> claims, String subject) {
         return Jwts.builder()
                 .setClaims(claims)
-                .setSubject(subject)
+                .setSubject(subject)  // Email làm subject
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 1))  // Thời hạn JWT 1 phút
-                .signWith(SignatureAlgorithm.HS256, secretKey)  // Sử dụng khóa bí mật
+                .setExpiration(new Date(System.currentTimeMillis() + jwtExpiration))
+                .signWith(SignatureAlgorithm.HS256, secretKey)
                 .compact();
     }
 

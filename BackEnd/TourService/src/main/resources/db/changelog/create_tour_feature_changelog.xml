@@ -22,7 +22,7 @@
             <column name="accommodation_quality" type="VARCHAR(50)">
                 <constraints nullable="false"/>
             </column>
-            <column name="transportation_mode" type="VARCHAR(30)">
+            <column name="transportation_mode" type="TEXT">
                 <constraints nullable="false"/>
             </column>
             <column name="start_date" type="DATE">
@@ -41,8 +41,9 @@
                                  constraintName="fk_tour_feature_tours"/>
     </changeSet>
 
+
 <!--    Add data-->
-    <changeSet id="table-tour_feature-init" author="NguyenVanLoc2002">
+    <changeSet id="table-tour_feature-init-1" author="NguyenVanLoc2002">
         <sqlFile path="db/sql/table-tour_feature_init.sql"/>
     </changeSet>
 </databaseChangeLog>

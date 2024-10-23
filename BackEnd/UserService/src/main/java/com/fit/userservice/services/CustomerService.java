@@ -56,9 +56,12 @@ public class CustomerService {
         return checkduplicateEmail(customerDTO.getEmail())
                 .flatMap(aBoolean -> {
                     if (Boolean.TRUE.equals(aBoolean)) {
+                        log.info("Mail exist: "+ customerDTO.getEmail());
                         return Mono.error(new Exception("Customer with email " + customerDTO.getEmail() + " already exists"));
                     } else {
-                        return createCustomer(customerDTO);
+                        return eventProducer.send(Constant.NOTIFICATION_CREATED_USER_TOPIC, String.valueOf(customerDTO.getEmail()), gson.toJson(customerDTO)) // Gửi message đến Kafka topic
+                                .doOnSuccess(result -> log.info("Message sent to Kafka: " + result))
+                                .then(Mono.just(customerDTO));
                     }
                 });
     }
@@ -73,10 +76,10 @@ public class CustomerService {
                 .flatMap(savedUser -> {
                     Customer customer = CustomerDTO.convertToEntity(customerDTO);
                     customer.setUserId(savedUser.getUserId());
-                    log.info("Customer: {}",customer);
+                    log.info("Customer: {}", customer);
                     return customerRepository.save(customer)
                             .map(savedCustomer -> {
-                                log.info("savedCustomer: {}",savedCustomer);
+                                log.info("savedCustomer: {}", savedCustomer);
                                 CustomerDTO dto = CustomerDTO.convertToDto(savedCustomer);
                                 dto.setName(savedUser.getName());
                                 dto.setEmail(savedUser.getEmail());
@@ -84,14 +87,7 @@ public class CustomerService {
                                 return dto;
                             });
                 })
-                .doOnError(throwable -> log.error(throwable.getMessage()))
-                .doOnSuccess(dto -> {
-                    // Gửi thông tin đến Kafka khi tạo thành công
-                    if (Objects.nonNull(dto)) {
-                        eventProducer.send(Constant.NOTIFICATION_CREATED_USER_TOPIC, String.valueOf(dto.getUserId()), gson.toJson(dto)) // Gửi message đến Kafka topic
-                                .subscribe(result -> log.info("Message sent to Kafka: " + result));
-                    }
-                });
+                .doOnError(throwable -> log.error(throwable.getMessage()));
     }
 
     public Mono<CustomerDTO> getInfoByEmail(String email) {

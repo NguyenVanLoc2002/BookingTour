@@ -26,6 +26,7 @@ import java.nio.charset.StandardCharsets;
 public class EmailService {
     @Autowired
     private JavaMailSender mailSender;
+
     @Autowired
     private ResourceLoader resourceLoader;
 
@@ -56,7 +57,7 @@ public class EmailService {
                     String htmlContent = loadVerifyAccountTemplate();
                     htmlContent = htmlContent.replace("${username}", customerReponse.getName());
                     htmlContent = htmlContent.replace("${email}", customerReponse.getEmail());
-                    htmlContent = htmlContent.replace("${verificationLink}", createVerificationLinkAccount(customerReponse.getEmail()));
+                    htmlContent = htmlContent.replace("${verificationLink}", createVerificationLinkAccount(customerReponse));
 
                     // Tạo đối tượng Email và gửi
                     Email emailDetails = new Email(customerReponse.getEmail(), htmlContent, "Booking Confirmation", "");
@@ -98,10 +99,11 @@ public class EmailService {
         return "http://localhost:8000/api/v1/notification/verify-booking-tour?bookingId=" + token;
     }
 
-    public String createVerificationLinkAccount(String email) {
-        String token = jwtUtils.generateToken(email);
+    public String createVerificationLinkAccount(CustomerResponse customerResponse) {
+        String token = jwtUtils.generateToken(customerResponse);
         log.info("token: {}", token);
-        return "http://localhost:8000/api/v1/auth/verify-account?token=" + token;
+//        return "http://localhost:8000/api/v1/auth/verify-account?token=" + token;
+        return "http://localhost:9002/auth/verify-account?token=" + token;
     }
 
 

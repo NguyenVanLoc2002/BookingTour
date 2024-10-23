@@ -87,4 +87,12 @@ public class CustomerController {
                 .onErrorReturn(ResponseEntity.status(HttpStatus.BAD_REQUEST).build()); // Trả về 400 nếu có lỗi
     }
 
+    @PostMapping("/register")
+    public Mono<ResponseEntity<CustomerDTO>> createCustomer(@RequestBody CustomerDTO customerDTO) {
+        return customerService.createCustomer(customerDTO)
+                .map(savedCustomerDTO -> ResponseEntity.ok(savedCustomerDTO)) // Trả về phản hồi 200 OK cùng với đối tượng CustomerDTO đã được lưu
+                .defaultIfEmpty(ResponseEntity.status(HttpStatus.BAD_REQUEST).build()) // Trả về phản hồi 400 nếu không có dữ liệu
+                .onErrorReturn(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build()); // Trả về phản hồi 500 nếu có lỗi xảy ra
+    }
+
 }
