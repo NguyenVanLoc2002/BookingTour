@@ -20,7 +20,8 @@ public class RouterValidator {
             Pattern.compile("/eureka"),
             //Tour
             Pattern.compile("/api/v1/tours/region"),
-            Pattern.compile("/api/v1/itineraries/by-tour")
+            Pattern.compile("/api/v1/itineraries/by-tour"),
+            Pattern.compile("/api/v1/itineraries/activities/by-itinerary")
     );
 
     public static final List<Pattern> internalApiEndpoints = List.of(

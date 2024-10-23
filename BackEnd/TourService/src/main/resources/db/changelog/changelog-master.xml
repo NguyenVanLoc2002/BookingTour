@@ -13,4 +13,5 @@
     <include file="db/changelog/create_tour_pricing_details_changelog.xml"/>
     <include file="db/changelog/create_tour_service_changelog.xml"/>
     <include file="/db/changelog/create_review_changelog.xml"/>
+    <include file="/db/changelog/create_activity_changelog.xml"/>
 </databaseChangeLog>

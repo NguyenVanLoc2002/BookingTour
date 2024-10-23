@@ -12,7 +12,7 @@ import {
   IoIosArrowDropleftCircle,
   IoIosArrowDroprightCircle,
 } from "react-icons/io";
-import { FaBus } from "react-icons/fa6";
+import { FaBus, FaCar, FaTrain } from "react-icons/fa6";
 import { GiCommercialAirplane, GiShipBow } from "react-icons/gi";
 import { BsCalendar4Week, BsCalendarHeart } from "react-icons/bs";
 import { TiWeatherPartlySunny } from "react-icons/ti";
@@ -63,9 +63,6 @@ function MainLayout() {
   useEffect(() => {
     const tourText = document.querySelector(".tour-text");
     const holidayText = document.querySelector(".holiday-text");
-
-    console.log("tourText:", tourText); // Kiểm tra nếu tourText được chọn đúng
-    console.log("holidayText:", holidayText); // Kiểm tra nếu holidayText được chọn đúng
 
     const observer = new IntersectionObserver(
       function (entries) {
@@ -155,11 +152,11 @@ function MainLayout() {
       } else if (region === "SOUTH") {
         setSouthernTours(response.data);
       }
-      
     } catch (error) {
       console.error("Lỗi khi lấy dữ liệu:", error);
     }
   };
+
 
   useEffect(() => {
     fetchToursByRegion("NORTH");
@@ -182,7 +179,7 @@ function MainLayout() {
     return (
       <div className="flex flex-col justify-between font-sriracha w-72 h-80 shadow-2xl shadow-gray-500/50 rounded-lg group overflow-hidden">
         <img
-          src={tour.urlImage}
+          src={tour.urlImage[0]}
           alt={tour.name}
           className="h-44 rounded-t-lg object-cover transform transition-transform duration-1000 ease-in-out group-hover:scale-105"
         />
@@ -190,9 +187,18 @@ function MainLayout() {
         <div className="flex ml-1 justify-between">
           <p className="text-xl text-red-500">{formatCurrency(tour.price)}</p>
           <div className="flex space-x-2 items-center mr-2">
-            <FaBus />
-            <GiShipBow />
-            <GiCommercialAirplane />
+            {tour.tourFeatureDTO.transportationMode.includes("AIRPLANE") && (
+              <GiCommercialAirplane />
+            )}
+            {tour.tourFeatureDTO.transportationMode.includes("BUS") && (
+              <FaBus />
+            )}
+            {tour.tourFeatureDTO.transportationMode.includes("TRAIN") && (
+              <FaTrain />
+            )}
+            {tour.tourFeatureDTO.transportationMode.includes("PRIVATE_CAR") && (
+              <FaCar />
+            )}
           </div>
         </div>
         <p className="text-gray-400 text-sm ml-1 line-through self-start">
@@ -291,10 +297,13 @@ function MainLayout() {
 
             <div className="flex flex-wrap justify-center space-x-4 p-4">
               {northernTours.slice(0, 3).map((tour) => (
-                <button key={tour.id} onClick={() => {
-                  handleNavigate(tour.tourId);
-                  console.log(tour.tourId);
-                }}>
+                <button
+                  key={tour.id}
+                  onClick={() => {
+                    handleNavigate(tour.tourId);
+                    console.log(tour.tourId);
+                  }}
+                >
                   <TourCard key={tour.id} tour={tour} />
                 </button>
               ))}

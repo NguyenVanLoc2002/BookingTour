@@ -1,6 +1,8 @@
 package com.fit.tourservice.controllers;
 
+import com.fit.tourservice.dtos.response.ActivityDTO;
 import com.fit.tourservice.dtos.response.ItinerariesDTO;
+import com.fit.tourservice.services.ActivityService;
 import com.fit.tourservice.services.ItinerariesService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +18,9 @@ import reactor.core.publisher.Mono;
 public class ItinerariesController {
     @Autowired
     private ItinerariesService itinerariesService;
+
+    @Autowired
+    private ActivityService activityService;
 
     @GetMapping
     public Mono<ResponseEntity<Flux<ItinerariesDTO>>> getItineraries(@RequestParam int page, @RequestParam int size){
@@ -59,5 +64,45 @@ public class ItinerariesController {
                 });
     }
 
+    @PostMapping("/activities/add")
+    public Mono<ResponseEntity<ActivityDTO>> addActivity(@RequestBody ActivityDTO activityDTO) {
+        return activityService.addActivity(activityDTO)
+                .map(savedActivity -> ResponseEntity.status(HttpStatus.CREATED).body(savedActivity))
+                .defaultIfEmpty(ResponseEntity.status(HttpStatus.BAD_REQUEST).build());
+    }
 
+    @PutMapping("/activities/{activityId}")
+    public Mono<ResponseEntity<ActivityDTO>> updateActivity(@PathVariable Long activityId, @RequestBody ActivityDTO activityDTO) {
+        return activityService.updateActivity(activityDTO, activityId)
+                .map(updatedActivity -> ResponseEntity.status(HttpStatus.OK).body(updatedActivity))
+                .defaultIfEmpty(ResponseEntity.status(HttpStatus.NOT_FOUND).build());
+    }
+
+    @DeleteMapping("/activities/{activityId}")
+    public Mono<ResponseEntity<String>> deleteActivity(@PathVariable Long activityId) {
+        return activityService.deleteActivity(activityId)
+                .then(Mono.just(ResponseEntity.ok("Activity with ID " + activityId + " has been deleted.")))
+                .onErrorResume(error -> {
+                    log.error("Error while deleting activity {}: {}", activityId, error.getMessage());
+                    return Mono.just(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build());
+                });
+    }
+
+    @GetMapping("/activities")
+    public Mono<ResponseEntity<Flux<ActivityDTO>>> getAllActivities(@RequestParam int page, @RequestParam int size) {
+        return Mono.just(ResponseEntity.ok(activityService.getAll(page, size)))
+                .onErrorResume(e -> {
+                    log.error("Error fetching activities: {}", e.getMessage());
+                    return Mono.just(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build());
+                });
+    }
+
+    @GetMapping("/activities/by-itinerary")
+    public Mono<ResponseEntity<Flux<ActivityDTO>>> getActivitiesByItineraryId(@RequestParam Long itinerId) {
+        return Mono.just(ResponseEntity.ok(activityService.getActivitiesByItineraryId(itinerId)))
+                .onErrorResume(e -> {
+                    log.error("Error fetching activities by itinerary ID: {}", e.getMessage());
+                    return Mono.just(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build());
+                });
+    }
 }
