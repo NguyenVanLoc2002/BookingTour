@@ -25,9 +25,6 @@
             <column name="departure_location" type="varchar(255)">
                 <constraints nullable="false"/>
             </column>
-            <column name="available_slot" type="int">
-                <constraints nullable="false"/>
-            </column>
             <column name="url_image" type="TEXT">
                 <constraints nullable="true"/>
             </column>

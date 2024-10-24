@@ -130,8 +130,8 @@ function MainLayout() {
   //Hiện thị trang Chi tiết tour
   const navigate = useNavigate();
 
-  const handleNavigate = (tourId) => {
-    navigate("/detail", { state: { tourId } }); // Điều hướng đến trang khác
+  const handleNavigate = (tour) => {
+    navigate("/detail", { state: { tour } }); // Điều hướng đến trang khác
   };
 
   //Call API Tour by Region
@@ -157,7 +157,6 @@ function MainLayout() {
     }
   };
 
-
   useEffect(() => {
     fetchToursByRegion("NORTH");
     fetchToursByRegion("CENTRAL");
@@ -174,10 +173,18 @@ function MainLayout() {
     });
   };
 
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    const day = String(date.getDate()).padStart(2, "0"); // Lấy ngày và đảm bảo có 2 chữ số
+    const month = String(date.getMonth() + 1).padStart(2, "0"); // Lấy tháng (tháng 0 bắt đầu từ 0)
+    const year = date.getFullYear(); // Lấy năm
+    return `${day}/${month}/${year}`; // Trả về định dạng "dd/mm/yyyy"
+  };
+
   //Tour Card By Region
   const TourCard = ({ tour }) => {
     return (
-      <div className="flex flex-col justify-between font-sriracha w-72 h-80 shadow-2xl shadow-gray-500/50 rounded-lg group overflow-hidden">
+      <div className="flex flex-col justify-between font-sriracha w-80 h-80 shadow-2xl shadow-gray-500/50 rounded-lg group overflow-hidden">
         <img
           src={tour.urlImage[0]}
           alt={tour.name}
@@ -204,9 +211,18 @@ function MainLayout() {
         <p className="text-gray-400 text-sm ml-1 line-through self-start">
           {formatCurrency(tour.oldPrice || 10000000)}
         </p>
-        <div className="flex ml-1 space-x-2 items-center text-sm">
-          <BsCalendar4Week />
-          <p>Khởi hành: {tour.tourFeatureDTO.startDate}</p>
+        <div className="flex ml-1 justify-between items-center text-sm">
+          <div className="flex space-x-2 items-center">
+            <BsCalendar4Week />
+            <p>Khởi hành: {formatDate(tour.departureDate)}</p>
+          </div>
+
+          {/* Số chỗ trống di chuyển sát lề phải */}
+          <p className="text-sm text-green-600 mr-2">
+            {tour.availableSlot > 0
+              ? `Còn ${tour.availableSlot} chỗ trống`
+              : "Hết chỗ"}
+          </p>
         </div>
         <div className="flex ml-1 items-center justify-between text-sm mb-2">
           <div className="flex space-x-2 items-center">
@@ -300,8 +316,7 @@ function MainLayout() {
                 <button
                   key={tour.id}
                   onClick={() => {
-                    handleNavigate(tour.tourId);
-                    console.log(tour.tourId);
+                    handleNavigate(tour);
                   }}
                 >
                   <TourCard key={tour.id} tour={tour} />
@@ -314,7 +329,7 @@ function MainLayout() {
           <div className="flex items-center space-x-6 mt-3 mb-3">
             <div className="flex flex-wrap justify-center space-x-4 p-4">
               {centralTours.slice(0, 3).map((tour) => (
-                <button key={tour.id} onClick={() => handleNavigate(tour.id)}>
+                <button key={tour.id} onClick={() => handleNavigate(tour)}>
                   <TourCard key={tour.id} tour={tour} />
                 </button>
               ))}
@@ -354,7 +369,7 @@ function MainLayout() {
 
             <div className="flex flex-wrap justify-center space-x-4 p-4">
               {southernTours.slice(0, 3).map((tour) => (
-                <button key={tour.id} onClick={() => handleNavigate(tour.id)}>
+                <button key={tour.id} onClick={() => handleNavigate(tour)}>
                   <TourCard key={tour.id} tour={tour} />
                 </button>
               ))}

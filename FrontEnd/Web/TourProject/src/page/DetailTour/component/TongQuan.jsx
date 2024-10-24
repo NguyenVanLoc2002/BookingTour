@@ -1,9 +1,11 @@
+import axios from "axios";
+import { useEffect, useState } from "react";
 import * as Icons from "react-icons/ai";
 
-function TongQuan({ tourId }) {
-  
+function TongQuan({ tour }) {
   const IconDisplay = ({ iconName }) => {
     const IconComponent = Icons[iconName]; // Lấy biểu tượng dựa trên tên truyền vào
+    console.log("Tong Quan tour: ", tour.tourId);
 
     return (
       <div className="flex items-center space-x-2">
@@ -11,6 +13,44 @@ function TongQuan({ tourId }) {
         {/* Hiển thị biểu tượng nếu tồn tại */}
       </div>
     );
+  };
+
+  //Call API Ticket Tour
+  const [tickets, setTickets] = useState([]);
+  useEffect(() => {
+    const fetchTickets = async () => {
+      if (tour) {
+        try {
+          const response = await axios.get(
+            `http://localhost:8000/api/v1/tours/tour-tickets/by-tour/${tour.tourId}`
+          );
+          setTickets(response.data);
+        } catch (error) {
+          console.error("Error fetching Ticket Tour data:", error);
+        }
+      }
+    };
+    fetchTickets();
+  }, [tour]);
+
+  console.log("Ticket: ", tickets);
+
+  // Hàm định dạng giá tiền
+  const formatCurrency = (amount) => {
+    return amount.toLocaleString("vi-VN", {
+      style: "currency",
+      currency: "VND",
+      minimumFractionDigits: 0, // không hiển thị số thập phân
+      maximumFractionDigits: 0,
+    });
+  };
+
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    const day = String(date.getDate()).padStart(2, "0"); // Lấy ngày và đảm bảo có 2 chữ số
+    const month = String(date.getMonth() + 1).padStart(2, "0"); // Lấy tháng (tháng 0 bắt đầu từ 0)
+    const year = date.getFullYear(); // Lấy năm
+    return `${day}/${month}/${year}`; // Trả về định dạng "dd/mm/yyyy"
   };
 
   return (
@@ -117,77 +157,44 @@ function TongQuan({ tourId }) {
                 <IconDisplay iconName="AiOutlineCalendar" />
                 Chọn ngày
               </button>
+
               <div className="space-y-4 pl-4">
-                <div className="flex justify-between items-center border p-4 rounded">
-                  <div>
-                    <h3 className="font-bold">
-                      Tour ghép - Khởi hành từ TP. Hồ Chí Minh
-                    </h3>
-                    <div className="flex">
-                      <IconDisplay iconName="AiOutlineCalendar" />
-                      <p> Ngày khởi hành: 18/09/2024</p>
+                {tickets.map((ticket_tour) => (
+                  <div
+                    className="flex justify-between items-center border p-4 rounded"
+                    key={ticket_tour.ticketId}
+                  >
+                    <div>
+                      <h3 className="font-bold">
+                        Tour ghép - Khởi hành từ {tour.departureLocation}
+                      </h3>
+                      <div className="flex">
+                        <IconDisplay iconName="AiOutlineCalendar"/>
+                        <p  className="ml-1"> Ngày khởi hành: {formatDate(tour.departureDate)}</p>
+                      </div>
+                      <div className="flex">
+                        <Icons.AiOutlineUser className="mr-2" size={20}/>
+                        <p>
+                          Số chỗ:{" "}
+                          {tour.availableSlot > 0
+                            ? `Còn ${tour.availableSlot} chỗ trống`
+                            : "Hết chỗ"}
+                        </p>
+                      </div>
+                      <a className="text-teal-500" href="#">
+                        Xem chi tiết
+                      </a>
                     </div>
-                    <div className="flex">
-                      <IconDisplay iconName="AiOutlineClockCircle" />
-                      <p>Thời gian: 3 ngày 2 đêm</p>
+                    <div className="text-right">
+                      <div className="text-red-500 text-lg font-bold">
+                        {formatCurrency(tour.price)}
+                      </div>
+                      <button className="bg-teal-500 text-white px-4 py-2 rounded">
+                        Chọn vé
+                      </button>
                     </div>
-                    <a className="text-teal-500" href="#">
-                      Xem chi tiết
-                    </a>
                   </div>
-                  <div className="text-right">
-                    <div className="text-red-500 text-lg font-bold">3.450.000đ</div>
-                    <button className="bg-teal-500 text-white px-4 py-2 rounded">
-                      Chọn vé
-                    </button>
-                  </div>
-                </div>
-                <div className="flex justify-between items-center border p-4 rounded">
-                  <div>
-                    <h3 className="font-bold">Tour ghép - Khởi hành từ Đà Nẵng</h3>
-                    <div className="flex">
-                      <IconDisplay iconName="AiOutlineCalendar" />
-                      <p> Ngày khởi hành: 18/09/2024</p>
-                    </div>
-                    <div className="flex">
-                      <IconDisplay iconName="AiOutlineClockCircle" />
-                      <p>Thời gian: 3 ngày 2 đêm</p>
-                    </div>
-                    <a className="text-teal-500" href="#">
-                      Xem chi tiết
-                    </a>
-                  </div>
-                  <div className="text-right">
-                    <div className="text-red-500 text-lg font-bold">3.650.000đ</div>
-                    <button className="bg-teal-500 text-white px-4 py-2 rounded">
-                      Chọn vé
-                    </button>
-                  </div>
-                </div>
-                <div className="flex justify-between items-center border p-4 rounded">
-                  <div>
-                    <h3 className="font-bold">
-                      Tour ghép - Khởi hành từ TP. Hồ Chí Minh
-                    </h3>
-                    <div className="flex">
-                      <IconDisplay iconName="AiOutlineCalendar" />
-                      <p> Ngày khởi hành: 28/09/2024</p>
-                    </div>
-                    <div className="flex">
-                      <IconDisplay iconName="AiOutlineClockCircle" />
-                      <p>Thời gian: 3 ngày 2 đêm</p>
-                    </div>
-                    <a className="text-teal-500" href="#">
-                      Xem chi tiết
-                    </a>
-                  </div>
-                  <div className="text-right">
-                    <div className="text-red-500 text-lg font-bold">3.450.000đ</div>
-                    <button className="bg-teal-500 text-white px-4 py-2 rounded">
-                      Chọn vé
-                    </button>
-                  </div>
-                </div>
+                ))}
               </div>
             </div>
           </div>

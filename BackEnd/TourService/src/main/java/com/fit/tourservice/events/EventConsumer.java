@@ -74,54 +74,54 @@ public class EventConsumer {
             return getLstTourByRecommendationPreferenceReceived(receiverRecord);
         } else if (Constant.RECOMMEND_INTERACTED_TOPIC.equals(topic)) {
             return getLstTourByRecommendationInteractionReceived(receiverRecord);
-        } else if (Constant.REQUEST_CHECK_AVAILABLE_SLOT_TOPIC.equals(topic)) {
-            return processBookingRequest(receiverRecord);
+//        } else if (Constant.REQUEST_CHECK_AVAILABLE_SLOT_TOPIC.equals(topic)) {
+//            return processBookingRequest(receiverRecord);
         } else {
             log.warn("Unknown topic: {}", topic);
             return Mono.empty();
         }
     }
 
-    private Mono<Void> processBookingRequest(ReceiverRecord<String, String> receiverRecord) {
-        log.info("Received booking request: {}", receiverRecord.value());
-        BookingRequest bookingRequest = gson.fromJson(receiverRecord.value(), BookingRequest.class);
-
-        return tourService.checkAvailableSlot(bookingRequest.getTourId(), bookingRequest.getQuantity())
-                .flatMap(isAvailable -> {
-                    BookingDTO bookingResponseDTO = new BookingDTO();
-                    bookingResponseDTO.setCustomerId(bookingRequest.getCustomerId());
-                    bookingResponseDTO.setTourId(bookingRequest.getTourId());
-                    bookingResponseDTO.setQuantity(bookingRequest.getQuantity());
-                    bookingResponseDTO.setAvailable(isAvailable);
-                    if (isAvailable) {
-                        bookingResponseDTO.setBookingDate(LocalDate.now());
-                        bookingResponseDTO.setStatusBooking(StatusBooking.PENDING_CONFIRMATION);
-                        log.info("bookingResponseDTO demo: {}",bookingResponseDTO);
-                        return tourService.updateAvailableSlot(bookingRequest.getTourId(), bookingRequest.getQuantity())
-                                .then(tourService.calcTotalAmountTicket(bookingRequest.getTourId(), bookingRequest.getQuantity()))
-                                .flatMap(amount -> {
-                                    bookingResponseDTO.setTotalAmount(amount);
-                                    log.info("Total amount: {}", amount);
-                                    log.info("BookingResponseDTO: {}", bookingResponseDTO);
-                                    return eventProducer.send(Constant.RESPONSE_BOOKING_TOPIC,
-                                                    String.valueOf(bookingRequest.getCustomerId()),
-                                                    gson.toJson(bookingResponseDTO))
-                                            .doOnSuccess(result -> log.info("Sent response to booking-response topic: {}", result))
-                                            .then();
-                                });
-                    } else {
-                        return eventProducer.send(Constant.RESPONSE_BOOKING_TOPIC,
-                                        String.valueOf(bookingRequest.getCustomerId()),
-                                        gson.toJson(bookingResponseDTO))
-                                .doOnSuccess(result -> log.info("Sent response to booking-response with error topic: {}", result))
-                                .then();
-                    }
-                })
-                .doOnTerminate(() -> {
-                    // Acknowledge record đã được xử lý
-                    receiverRecord.receiverOffset().acknowledge();
-                });
-    }
+//    private Mono<Void> processBookingRequest(ReceiverRecord<String, String> receiverRecord) {
+//        log.info("Received booking request: {}", receiverRecord.value());
+//        BookingRequest bookingRequest = gson.fromJson(receiverRecord.value(), BookingRequest.class);
+//
+//        return tourService.checkAvailableSlot(bookingRequest.getTourId(), bookingRequest.getQuantity())
+//                .flatMap(isAvailable -> {
+//                    BookingDTO bookingResponseDTO = new BookingDTO();
+//                    bookingResponseDTO.setCustomerId(bookingRequest.getCustomerId());
+//                    bookingResponseDTO.setTourId(bookingRequest.getTourId());
+//                    bookingResponseDTO.setQuantity(bookingRequest.getQuantity());
+//                    bookingResponseDTO.setAvailable(isAvailable);
+//                    if (isAvailable) {
+//                        bookingResponseDTO.setBookingDate(LocalDate.now());
+//                        bookingResponseDTO.setStatusBooking(StatusBooking.PENDING_CONFIRMATION);
+//                        log.info("bookingResponseDTO demo: {}",bookingResponseDTO);
+//                        return tourService.updateAvailableSlot(bookingRequest.getTourId(), bookingRequest.getQuantity())
+//                                .then(tourService.calcTotalAmountTicket(bookingRequest.getTourId(), bookingRequest.getQuantity()))
+//                                .flatMap(amount -> {
+//                                    bookingResponseDTO.setTotalAmount(amount);
+//                                    log.info("Total amount: {}", amount);
+//                                    log.info("BookingResponseDTO: {}", bookingResponseDTO);
+//                                    return eventProducer.send(Constant.RESPONSE_BOOKING_TOPIC,
+//                                                    String.valueOf(bookingRequest.getCustomerId()),
+//                                                    gson.toJson(bookingResponseDTO))
+//                                            .doOnSuccess(result -> log.info("Sent response to booking-response topic: {}", result))
+//                                            .then();
+//                                });
+//                    } else {
+//                        return eventProducer.send(Constant.RESPONSE_BOOKING_TOPIC,
+//                                        String.valueOf(bookingRequest.getCustomerId()),
+//                                        gson.toJson(bookingResponseDTO))
+//                                .doOnSuccess(result -> log.info("Sent response to booking-response with error topic: {}", result))
+//                                .then();
+//                    }
+//                })
+//                .doOnTerminate(() -> {
+//                    // Acknowledge record đã được xử lý
+//                    receiverRecord.receiverOffset().acknowledge();
+//                });
+//    }
 
 
     private Mono<Void> getLstTourByRecommendationInteractionReceived(ReceiverRecord<String, String> receiverRecord) {

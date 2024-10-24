@@ -21,7 +21,8 @@ public class RouterValidator {
             //Tour
             Pattern.compile("/api/v1/tours/region"),
             Pattern.compile("/api/v1/itineraries/by-tour"),
-            Pattern.compile("/api/v1/itineraries/activities/by-itinerary")
+            Pattern.compile("/api/v1/itineraries/activities/by-itinerary"),
+            Pattern.compile("/api/v1/tours/tour-tickets/by-tour/.+")
     );
 
     public static final List<Pattern> internalApiEndpoints = List.of(

@@ -1,8 +1,10 @@
 package com.fit.tourservice.dtos.response;
 
 import com.fit.tourservice.models.Tour;
+import com.fit.tourservice.models.TourTicket;
 import lombok.*;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Getter
@@ -19,10 +21,11 @@ public class TourDTO {
     private int night;
     private String destination;
     private String departureLocation;
-    private int availableSlot;
     private List<String> urlImage;
     private boolean includePromotions;
     private TourFeatureDTO tourFeatureDTO;
+    private LocalDate departureDate;
+    private int availableSlot;
 
     public static Tour convertToEnity(TourDTO tourDTO) {
         Tour tour = new Tour();
@@ -34,7 +37,6 @@ public class TourDTO {
         tour.setNight(tourDTO.getNight());
         tour.setDestination(tourDTO.getDestination());
         tour.setDepartureLocation(tourDTO.getDepartureLocation());
-        tour.setAvailableSlot(tourDTO.getAvailableSlot());
         tour.setUrlImage(tourDTO.getUrlImage());
         tour.setIncludePromotions(tourDTO.isIncludePromotions());
         return tour;
@@ -50,7 +52,6 @@ public class TourDTO {
         tourDTO.setNight(tour.getNight());
         tourDTO.setDestination(tour.getDestination());
         tourDTO.setDepartureLocation(tour.getDepartureLocation());
-        tourDTO.setAvailableSlot(tour.getAvailableSlot());
         tourDTO.setUrlImage(tour.getUrlImage());
         tourDTO.setIncludePromotions(tour.isIncludePromotions());
         return tourDTO;
