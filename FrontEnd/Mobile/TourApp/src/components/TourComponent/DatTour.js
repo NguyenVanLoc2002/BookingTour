@@ -25,6 +25,7 @@ const DatTour = ({ navigation, route }) => {
     ]
     const [selectedQuocGia, setSelectedQuocGia] = useState(listTinh[0].value);
     const [selectedQuocTich, setSelectedQuocTich] = useState(listQuan[0].value);
+    
     return (
         <View style={{ flex: 1, backgroundColor: "#fafafa", }}>
             <View style={styles.header}>
@@ -206,12 +207,12 @@ const DatTour = ({ navigation, route }) => {
                 </View>
             </ScrollView>
             <View style={styles.priceBox}>
-                        <Text style={{ fontSize: 15, paddingLeft: 10, color: "red", fontWeight: "500" }}>{tour?.price}đ</Text>
+                <Text style={{ fontSize: 15, paddingLeft: 10, color: "red", fontWeight: "500" }}>{tour?.price}đ</Text>
 
-                        <Pressable style={styles.buttonDat} onPress={() => { navigation.navigate("DatTour", { tour: tour }); }}>
-                            <Text style={styles.textDat}>ĐẶT NGAY</Text>
-                        </Pressable>
-                </View>
+                <Pressable style={styles.buttonDat} onPress={() => { navigation.navigate("DatTour", { tour: tour }); }}>
+                    <Text style={styles.textDat}>ĐẶT NGAY</Text>
+                </Pressable>
+            </View>
         </View>
     );
 };
@@ -341,8 +342,8 @@ const styles = StyleSheet.create({
     },
     priceBox: {
         backgroundColor: "#ffcccc",
-        justifyContent:'center',
-        alignItems:'center'
+        justifyContent: 'center',
+        alignItems: 'center'
     },
 
 
