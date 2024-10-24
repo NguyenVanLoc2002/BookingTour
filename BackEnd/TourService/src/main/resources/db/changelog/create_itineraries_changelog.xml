@@ -21,8 +21,13 @@
             </column>
             <column name="description" type="TEXT"/>
             <column name="temperature" type="FLOAT"/>
-            <column name="weather_condition" type="VARCHAR(255)"/>
+            <column name="weather_condition" type="VARCHAR(25)"/>
         </createTable>
+    </changeSet>
+
+    <!--    Thêm 10 data-->
+    <changeSet id="table-itineraries-init" author="NguyenVanLoc2002">
+        <sqlFile path="db/sql/table-itineraries-init.sql"/>
     </changeSet>
 
 </databaseChangeLog>

@@ -6,7 +6,7 @@
 
     <changeSet id="create-review-table" author="NguyenVanLoc2002">
         <createTable tableName="review">
-            <column name="rew_id" type="BIGINT">
+            <column name="rew_id" type="BIGINT" autoIncrement="true">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
             <column name="cus_id" type="BIGINT">
@@ -18,7 +18,7 @@
             <column name="rating" type="INT">
                 <constraints nullable="false"/>
             </column>
-            <column name="content_comment" type="VARCHAR(255)">
+            <column name="content_comment" type="TEXT">
                 <constraints nullable="false"/>
             </column>
             <column name="review_date" type="DATE">
@@ -39,6 +39,10 @@
 <!--                referencedTableName="customer"-->
 <!--                referencedColumnNames="cus_id"-->
 <!--                constraintName="fk_review_customer"/>-->
+    </changeSet>
+
+    <changeSet id="modify_content_comment_table_review" author="NguyenVanLoc2002">
+        <sqlFile path="db/sql/table-review-init.sql"/>
     </changeSet>
 
 

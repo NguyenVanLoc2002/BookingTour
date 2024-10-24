@@ -1,0 +1,40 @@
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                            http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <!-- ChangeSet để tạo bảng activity_itineraries -->
+    <changeSet id="create-activity-itineraries" author="NguyenVanLoc2002">
+        <createTable tableName="activity_itineraries">
+            <column name="activity_id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="itiner_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="time" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="activity_description" type="TEXT"/>
+            <column name="place" type="VARCHAR(255)">
+                <constraints nullable="true"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <!-- ChangeSet để thêm ràng buộc khóa ngoại -->
+    <changeSet id="add-foreign-key-activity-itineraries" author="NguyenVanLoc2002">
+        <addForeignKeyConstraint
+                baseTableName="activity_itineraries"
+                baseColumnNames="itiner_id"
+                referencedTableName="itineraries"
+                referencedColumnNames="itiner_id"
+                constraintName="fk_activity_itineraries_itiner_id"/>
+    </changeSet>
+
+    <changeSet id="table-activity-init" author="NguyenVanLoc2002">
+        <sqlFile path="db/sql/table_activity-init.sql"/>
+    </changeSet>
+
+</databaseChangeLog>

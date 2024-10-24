@@ -9,8 +9,6 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
 
-import java.time.LocalDate;
-
 @Getter
 @Setter
 @NoArgsConstructor
@@ -23,4 +21,5 @@ public class AuthUser {
     private String email;
     private String password;
     private Role role;
+    private boolean isActive;
 }

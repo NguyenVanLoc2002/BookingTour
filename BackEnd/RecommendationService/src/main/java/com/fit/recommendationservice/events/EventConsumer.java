@@ -9,7 +9,6 @@ import com.google.gson.reflect.TypeToken;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.mahout.cf.taste.common.TasteException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.http.HttpMessageConverters;
 import org.springframework.stereotype.Service;
 import reactor.kafka.receiver.KafkaReceiver;
 import reactor.kafka.receiver.ReceiverOptions;
@@ -29,8 +28,7 @@ public class EventConsumer {
     private CustomerPreferenceService customerPreferenceService;
     @Autowired
     private Gson gson;
-    @Autowired
-    private HttpMessageConverters messageConverters;
+
     @Autowired
     private EventProducer eventProducer;
     @Autowired

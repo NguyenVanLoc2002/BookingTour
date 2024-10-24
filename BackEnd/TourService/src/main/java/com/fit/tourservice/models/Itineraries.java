@@ -1,5 +1,6 @@
 package com.fit.tourservice.models;
 
+import com.fit.tourservice.enums.WeatherCondition;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -20,6 +21,5 @@ public class Itineraries {
     private String title;
     private String description;
     private float temperature;
-    private String weatherCondition;
-
+    private WeatherCondition weatherCondition;
 }

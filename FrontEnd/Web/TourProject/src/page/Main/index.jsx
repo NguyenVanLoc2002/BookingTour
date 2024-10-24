@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import axios from "axios";
 import Header from "../../layouts/Header";
 import Menu from "../../layouts/Menu";
 import bn1 from "/src/assets/banner/h1-slider-img-1-.jpg";
@@ -11,16 +12,19 @@ import {
   IoIosArrowDropleftCircle,
   IoIosArrowDroprightCircle,
 } from "react-icons/io";
-import { FaBus } from "react-icons/fa6";
+import { FaBus, FaCar, FaTrain } from "react-icons/fa6";
 import { GiCommercialAirplane, GiShipBow } from "react-icons/gi";
 import { BsCalendar4Week, BsCalendarHeart } from "react-icons/bs";
 import { TiWeatherPartlySunny } from "react-icons/ti";
 import Footer from "../../layouts/Footer";
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from "react-router-dom";
 
 function MainLayout() {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isSlide1Active, setIsSlide1Active] = useState(true);
+  const [northernTours, setNorthernTours] = useState([]);
+  const [centralTours, setCentralTours] = useState([]);
+  const [southernTours, setSouthernTours] = useState([]);
 
   const images = [bn1, bn2];
 
@@ -43,8 +47,9 @@ function MainLayout() {
 
     // Đặt ảnh đầu tiên
     slide1.style.backgroundImage = `url(${images[currentImageIndex]})`;
-    slide2.style.backgroundImage = `url(${images[(currentImageIndex + 1) % images.length]
-      })`;
+    slide2.style.backgroundImage = `url(${
+      images[(currentImageIndex + 1) % images.length]
+    })`;
 
     const nextSlide = isSlide1Active ? slide2 : slide1;
     const currentSlide = isSlide1Active ? slide1 : slide2;
@@ -58,9 +63,6 @@ function MainLayout() {
   useEffect(() => {
     const tourText = document.querySelector(".tour-text");
     const holidayText = document.querySelector(".holiday-text");
-
-    console.log("tourText:", tourText); // Kiểm tra nếu tourText được chọn đúng
-    console.log("holidayText:", holidayText); // Kiểm tra nếu holidayText được chọn đúng
 
     const observer = new IntersectionObserver(
       function (entries) {
@@ -125,17 +127,121 @@ function MainLayout() {
     };
   }, []);
 
+  //Hiện thị trang Chi tiết tour
   const navigate = useNavigate();
 
-  const handleNavigate = () => {
-    navigate('/detail'); // Điều hướng đến trang khác
+  const handleNavigate = (tour) => {
+    navigate("/detail", { state: { tour } }); // Điều hướng đến trang khác
+  };
+
+  //Call API Tour by Region
+  const fetchToursByRegion = async (region) => {
+    try {
+      const response = await axios.get(
+        `http://localhost:8000/api/v1/tours/region`,
+        {
+          params: { region },
+        }
+      );
+
+      // Cập nhật state tương ứng với miền
+      if (region === "NORTH") {
+        setNorthernTours(response.data);
+      } else if (region === "CENTRAL") {
+        setCentralTours(response.data);
+      } else if (region === "SOUTH") {
+        setSouthernTours(response.data);
+      }
+    } catch (error) {
+      console.error("Lỗi khi lấy dữ liệu:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchToursByRegion("NORTH");
+    fetchToursByRegion("CENTRAL");
+    fetchToursByRegion("SOUTH");
+  }, []);
+
+  // Hàm định dạng giá tiền
+  const formatCurrency = (amount) => {
+    return amount.toLocaleString("vi-VN", {
+      style: "currency",
+      currency: "VND",
+      minimumFractionDigits: 0, // không hiển thị số thập phân
+      maximumFractionDigits: 0,
+    });
+  };
+
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    const day = String(date.getDate()).padStart(2, "0"); // Lấy ngày và đảm bảo có 2 chữ số
+    const month = String(date.getMonth() + 1).padStart(2, "0"); // Lấy tháng (tháng 0 bắt đầu từ 0)
+    const year = date.getFullYear(); // Lấy năm
+    return `${day}/${month}/${year}`; // Trả về định dạng "dd/mm/yyyy"
+  };
+
+  //Tour Card By Region
+  const TourCard = ({ tour }) => {
+    return (
+      <div className="flex flex-col justify-between font-sriracha w-80 h-80 shadow-2xl shadow-gray-500/50 rounded-lg group overflow-hidden">
+        <img
+          src={tour.urlImage[0]}
+          alt={tour.name}
+          className="h-44 rounded-t-lg object-cover transform transition-transform duration-1000 ease-in-out group-hover:scale-105"
+        />
+        <p className="text-black font-bold m-1 mt-2 text-xl">{tour.name}</p>
+        <div className="flex ml-1 justify-between">
+          <p className="text-xl text-red-500">{formatCurrency(tour.price)}</p>
+          <div className="flex space-x-2 items-center mr-2">
+            {tour.tourFeatureDTO.transportationMode.includes("AIRPLANE") && (
+              <GiCommercialAirplane />
+            )}
+            {tour.tourFeatureDTO.transportationMode.includes("BUS") && (
+              <FaBus />
+            )}
+            {tour.tourFeatureDTO.transportationMode.includes("TRAIN") && (
+              <FaTrain />
+            )}
+            {tour.tourFeatureDTO.transportationMode.includes("PRIVATE_CAR") && (
+              <FaCar />
+            )}
+          </div>
+        </div>
+        <p className="text-gray-400 text-sm ml-1 line-through self-start">
+          {formatCurrency(tour.oldPrice || 10000000)}
+        </p>
+        <div className="flex ml-1 justify-between items-center text-sm">
+          <div className="flex space-x-2 items-center">
+            <BsCalendar4Week />
+            <p>Khởi hành: {formatDate(tour.departureDate)}</p>
+          </div>
+
+          {/* Số chỗ trống di chuyển sát lề phải */}
+          <p className="text-sm text-green-600 mr-2">
+            {tour.availableSlot > 0
+              ? `Còn ${tour.availableSlot} chỗ trống`
+              : "Hết chỗ"}
+          </p>
+        </div>
+        <div className="flex ml-1 items-center justify-between text-sm mb-2">
+          <div className="flex space-x-2 items-center">
+            <BsCalendarHeart />
+            <p>
+              Thời gian: {tour.day} ngày {tour.night} đêm
+            </p>
+          </div>
+          <TiWeatherPartlySunny size={20} className="mr-2" />
+        </div>
+      </div>
+    );
   };
 
   return (
     <>
       <div className="w-full h-full flex flex-col">
         <Header />
-        <Menu name="Home"/>
+        <Menu name="Home" />
 
         <div className="relative w-full h-[500px] overflow-hidden md:h-[500px] sm:h-[250px]">
           <div
@@ -205,205 +311,29 @@ function MainLayout() {
               </p>
             </div>
 
-            <button onClick={handleNavigate}>
-              <div className="flex flex-col justify-between font-sriracha w-72 h-80 shadow-2xl shadow-gray-500/50 rounded-lg group overflow-hidden">
-                <img
-                  src="https://thdtravel.com.vn/wp-content/uploads/2021/10/Hinh-anh-vinh-ha-long-8.jpg"
-                  alt="Tour Hạ Long"
-                  className="h-44 rounded-t-lg object-cover transform transition-transform duration-1000 ease-in-out group-hover:scale-105"
-                />
-                <p className="text-black font-bold m-1 mt-2 text-xl">
-                  Vịnh Hạ Long - Quảng Ninh
-                </p>
-                <div className="flex ml-1 justify-between">
-                  <p className="text-xl text-red-500 ">6,500,000đ</p>
-                  <div className="flex space-x-2 items-center mr-2">
-                    <FaBus />
-                    <GiShipBow />
-                    <GiCommercialAirplane />
-                  </div>
-                </div>
-                <p className="text-gray-400 text-sm ml-1 line-through">
-                  8,437,000đ
-                </p>
-                <div className="flex ml-1 space-x-2 items-center text-sm">
-                  <BsCalendar4Week />
-                  <p>Khởi hành: Thứ 5</p>
-                </div>
-                <div className="flex ml-1 items-center justify-between text-sm mb-2">
-                  <div className="flex space-x-2 items-center">
-                    <BsCalendarHeart />
-                    <p>Thời gian: 3 ngày 2 đêm</p>
-                  </div>
-                  <TiWeatherPartlySunny size={20} className="mr-2" />
-                </div>
-              </div>
-            </button>
-
-            <div className="flex flex-col justify-between font-sriracha w-72 h-80 shadow-2xl shadow-gray-500/50 rounded-lg group overflow-hidden">
-              <img
-                src="https://vanhoavaphattrien.vn/uploads/images/2021/06/04/mua-nuoc-do-duc-long-1622819122.jpg"
-                alt="Tour Hà Giang"
-                className="h-44 rounded-t-lg object-cover transform transition-transform duration-1000 ease-in-out group-hover:scale-105"
-              />
-              <p className="text-black font-bold m-1 mt-2 text-xl">Hà Giang</p>
-              <div className="flex ml-1 justify-between">
-                <p className="text-xl text-red-500 ">6,500,000đ</p>
-                <div className="flex space-x-2 items-center mr-2">
-                  <FaBus />
-                  <GiShipBow />
-                  <GiCommercialAirplane />
-                </div>
-              </div>
-              <p className="text-gray-400 text-sm ml-1 line-through">
-                8,437,000đ
-              </p>
-              <div className="flex ml-1 space-x-2 items-center text-sm">
-                <BsCalendar4Week />
-                <p>Khởi hành: Thứ 5</p>
-              </div>
-              <div className="flex ml-1 items-center justify-between text-sm mb-2">
-                <div className="flex space-x-2 items-center">
-                  <BsCalendarHeart />
-                  <p>Thời gian: 3 ngày 2 đêm</p>
-                </div>
-                <TiWeatherPartlySunny size={20} className="mr-2" />
-              </div>
-            </div>
-
-            <div className="flex flex-col justify-between font-sriracha w-72 h-80 shadow-2xl shadow-gray-500/50 rounded-lg group overflow-hidden">
-              <img
-                src="https://dulichvietnam.com.vn/vnt_upload/news/10_2019/dia-diem-mua-dong-4.jpg"
-                alt="Tour Sapa"
-                className="h-44 rounded-t-lg object-cover transform transition-transform duration-1000 ease-in-out group-hover:scale-105"
-              />
-              <p className="text-black font-bold m-1 mt-2 text-xl">Sapa</p>
-              <div className="flex ml-1 justify-between">
-                <p className="text-xl text-red-500 ">6,500,000đ</p>
-                <div className="flex space-x-2 items-center mr-2">
-                  <FaBus />
-                  <GiShipBow />
-                  <GiCommercialAirplane />
-                </div>
-              </div>
-              <p className="text-gray-400 text-sm ml-1 line-through">
-                8,437,000đ
-              </p>
-              <div className="flex ml-1 space-x-2 items-center text-sm">
-                <BsCalendar4Week />
-                <p>Khởi hành: Thứ 5</p>
-              </div>
-              <div className="flex ml-1 items-center justify-between text-sm mb-2">
-                <div className="flex space-x-2 items-center">
-                  <BsCalendarHeart />
-                  <p>Thời gian: 3 ngày 2 đêm</p>
-                </div>
-                <TiWeatherPartlySunny size={20} className="mr-2" />
-              </div>
+            <div className="flex flex-wrap justify-center space-x-4 p-4">
+              {northernTours.slice(0, 3).map((tour) => (
+                <button
+                  key={tour.id}
+                  onClick={() => {
+                    handleNavigate(tour);
+                  }}
+                >
+                  <TourCard key={tour.id} tour={tour} />
+                </button>
+              ))}
             </div>
           </div>
 
           {/* MT */}
           <div className="flex items-center space-x-6 mt-3 mb-3">
-            <div className="flex flex-col justify-between font-sriracha w-72 h-80 shadow-2xl shadow-gray-500/50 rounded-lg group overflow-hidden">
-              <img
-                src="https://divui.com/blog/wp-content/uploads/2018/10/111111.jpg"
-                alt="Bà Nà Hill"
-                className="h-44 rounded-t-lg object-cover transform transition-transform duration-1000 ease-in-out group-hover:scale-105"
-              />
-              <p className="text-black font-bold m-1 mt-2 text-xl">
-                Bà Nà Hill - Đà Nẵng
-              </p>
-              <div className="flex ml-1 justify-between">
-                <p className="text-xl text-red-500 ">6,500,000đ</p>
-                <div className="flex space-x-2 items-center mr-2">
-                  <FaBus />
-                  <GiShipBow />
-                  <GiCommercialAirplane />
-                </div>
-              </div>
-              <p className="text-gray-400 text-sm ml-1 line-through">
-                8,437,000đ
-              </p>
-              <div className="flex ml-1 space-x-2 items-center text-sm">
-                <BsCalendar4Week />
-                <p>Khởi hành: Thứ 5</p>
-              </div>
-              <div className="flex ml-1 items-center justify-between text-sm mb-2">
-                <div className="flex space-x-2 items-center">
-                  <BsCalendarHeart />
-                  <p>Thời gian: 3 ngày 2 đêm</p>
-                </div>
-                <TiWeatherPartlySunny size={20} className="mr-2" />
-              </div>
+            <div className="flex flex-wrap justify-center space-x-4 p-4">
+              {centralTours.slice(0, 3).map((tour) => (
+                <button key={tour.id} onClick={() => handleNavigate(tour)}>
+                  <TourCard key={tour.id} tour={tour} />
+                </button>
+              ))}
             </div>
-
-            <div className="flex flex-col justify-between font-sriracha w-72 h-80 shadow-2xl shadow-gray-500/50 rounded-lg group overflow-hidden">
-              <img
-                src="https://divui.com/blog/wp-content/uploads/2018/10/111111.jpg"
-                alt="Bà Nà Hill"
-                className="h-44 rounded-t-lg object-cover transform transition-transform duration-1000 ease-in-out group-hover:scale-105"
-              />
-              <p className="text-black font-bold m-1 mt-2 text-xl">
-                Bà Nà Hill - Đà Nẵng
-              </p>
-              <div className="flex ml-1 justify-between">
-                <p className="text-xl text-red-500 ">6,500,000đ</p>
-                <div className="flex space-x-2 items-center mr-2">
-                  <FaBus />
-                  <GiShipBow />
-                  <GiCommercialAirplane />
-                </div>
-              </div>
-              <p className="text-gray-400 text-sm ml-1 line-through">
-                8,437,000đ
-              </p>
-              <div className="flex ml-1 space-x-2 items-center text-sm">
-                <BsCalendar4Week />
-                <p>Khởi hành: Thứ 5</p>
-              </div>
-              <div className="flex ml-1 items-center justify-between text-sm mb-2">
-                <div className="flex space-x-2 items-center">
-                  <BsCalendarHeart />
-                  <p>Thời gian: 3 ngày 2 đêm</p>
-                </div>
-                <TiWeatherPartlySunny size={20} className="mr-2" />
-              </div>
-            </div>
-
-            <div className="flex flex-col justify-between font-sriracha w-72 h-80 shadow-2xl shadow-gray-500/50 rounded-lg group overflow-hidden">
-              <img
-                src="https://divui.com/blog/wp-content/uploads/2018/10/111111.jpg"
-                alt="Bà Nà Hill"
-                className="h-44 rounded-t-lg object-cover transform transition-transform duration-1000 ease-in-out group-hover:scale-105"
-              />
-              <p className="text-black font-bold m-1 mt-2 text-xl">
-                Bà Nà Hill - Đà Nẵng
-              </p>
-              <div className="flex ml-1 justify-between">
-                <p className="text-xl text-red-500 ">6,500,000đ</p>
-                <div className="flex space-x-2 items-center mr-2">
-                  <FaBus />
-                  <GiShipBow />
-                  <GiCommercialAirplane />
-                </div>
-              </div>
-              <p className="text-gray-400 text-sm ml-1 line-through">
-                8,437,000đ
-              </p>
-              <div className="flex ml-1 space-x-2 items-center text-sm">
-                <BsCalendar4Week />
-                <p>Khởi hành: Thứ 5</p>
-              </div>
-              <div className="flex ml-1 items-center justify-between text-sm mb-2">
-                <div className="flex space-x-2 items-center">
-                  <BsCalendarHeart />
-                  <p>Thời gian: 3 ngày 2 đêm</p>
-                </div>
-                <TiWeatherPartlySunny size={20} className="mr-2" />
-              </div>
-            </div>
-
             <div
               ref={(el) => (elementRefs.current[1] = el)}
               data-direction="right"
@@ -437,99 +367,12 @@ function MainLayout() {
               </p>
             </div>
 
-            <div className="flex flex-col justify-between font-sriracha w-72 h-80 shadow-2xl shadow-gray-500/50 rounded-lg group overflow-hidden">
-              <img
-                src="https://thdtravel.com.vn/wp-content/uploads/2021/10/Hinh-anh-vinh-ha-long-8.jpg"
-                alt="Tour Hạ Long"
-                className="h-44 rounded-t-lg object-cover transform transition-transform duration-1000 ease-in-out group-hover:scale-105"
-              />
-              <p className="text-black font-bold m-1 mt-2 text-xl">
-                Vịnh Hạ Long - Quảng Ninh
-              </p>
-              <div className="flex ml-1 justify-between">
-                <p className="text-xl text-red-500 ">6,500,000đ</p>
-                <div className="flex space-x-2 items-center mr-2">
-                  <FaBus />
-                  <GiShipBow />
-                  <GiCommercialAirplane />
-                </div>
-              </div>
-              <p className="text-gray-400 text-sm ml-1 line-through">
-                8,437,000đ
-              </p>
-              <div className="flex ml-1 space-x-2 items-center text-sm">
-                <BsCalendar4Week />
-                <p>Khởi hành: Thứ 5</p>
-              </div>
-              <div className="flex ml-1 items-center justify-between text-sm mb-2">
-                <div className="flex space-x-2 items-center">
-                  <BsCalendarHeart />
-                  <p>Thời gian: 3 ngày 2 đêm</p>
-                </div>
-                <TiWeatherPartlySunny size={20} className="mr-2" />
-              </div>
-            </div>
-
-            <div className="flex flex-col justify-between font-sriracha w-72 h-80 shadow-2xl shadow-gray-500/50 rounded-lg group overflow-hidden">
-              <img
-                src="https://vanhoavaphattrien.vn/uploads/images/2021/06/04/mua-nuoc-do-duc-long-1622819122.jpg"
-                alt="Tour Hà Giang"
-                className="h-44 rounded-t-lg object-cover transform transition-transform duration-1000 ease-in-out group-hover:scale-105"
-              />
-              <p className="text-black font-bold m-1 mt-2 text-xl">Hà Giang</p>
-              <div className="flex ml-1 justify-between">
-                <p className="text-xl text-red-500 ">6,500,000đ</p>
-                <div className="flex space-x-2 items-center mr-2">
-                  <FaBus />
-                  <GiShipBow />
-                  <GiCommercialAirplane />
-                </div>
-              </div>
-              <p className="text-gray-400 text-sm ml-1 line-through">
-                8,437,000đ
-              </p>
-              <div className="flex ml-1 space-x-2 items-center text-sm">
-                <BsCalendar4Week />
-                <p>Khởi hành: Thứ 5</p>
-              </div>
-              <div className="flex ml-1 items-center justify-between text-sm mb-2">
-                <div className="flex space-x-2 items-center">
-                  <BsCalendarHeart />
-                  <p>Thời gian: 3 ngày 2 đêm</p>
-                </div>
-                <TiWeatherPartlySunny size={20} className="mr-2" />
-              </div>
-            </div>
-
-            <div className="flex flex-col justify-between font-sriracha w-72 h-80 shadow-2xl shadow-gray-500/50 rounded-lg group overflow-hidden">
-              <img
-                src="https://dulichvietnam.com.vn/vnt_upload/news/10_2019/dia-diem-mua-dong-4.jpg"
-                alt="Tour Sapa"
-                className="h-44 rounded-t-lg object-cover transform transition-transform duration-1000 ease-in-out group-hover:scale-105"
-              />
-              <p className="text-black font-bold m-1 mt-2 text-xl">Sapa</p>
-              <div className="flex ml-1 justify-between">
-                <p className="text-xl text-red-500 ">6,500,000đ</p>
-                <div className="flex space-x-2 items-center mr-2">
-                  <FaBus />
-                  <GiShipBow />
-                  <GiCommercialAirplane />
-                </div>
-              </div>
-              <p className="text-gray-400 text-sm ml-1 line-through">
-                8,437,000đ
-              </p>
-              <div className="flex ml-1 space-x-2 items-center text-sm">
-                <BsCalendar4Week />
-                <p>Khởi hành: Thứ 5</p>
-              </div>
-              <div className="flex ml-1 items-center justify-between text-sm mb-2">
-                <div className="flex space-x-2 items-center">
-                  <BsCalendarHeart />
-                  <p>Thời gian: 3 ngày 2 đêm</p>
-                </div>
-                <TiWeatherPartlySunny size={20} className="mr-2" />
-              </div>
+            <div className="flex flex-wrap justify-center space-x-4 p-4">
+              {southernTours.slice(0, 3).map((tour) => (
+                <button key={tour.id} onClick={() => handleNavigate(tour)}>
+                  <TourCard key={tour.id} tour={tour} />
+                </button>
+              ))}
             </div>
           </div>
 

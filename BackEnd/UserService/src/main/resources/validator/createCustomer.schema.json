@@ -19,8 +19,7 @@
       "description": "Customer's full name"
     },
     "address": {
-      "type": "string",
-      "minLength": 1,
+      "type": ["string", "null"],
       "description": "Customer's address"
     },
     "gender": {
@@ -33,18 +32,15 @@
       "description": "Customer's birth date in YYYY-MM-DD format"
     },
     "phoneNumber": {
-      "type": "string",
-      "pattern": "^\\d{10,11}$",
-      "minLength": 1,
+      "type": ["string", "null"],
+      "pattern": "^(\\d{10,11}|)$",
       "description": "Customer's phone number with 10 or 11 digits"
     }
   },
   "required": [
     "email",
     "name",
-    "address",
     "gender",
-    "dateOfBirth",
-    "phoneNumber"
+    "dateOfBirth"
   ]
 }

@@ -29,14 +29,14 @@
                 <constraints primaryKey="true" nullable="false"/>
             </column>
             <column name="address" type="varchar(255)">
-                <constraints nullable="false"/>
+                <constraints nullable="true"/>
             </column>
             <column name="gender" type="boolean"/>
             <column name="date_of_birth" type="date">
                 <constraints nullable="false"/>
             </column>
             <column name="phone_number" type="varchar(20)">
-                <constraints nullable="false"/>
+                <constraints nullable="true"/>
             </column>
         </createTable>
     </changeSet>

@@ -13,6 +13,7 @@ import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Getter
 @Setter
@@ -26,7 +27,7 @@ public class TourFeature {
     private TypeTour typeTour;
     private Region region;
     private AccommodationQuality accommodationQuality;
-    private TransportationMode transportationMode;
+    private List<TransportationMode> transportationMode;
     private LocalDate startDate;
     private LocalDate endDate;
 }
