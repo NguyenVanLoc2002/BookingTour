@@ -1,0 +1,294 @@
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Đăng tour</title>
+  <link rel="stylesheet" href="../assets/css/style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+
+</head>
+
+<body class="bg-gray-100 font-roboto">
+  <div class="flex flex-col h-screen  ">
+    <div class="flex justify-between bg-teal-500 ">
+      <div class="text-white text-2xl font-bold pl-4">
+        <img alt=logo" src="../assets/logo_Text.jpg" width="80px" />
+      </div>
+      <div class="text-white justify-center items-center pr-4 pt-4">
+        <i class="fas fa-user-circle fa-2x"></i>
+      </div>
+
+    </div>
+    <div class="flex  bg-slate-300 justify-between">
+      <div class="w-1/6 bg-white p-2 m-2">
+        <div class="flex items-center pb-4 pl-2">
+          <img alt="User avatar" class="rounded-full" height="50"
+            src="https://res.cloudinary.com/doqbelkif/image/upload/v1727453521/e015a22e-fa11-4f2c-86bf-322445d957ea.png"
+            width="50" />
+          <div>
+            <div class="pl-4 font-bold">
+              Bảo Trúc
+            </div>
+            <div class="pl-4 text-gray-400 font-normal pr-4">
+              baotruc123@gmail.com
+            </div>
+          </div>
+        </div>
+        <nav>
+          <ul>
+            <li class="mb-2 font-bold">
+              Quản lý người dùng
+            </li>
+            <li class="mb-2 font-bold cursor-pointer" id="toggle-ql-dat-tour">
+              Quản lý đặt Tour
+            </li>
+            <ul class="ml-2 hidden" id="ql-dat-tour">
+              <li class="mb-2 text-teal-500">Danh sách tour</li>
+              <li class="mb-2">Đăng tour</li>
+              <li class="mb-2">Tạo tour</li>
+            </ul>
+    
+            <li class="mb-2 font-bold cursor-pointer" id="toggle-ql-tour">
+              Quản lý Tour
+            </li>
+            <ul class="ml-2 hidden" id="ql-tour">
+              <li class="mb-2 text-teal-500">Danh sách tour</li>
+              <li class="mb-2">Đăng tour</li>
+              <li class="mb-2">Tạo tour</li>
+            </ul>
+            <li class="mb-2 font-bold">
+              Quản lý đặt Tour
+            </li>
+            <li class="mb-2 font-bold">
+              Thống kê
+            </li>
+          </ul>
+        </nav>
+
+      </div>
+      <div class="w-4/5 bg-white p-2 m-2">
+        <div class="flex justify-between items-center mb-4">
+          <div class="text-xl font-bold">
+            Danh sách tour
+          </div>
+          <div class="flex space-x-4">
+            <select class="border border-gray-300 rounded p-2">
+              <option>
+                Miền Bắc
+              </option>
+            </select>
+            <select class="border border-gray-300 rounded p-2">
+              <option>
+                Mạo hiểm
+              </option>
+            </select>
+            <input class="border border-gray-300 rounded p-2" type="text" value="9/10/2024-25/10/2024" />
+          </div>
+        </div>
+        <table class="w-full border-collapse">
+          <thead>
+            <tr class="bg-gray-100">
+              <th class="border p-2">
+                STT
+              </th>
+              <th class="border p-2">
+                Ảnh đại diện
+              </th>
+              <th class="border p-2">
+                Tên tour
+              </th>
+              <th class="border p-2">
+                Thời gian
+              </th>
+              <th class="border p-2">
+                Ngày khởi hành
+              </th>
+              <th class="border p-2">
+                Giá tour
+              </th>
+              <th class="border p-2">
+                #
+              </th>
+              <th class="border p-2">
+                Đăng tour
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="border p-2 text-center">
+                1
+              </td>
+              <td class="border p-2 text-center">
+                <img alt="Tour image" height="50"
+                  src="https://storage.googleapis.com/a1aa/image/2rlUvPwJezw0L6d3K0SYWQsOHzd9yU5l5TCHjnuyTHpoGD0JA.jpg"
+                  width="50" />
+              </td>
+              <td class="border p-2">
+                Phú Quốc - Bến Tre
+              </td>
+              <td class="border p-2 text-center">
+                3 ngày 2 đêm
+              </td>
+              <td class="border p-2 text-center">
+                10/11/2024
+              </td>
+              <td class="border p-2 text-center">
+                6.500.000 đ
+              </td>
+              <td class="border p-2 text-center">
+                <a class="text-teal-500" href="#">
+                  <i class="fas fa-edit">
+                  </i>
+                  Cập nhật
+                </a>
+                <br />
+                <a class="text-teal-500" href="#">
+                  <i class="fas fa-info-circle">
+                  </i>
+                  Chi tiết
+                </a>
+              </td>
+              <td class="border p-2 text-center">
+                <input type="checkbox" />
+              </td>
+            </tr>
+            <tr>
+              <td class="border p-2 text-center">
+                2
+              </td>
+              <td class="border p-2 text-center">
+                <img alt="Tour image" height="50"
+                  src="https://storage.googleapis.com/a1aa/image/2rlUvPwJezw0L6d3K0SYWQsOHzd9yU5l5TCHjnuyTHpoGD0JA.jpg"
+                  width="50" />
+              </td>
+              <td class="border p-2">
+                Cà Mau
+              </td>
+              <td class="border p-2 text-center">
+                2 ngày 1 đêm
+              </td>
+              <td class="border p-2 text-center">
+                10/11/2024
+              </td>
+              <td class="border p-2 text-center">
+                4.500.000 đ
+              </td>
+              <td class="border p-2 text-center">
+                <a class="text-teal-500" href="#">
+                  <i class="fas fa-edit">
+                  </i>
+                  Cập nhật
+                </a>
+                <br />
+                <a class="text-teal-500" href="#">
+                  <i class="fas fa-info-circle">
+                  </i>
+                  Chi tiết
+                </a>
+              </td>
+              <td class="border p-2 text-center">
+                <input type="checkbox" />
+              </td>
+            </tr>
+            <tr>
+              <td class="border p-2 text-center">
+                3
+              </td>
+              <td class="border p-2 text-center">
+                <img alt="Tour image" height="50"
+                  src="https://storage.googleapis.com/a1aa/image/2rlUvPwJezw0L6d3K0SYWQsOHzd9yU5l5TCHjnuyTHpoGD0JA.jpg"
+                  width="50" />
+              </td>
+              <td class="border p-2">
+                Cà Mau
+              </td>
+              <td class="border p-2 text-center">
+                2 ngày 1 đêm
+              </td>
+              <td class="border p-2 text-center">
+                10/11/2024
+              </td>
+              <td class="border p-2 text-center">
+                4.500.000 đ
+              </td>
+              <td class="border p-2 text-center">
+                <a class="text-teal-500" href="#">
+                  <i class="fas fa-edit">
+                  </i>
+                  Cập nhật
+                </a>
+                <br />
+                <a class="text-teal-500" href="#">
+                  <i class="fas fa-info-circle">
+                  </i>
+                  Chi tiết
+                </a>
+              </td>
+              <td class="border p-2 text-center">
+                <input type="checkbox" />
+              </td>
+            </tr>
+            <tr>
+              <td class="border p-2 text-center">
+                4
+              </td>
+              <td class="border p-2 text-center">
+                <img alt="Tour image" height="50"
+                  src="https://storage.googleapis.com/a1aa/image/2rlUvPwJezw0L6d3K0SYWQsOHzd9yU5l5TCHjnuyTHpoGD0JA.jpg"
+                  width="50" />
+              </td>
+              <td class="border p-2">
+                Cà Mau
+              </td>
+              <td class="border p-2 text-center">
+                2 ngày 1 đêm
+              </td>
+              <td class="border p-2 text-center">
+                10/11/2024
+              </td>
+              <td class="border p-2 text-center">
+                4.500.000 đ
+              </td>
+              <td class="border p-2 text-center">
+                <a class="text-teal-500" href="#">
+                  <i class="fas fa-edit">
+                  </i>
+                  Cập nhật
+                </a>
+                <br />
+                <a class="text-teal-500" href="#">
+                  <i class="fas fa-info-circle">
+                  </i>
+                  Chi tiết
+                </a>
+              </td>
+
+            </tr>
+          </tbody>
+        </table>
+
+      </div>
+    </div>
+  </div>
+  <script>
+    const qlDatTour = document.getElementById('ql-dat-tour');
+    const qlTour = document.getElementById('ql-tour');
+    const toggleQlDatTour = document.getElementById('toggle-ql-dat-tour');
+    const toggleQlTour = document.getElementById('toggle-ql-tour');
+
+    toggleQlDatTour.addEventListener('click', () => {
+      qlDatTour.classList.toggle('hidden');
+      qlTour.classList.add('hidden');
+    });
+
+    toggleQlTour.addEventListener('click', () => {
+      qlTour.classList.toggle('hidden');
+      qlDatTour.classList.add('hidden');
+    });
+  </script>
+</body>
+
+</html>
