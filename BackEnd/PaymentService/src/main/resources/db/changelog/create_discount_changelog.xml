@@ -6,7 +6,7 @@
     <!-- ChangeSet để tạo bảng discounts -->
     <changeSet id="create-discounts" author="NguyenVanLoc2002">
         <createTable tableName="discounts">
-            <column name="discount_id" type="VARCHAR(255)">
+            <column name="discount_id" type="VARCHAR(50)">
                 <constraints primaryKey="true"/>
             </column>
             <column name="customer_id" type="BIGINT">
@@ -31,11 +31,6 @@
                 <constraints nullable="false"/>
             </column>
         </createTable>
-        <addForeignKeyConstraint
-                baseTableName="discounts"
-                baseColumnNames="discount_id"
-                referencedTableName="payments"
-                referencedColumnNames="payment_id"
-                constraintName="fk_discount_payment"/>
+
     </changeSet>
 </databaseChangeLog>

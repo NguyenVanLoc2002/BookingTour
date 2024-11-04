@@ -1,8 +1,11 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 import * as Icons from "react-icons/ai";
+import { useNavigate } from "react-router-dom";
 
 function TongQuan({ tour }) {
+  const navigate = useNavigate();
+
   const IconDisplay = ({ iconName }) => {
     const IconComponent = Icons[iconName]; // Lấy biểu tượng dựa trên tên truyền vào
     console.log("Tong Quan tour: ", tour.tourId);
@@ -51,6 +54,12 @@ function TongQuan({ tour }) {
     const month = String(date.getMonth() + 1).padStart(2, "0"); // Lấy tháng (tháng 0 bắt đầu từ 0)
     const year = date.getFullYear(); // Lấy năm
     return `${day}/${month}/${year}`; // Trả về định dạng "dd/mm/yyyy"
+  };
+
+  //Navigate booking
+  const handleChooseTicket = (ticket_tour) => {
+    // Chuyển hướng sang trang /booking và truyền dữ liệu ticket_tour
+    navigate("/booking", { state: { ticket: ticket_tour, tour: tour } });
   };
 
   return (
@@ -169,15 +178,18 @@ function TongQuan({ tour }) {
                         Tour ghép - Khởi hành từ {tour.departureLocation}
                       </h3>
                       <div className="flex">
-                        <IconDisplay iconName="AiOutlineCalendar"/>
-                        <p  className="ml-1"> Ngày khởi hành: {formatDate(tour.departureDate)}</p>
+                        <IconDisplay iconName="AiOutlineCalendar" />
+                        <p className="ml-1">
+                          {" "}
+                          Ngày khởi hành: {formatDate(ticket_tour.departureDate)}
+                        </p>
                       </div>
                       <div className="flex">
-                        <Icons.AiOutlineUser className="mr-2" size={20}/>
+                        <Icons.AiOutlineUser className="mr-2" size={20} />
                         <p>
                           Số chỗ:{" "}
-                          {tour.availableSlot > 0
-                            ? `Còn ${tour.availableSlot} chỗ trống`
+                          {ticket_tour.availableSlot > 0
+                            ? `Còn ${ticket_tour.availableSlot} chỗ trống`
                             : "Hết chỗ"}
                         </p>
                       </div>
@@ -189,7 +201,10 @@ function TongQuan({ tour }) {
                       <div className="text-red-500 text-lg font-bold">
                         {formatCurrency(tour.price)}
                       </div>
-                      <button className="bg-teal-500 text-white px-4 py-2 rounded">
+                      <button
+                        className="bg-teal-500 text-white px-4 py-2 rounded"
+                        onClick={() => handleChooseTicket(ticket_tour)}
+                      >
                         Chọn vé
                       </button>
                     </div>

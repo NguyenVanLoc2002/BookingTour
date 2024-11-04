@@ -8,6 +8,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Table;
 
 import java.time.LocalDate;
+import java.util.UUID;
 
 @Getter
 @Setter
@@ -18,8 +19,7 @@ import java.time.LocalDate;
 public class Payment {
     @Id
     private String paymentId;
-    private Long customerId;
-    private Long bookingId;
+    private String bookingId;
     private String discountId; // Optional, in case discounts apply
     private double amount;
     private PaymentMethod paymentMethod;

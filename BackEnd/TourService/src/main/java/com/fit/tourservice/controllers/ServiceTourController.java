@@ -1,6 +1,6 @@
 package com.fit.tourservice.controllers;
 
-import com.fit.tourservice.dtos.response.ServiceTourDTO;
+import com.fit.tourservice.dtos.ServiceTourDTO;
 import com.fit.tourservice.services.ServiceTourService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;

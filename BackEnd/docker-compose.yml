@@ -85,6 +85,21 @@ services:
       - gateway
 
 
+  redis:
+    image: redis:latest
+    container_name: redis-container
+    restart: always
+    ports:
+      - "6379:6379"
+    volumes:
+      - ./redis-data:/data  # Dữ liệu Redis lưu tại thư mục ./redis-data
+    environment:
+      - REDIS_PASSWORD=123456
+      - REDIS_PORT=6379
+      - REDIS_DATABASES=16
+    networks:
+      - kafka-network
+
   api_gateway:
     build:
       context: ApiGateway
@@ -105,20 +120,6 @@ services:
     networks:
       - gateway
 
-  redis:
-    image: redis:latest
-    container_name: redis-container
-    restart: always
-    ports:
-      - "6379:6379"
-    volumes:
-      - ./redis-data:/data  # Dữ liệu Redis lưu tại thư mục ./redis-data
-    environment:
-      - REDIS_PASSWORD=123456
-      - REDIS_PORT=6379
-      - REDIS_DATABASES=16
-    networks:
-      - kafka-network
 
 
       # ================================== Authenticate-DB & AuthService ==================================
@@ -243,7 +244,6 @@ services:
       - discovery-server
       - api_gateway
       - kafka
-      - UserService
     networks:
       - gateway
       - kafka-network
@@ -269,10 +269,29 @@ services:
       - discovery-server
       - api_gateway
       - kafka
-      - UserService
     networks:
       - gateway
       - kafka-network
+
+
+
+  # ================================== Rasa For chat bot AI ==================================
+  rasa:
+    build:
+      context: ./Rasa
+      dockerfile: Dockerfile
+    container_name: rasa
+    ports:
+      - "5005:5005"  # Cổng cho API Rasa
+    environment:
+      - PYTHONUNBUFFERED=1  # Đảm bảo rằng log được hiển thị ngay lập tức
+      - RASA_MODEL_SERVER=localhost:5002  # Ví dụ biến môi trường
+    volumes:
+      - ./Rasa/data:/app/data  # Gắn kết thư mục chứa dữ liệu huấn luyện
+      - ./Rasa/actions:/app/actions  # Gắn kết thư mục chứa actions
+    networks:
+      - gateway
+
 
 
 networks:

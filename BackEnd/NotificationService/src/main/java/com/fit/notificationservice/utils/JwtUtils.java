@@ -1,6 +1,8 @@
 package com.fit.notificationservice.utils;
 
+import com.fit.notificationservice.dtos.BookingDTO;
 import com.fit.notificationservice.dtos.reponse.CustomerResponse;
+import com.fit.notificationservice.dtos.request.BookingRequest;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -46,7 +48,7 @@ public class JwtUtils {
         return extractExpiration(token).before(new Date());
     }
 
-    public String generateToken(CustomerResponse customerResponse) {
+    public String generateTokenAuth(CustomerResponse customerResponse) {
         Map<String, Object> claims = new HashMap<>();
 
         // Đặt các thông tin cần thiết từ CustomerResponse vào trong claims
@@ -62,6 +64,17 @@ public class JwtUtils {
         // Tạo token với thông tin của customerResponse
         return createToken(claims, customerResponse.getEmail());  // Email sẽ là subject của JWT
     }
+
+    public String generateBookingToken(BookingDTO bookingDTO) {
+        Map<String, Object> claims = new HashMap<>();
+
+        // Chỉ thêm bookingId vào claims
+        claims.put("bookingId", bookingDTO.getBookingId()); // Đảm bảo bookingId là String
+
+        // Tạo token với bookingId
+        return createToken(claims, bookingDTO.getBookingId());  // Sử dụng bookingId làm subject
+    }
+
 
     private String createToken(Map<String, Object> claims, String subject) {
         return Jwts.builder()

@@ -13,4 +13,5 @@ public interface TourTicketRepository extends ReactiveCrudRepository<TourTicket,
 
     @Query("SELECT * FROM tour_tickets WHERE tour_id = :tourId AND departure_date > CURRENT_DATE ORDER BY departure_date ASC LIMIT 1")
     Mono<TourTicket> findClosestTourTicketByTourId(@Param("tourId") Long tourId);
+
 }

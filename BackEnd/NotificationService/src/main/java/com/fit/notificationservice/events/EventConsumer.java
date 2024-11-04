@@ -1,6 +1,7 @@
 package com.fit.notificationservice.events;
 
 import com.fit.commonservice.utils.Constant;
+import com.fit.notificationservice.dtos.BookingDTO;
 import com.fit.notificationservice.dtos.reponse.CustomerResponse;
 import com.fit.notificationservice.dtos.request.BookingRequest;
 import com.fit.notificationservice.service.EmailService;
@@ -69,11 +70,11 @@ public class EventConsumer {
         try {
             log.info("Received message Booking Tour: {}", receiverRecord.value());
             // Chuyển đổi từ JSON sang BookingRequest
-            BookingRequest request = gson.fromJson(receiverRecord.value(), BookingRequest.class);
-            log.info("request: {}", request);
+            BookingDTO bookingDTO = gson.fromJson(receiverRecord.value(), BookingDTO.class);
+            log.info("request: {}", bookingDTO);
 
             // Gọi phương thức gửi email
-            return emailService.sendEmailAuthBookingTour(request);
+            return emailService.sendEmailAuthBookingTour(bookingDTO);
         } catch (Exception e) {
             log.error("Error sending email Booking Tour: {}", e.getMessage());
             return Mono.error(e); // Ném ra lỗi nếu xảy ra lỗi trong quá trình gửi email

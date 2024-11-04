@@ -142,7 +142,6 @@ function MainLayout() {
           params: { region },
         }
       );
-
       // Cập nhật state tương ứng với miền
       if (region === "NORTH") {
         setNorthernTours(response.data);
@@ -161,6 +160,10 @@ function MainLayout() {
     fetchToursByRegion("CENTRAL");
     fetchToursByRegion("SOUTH");
   }, []);
+
+  console.log("North: ", northernTours);
+  console.log("MT: ", centralTours);
+  console.log("MN: ", southernTours);
 
   // Hàm định dạng giá tiền
   const formatCurrency = (amount) => {
@@ -311,14 +314,14 @@ function MainLayout() {
             </div>
 
             <div className="flex flex-wrap justify-center space-x-4 p-4">
-              {northernTours.slice(0, 3).map((tour) => (
+              {northernTours.slice(0, 3).map((tour, index) => (
                 <button
-                  key={tour.id}
+                  key={tour.id || index}
                   onClick={() => {
                     handleNavigate(tour);
                   }}
                 >
-                  <TourCard key={tour.id} tour={tour} />
+                  <TourCard tour={tour} />
                 </button>
               ))}
             </div>
@@ -327,9 +330,12 @@ function MainLayout() {
           {/* MT */}
           <div className="flex items-center space-x-6 mt-3 mb-3">
             <div className="flex flex-wrap justify-center space-x-4 p-4">
-              {centralTours.slice(0, 3).map((tour) => (
-                <button key={tour.id} onClick={() => handleNavigate(tour)}>
-                  <TourCard key={tour.id} tour={tour} />
+              {centralTours.slice(0, 3).map((tour, index) => (
+                <button
+                  key={tour.id || index}
+                  onClick={() => handleNavigate(tour)}
+                >
+                  <TourCard tour={tour} />
                 </button>
               ))}
             </div>
@@ -367,9 +373,12 @@ function MainLayout() {
             </div>
 
             <div className="flex flex-wrap justify-center space-x-4 p-4">
-              {southernTours.slice(0, 3).map((tour) => (
-                <button key={tour.id} onClick={() => handleNavigate(tour)}>
-                  <TourCard key={tour.id} tour={tour} />
+              {southernTours.slice(0, 3).map((tour, index) => (
+                <button
+                  key={tour.id || index}
+                  onClick={() => handleNavigate(tour)}
+                >
+                  <TourCard tour={tour} />
                 </button>
               ))}
             </div>

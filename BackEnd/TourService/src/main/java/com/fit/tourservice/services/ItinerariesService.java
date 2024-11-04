@@ -1,6 +1,6 @@
 package com.fit.tourservice.services;
 
-import com.fit.tourservice.dtos.response.ItinerariesDTO;
+import com.fit.tourservice.dtos.ItinerariesDTO;
 import com.fit.tourservice.models.Itineraries;
 import com.fit.tourservice.repositories.r2dbc.ItinerariesRepository;
 import lombok.extern.slf4j.Slf4j;

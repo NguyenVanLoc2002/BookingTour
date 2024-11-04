@@ -1,7 +1,7 @@
 package com.fit.tourservice.controllers;
 
-import com.fit.tourservice.dtos.response.ActivityDTO;
-import com.fit.tourservice.dtos.response.ItinerariesDTO;
+import com.fit.tourservice.dtos.ActivityDTO;
+import com.fit.tourservice.dtos.ItinerariesDTO;
 import com.fit.tourservice.services.ActivityService;
 import com.fit.tourservice.services.ItinerariesService;
 import lombok.extern.slf4j.Slf4j;

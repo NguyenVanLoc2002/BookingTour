@@ -12,9 +12,10 @@ function App() {
         <Route path="/" element={<MainLayout />} />
         <Route path="/detail" element={<DetailTour />} />
         <Route path="/listTour" element={<ListTour />} />
-        <Route path="/Introduce" element={<Introduce />} />
-        <Route path="/Account" element={<Account />} />
-        <Route path="/Booking" element={<Booking />} />
+        <Route path="/introduce" element={<Introduce />} />
+        <Route path="/account" element={<Account />} />
+        <Route path="/booking" element={<Booking />} />
+        <Route path="/payment" element={<PaymentPage />} />
       </Routes>
     </>
   );

@@ -1,8 +1,7 @@
 package com.fit.tourservice.controllers;
 
 import com.fit.tourservice.dtos.request.TourFilterCriteriaRequest;
-import com.fit.tourservice.dtos.response.TourDTO;
-import com.fit.tourservice.dtos.response.TourFeatureDTO;
+import com.fit.tourservice.dtos.TourDTO;
 import com.fit.tourservice.enums.Region;
 import com.fit.tourservice.events.EventConsumer;
 import com.fit.tourservice.services.TourService;

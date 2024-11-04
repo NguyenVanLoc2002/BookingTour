@@ -1,6 +1,6 @@
 package com.fit.tourservice.services;
 
-import com.fit.tourservice.dtos.response.ReviewDTO;
+import com.fit.tourservice.dtos.ReviewDTO;
 import com.fit.tourservice.models.Review;
 import com.fit.tourservice.repositories.r2dbc.ReviewRepository;
 import lombok.extern.slf4j.Slf4j;

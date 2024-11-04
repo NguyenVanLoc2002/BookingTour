@@ -1,6 +1,6 @@
 package com.fit.tourservice.repositories.r2dbc;
 
-import com.fit.tourservice.dtos.response.TourDTO;
+import com.fit.tourservice.dtos.TourDTO;
 import com.fit.tourservice.models.Tour;
 import org.springframework.data.r2dbc.repository.Query;
 import org.springframework.data.repository.query.Param;
