@@ -1,6 +1,6 @@
 package com.fit.tourservice.services;
 
-import com.fit.tourservice.dtos.response.TourFeatureDTO;
+import com.fit.tourservice.dtos.TourFeatureDTO;
 import com.fit.tourservice.models.TourFeature;
 import com.fit.tourservice.repositories.r2dbc.TourFeatureRepository;
 import org.springframework.beans.factory.annotation.Autowired;

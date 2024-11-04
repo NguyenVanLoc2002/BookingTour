@@ -1,6 +1,6 @@
 package com.fit.tourservice.services;
 
-import com.fit.tourservice.dtos.response.TourTicketDTO;
+import com.fit.tourservice.dtos.TourTicketDTO;
 import com.fit.tourservice.models.TourTicket;
 import com.fit.tourservice.repositories.r2dbc.TourTicketRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -63,5 +63,26 @@ public class TourTicketService {
         return tourTicketRepository.findClosestTourTicketByTourId(tourId)
                 .map(TourTicketDTO::convertToDTO)
                 .switchIfEmpty(Mono.error(new RuntimeException("No tickets available for the selected tour.")));
+    }
+
+    //Kiem tra so luong con trong và update
+    public Mono<Boolean> checkAvailableSlot(Long ticketId, int numberOfGuests) {
+        return tourTicketRepository.findById(ticketId)
+                .map(tour -> tour.getAvailableSlot() >= numberOfGuests)
+                .defaultIfEmpty(false);
+    }
+
+    public Mono<TourTicketDTO> updateAvailableSlot(Long ticketId, int numberOfGuests) {
+        return tourTicketRepository.findById(ticketId)
+                .flatMap(ticket -> {
+                    int updatedSlot = ticket.getAvailableSlot() - numberOfGuests;
+                    if (updatedSlot < 0) {
+                        return Mono.error(new IllegalArgumentException("Not enough slots available"));
+                    }
+                    ticket.setAvailableSlot(updatedSlot);
+                    return tourTicketRepository.save(ticket);
+                })
+                .map(TourTicketDTO::convertToDTO)
+                .switchIfEmpty(Mono.error(new Exception("Tour not found!")));
     }
 }

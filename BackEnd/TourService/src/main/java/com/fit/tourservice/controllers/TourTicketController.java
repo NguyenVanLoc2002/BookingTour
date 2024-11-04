@@ -1,6 +1,6 @@
 package com.fit.tourservice.controllers;
 
-import com.fit.tourservice.dtos.response.TourTicketDTO;
+import com.fit.tourservice.dtos.TourTicketDTO;
 import com.fit.tourservice.services.TourTicketService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

@@ -4,6 +4,9 @@ import DetailTour from "./page/DetailTour";
 import ListTour from "./page/ListTour";
 import Introduce from "./page/Introduce";
 import Account from "./page/Account";
+import Booking from "./page/Booking";
+import PaymentPage from "./page/Payment";
+
 function App() {
   return (
     <>
@@ -11,8 +14,10 @@ function App() {
         <Route path="/" element={<MainLayout />} />
         <Route path="/detail" element={<DetailTour />} />
         <Route path="/listTour" element={<ListTour />} />
-        <Route path="/Introduce" element={<Introduce />} />
-        <Route path="/Account" element={<Account />} />
+        <Route path="/introduce" element={<Introduce />} />
+        <Route path="/account" element={<Account />} />
+        <Route path="/booking" element={<Booking />} />
+        <Route path="/payment" element={<PaymentPage />} />
       </Routes>
     </>
   );

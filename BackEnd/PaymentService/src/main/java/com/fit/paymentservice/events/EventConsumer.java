@@ -1,7 +1,7 @@
 package com.fit.paymentservice.events;
 
 import com.fit.commonservice.utils.Constant;
-import com.fit.paymentservice.dtos.response.BookingDTO;
+import com.fit.paymentservice.dtos.response.BookingResponse;
 import com.fit.paymentservice.enums.StatusBooking;
 import com.fit.paymentservice.services.BookingService;
 import com.google.gson.Gson;
@@ -17,6 +17,7 @@ import reactor.kafka.receiver.ReceiverRecord;
 
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Service
@@ -24,16 +25,17 @@ import java.util.concurrent.ConcurrentHashMap;
 public class EventConsumer {
 
     private final KafkaReceiver<String, String> kafkaReceiver;
-    private final Gson gson;
+
+    @Autowired
+    private Gson gson;
 
     // Lưu trữ các Sinks theo customerId để quản lý kết quả phản hồi từ Kafka
-    private final Map<Long, Sinks.One<BookingDTO>> bookingResponseSinks = new ConcurrentHashMap<>();
+    private final Map<String, Sinks.One<BookingResponse>> bookingResponseSinks = new ConcurrentHashMap<>();
 
     private final BookingService bookingService;
 
     @Autowired
-    public EventConsumer(ReceiverOptions<String, String> options, Gson gson,@Lazy BookingService bookingService) {
-        this.gson = gson;
+    public EventConsumer(ReceiverOptions<String, String> options, @Lazy BookingService bookingService) {
 
         // KafkaReceiver luôn lắng nghe phản hồi từ Kafka
         this.kafkaReceiver = KafkaReceiver.create(
@@ -78,18 +80,18 @@ public class EventConsumer {
 
     // Phương thức xử lý thông báo khi nhận được phản hồi từ Kafka
     private Mono<Void> getBooking(ReceiverRecord<String, String> receiverRecord) {
-        BookingDTO bookingDTO = gson.fromJson(receiverRecord.value(), BookingDTO.class);
+        BookingResponse bookingDTO = gson.fromJson(receiverRecord.value(), BookingResponse.class);
         log.info("bookingResponseDTO: {}", bookingDTO);
 
-        // Tìm Sinks tương ứng với customerId
-        Sinks.One<BookingDTO> sink = bookingResponseSinks.get(bookingDTO.getCustomerId());
+        // Tìm Sinks tương ứng với transactionID
+        Sinks.One<BookingResponse> sink = bookingResponseSinks.get(bookingDTO.getBookingId());
 
         // Nếu tìm thấy Sink tương ứng, phát ra kết quả và xóa nó
         if (sink != null) {
             sink.tryEmitValue(bookingDTO);
-            bookingResponseSinks.remove(bookingDTO.getCustomerId());
+            bookingResponseSinks.remove(bookingDTO.getBookingId());
         } else {
-            log.warn("No sink found for customerId: {}", bookingDTO.getCustomerId());
+            log.warn("No sink found for customerId: {}", bookingDTO.getBookingId());
             return Mono.empty(); // Trả về Mono.empty() nếu không tìm thấy sink
         }
 
@@ -99,16 +101,16 @@ public class EventConsumer {
     }
 
     // Phương thức lấy kết quả từ Kafka bằng cách chờ phản hồi
-    public Mono<BookingDTO> waitForBookingResponse(Long customerId) {
+    public Mono<BookingResponse> waitForBookingResponse(String bookingId) {
         // Tạo Sinks.One để lưu trữ phản hồi
-        Sinks.One<BookingDTO> sink = Sinks.one();
+        Sinks.One<BookingResponse> sink = Sinks.one();
 
-        // Lưu sink theo customerId
-        bookingResponseSinks.put(customerId, sink);
+        // Lưu sink theo transactionId
+        bookingResponseSinks.put(bookingId, sink);
 
         // Trả về Mono cho phép BookingService chờ phản hồi
         return sink.asMono()
-                .doOnTerminate(() -> bookingResponseSinks.remove(customerId)); // Xóa khỏi map sau khi hoàn thành
+                .doOnTerminate(() -> bookingResponseSinks.remove(bookingId)); // Xóa khỏi map sau khi hoàn thành
     }
 
 

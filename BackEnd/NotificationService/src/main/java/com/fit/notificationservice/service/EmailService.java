@@ -1,8 +1,8 @@
 package com.fit.notificationservice.service;
 
 
+import com.fit.notificationservice.dtos.BookingDTO;
 import com.fit.notificationservice.dtos.reponse.CustomerResponse;
-import com.fit.notificationservice.dtos.request.BookingRequest;
 import com.fit.notificationservice.entity.Email;
 import com.fit.notificationservice.utils.JwtUtils;
 import jakarta.mail.internet.MimeMessage;
@@ -36,15 +36,15 @@ public class EmailService {
     @Value("${spring.mail.username}")
     private String sender;
 
-    public Mono<Void> sendEmailAuthBookingTour(BookingRequest bookingRequest) {
+    public Mono<Void> sendEmailAuthBookingTour(BookingDTO bookingDTO) {
         return Mono.fromCallable(() -> {
                     String htmlContent = loadVerifyBookingTourTemplate();
-                    htmlContent = htmlContent.replace("${username}", bookingRequest.getUserName());
-                    htmlContent = htmlContent.replace("${email}", bookingRequest.getEmail());
-                    htmlContent = htmlContent.replace("${verificationLink}", createVerificationLinkBookingTour(bookingRequest.getBookingId()));
+                    htmlContent = htmlContent.replace("${username}", bookingDTO.getUserName());
+                    htmlContent = htmlContent.replace("${email}", bookingDTO.getEmail());
+                    htmlContent = htmlContent.replace("${verificationLink}", createVerificationLinkBookingTour(bookingDTO));
 
                     // Tạo đối tượng Email và gửi
-                    Email emailDetails = new Email(bookingRequest.getEmail(), htmlContent, "Booking Confirmation", "");
+                    Email emailDetails = new Email(bookingDTO.getEmail(), htmlContent, "Booking Confirmation", "");
                     sendVerifyEmail(emailDetails);
                     return true;
                 })
@@ -94,16 +94,17 @@ public class EmailService {
         return StreamUtils.copyToString(resource.getInputStream(), StandardCharsets.UTF_8);
     }
 
-    public String createVerificationLinkBookingTour(Long token) {
-//        String token = createToken(bookingRequest);
-        return "http://localhost:8000/api/v1/notification/verify-booking-tour?bookingId=" + token;
+    public String createVerificationLinkBookingTour(BookingDTO bookingDTO) {
+        String token = jwtUtils.generateBookingToken(bookingDTO);
+//        return "http://localhost:8000/api/v1/notification/verify-booking-tour?bookingId=" + token;
+        return "http://localhost:9005/booking/verify-booking-tour?bookingId=" + token;
     }
 
     public String createVerificationLinkAccount(CustomerResponse customerResponse) {
-        String token = jwtUtils.generateToken(customerResponse);
+        String token = jwtUtils.generateTokenAuth(customerResponse);
         log.info("token: {}", token);
-//        return "http://localhost:8000/api/v1/auth/verify-account?token=" + token;
-        return "http://localhost:9002/auth/verify-account?token=" + token;
+        return "http://localhost:8000/api/v1/auth/verify-account?token=" + token;
+//        return "http://localhost:9002/auth/verify-account?token=" + token;
     }
 
 

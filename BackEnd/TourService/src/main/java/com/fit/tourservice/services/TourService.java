@@ -2,13 +2,12 @@ package com.fit.tourservice.services;
 
 import com.fit.commonservice.utils.Constant;
 import com.fit.tourservice.dtos.request.TourFilterCriteriaRequest;
-import com.fit.tourservice.dtos.response.TourDTO;
-import com.fit.tourservice.dtos.response.TourFeatureDTO;
-import com.fit.tourservice.dtos.response.TourTicketDTO;
+import com.fit.tourservice.dtos.TourDTO;
+import com.fit.tourservice.dtos.TourFeatureDTO;
+import com.fit.tourservice.dtos.TourTicketDTO;
 import com.fit.tourservice.enums.Region;
 import com.fit.tourservice.events.EventProducer;
 import com.fit.tourservice.models.Tour;
-import com.fit.tourservice.models.TourTicket;
 import com.fit.tourservice.repositories.r2dbc.TourFeatureRepository;
 import com.fit.tourservice.repositories.r2dbc.TourRepository;
 import com.fit.tourservice.repositories.r2dbc.TourTicketRepository;
@@ -134,29 +133,10 @@ public class TourService {
                 .map(TourDTO::convertToDTO);
     }
 
-//    public Mono<Boolean> checkAvailableSlot(Long tourId, int numberOfGuests) {
-//        return tourRepository.findById(tourId)
-//                .map(tour -> tour.getAvailableSlot() >= numberOfGuests)
-//                .defaultIfEmpty(false);
-//    }
-
     public Mono<Double> calcTotalAmountTicket(Long tourId, int numberOfGuests) {
         return tourRepository.findById(tourId)
                 .map(tour -> tour.getPrice() * numberOfGuests); // Tính tổng tiền trực tiếp trong luồng
     }
-
-//    public Mono<Tour> updateAvailableSlot(Long tourId, int numberOfGuests) {
-//        return tourRepository.findById(tourId)
-//                .flatMap(tour -> {
-//                    int updatedSlot = tour.getAvailableSlot() - numberOfGuests;
-//                    if (updatedSlot < 0) {
-//                        return Mono.error(new IllegalArgumentException("Not enough slots available"));
-//                    }
-//                    tour.setAvailableSlot(updatedSlot);
-//                    return tourRepository.save(tour);
-//                })
-//                .switchIfEmpty(Mono.error(new Exception("Tour not found!")));
-//    }
 
     public Flux<TourDTO> getTourByRegion(Region region) {
         return tourFeatureRepository.findAllByRegion(region)
