@@ -1,10 +1,13 @@
-export default {
+/** @type {import('tailwindcss').Config} */
+module.exports = {
   content: [
-    './src/**/*.html',
-    './src/**/*.js',
+    './pages/**/*.{js,jsx}',
+    './components/**/*.{js,jsx}',
+    './app/**/*.{js,jsx}',
+    './src/**/*.{js,jsx}'
   ],
   theme: {
-    extend: {},
+    extend: {}
   },
-  plugins: [],
+  plugins: [require('tailwindcss-animate'), require('daisyui')]
 }
