@@ -18,7 +18,7 @@ import { BsCalendar4Week, BsCalendarHeart } from "react-icons/bs";
 import { TiWeatherPartlySunny } from "react-icons/ti";
 import Footer from "../../layouts/Footer";
 import { useNavigate } from "react-router-dom";
-
+import ChatBot from "../../layouts/ChatBot";
 function MainLayout() {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isSlide1Active, setIsSlide1Active] = useState(true);
@@ -47,9 +47,8 @@ function MainLayout() {
 
     // Đặt ảnh đầu tiên
     slide1.style.backgroundImage = `url(${images[currentImageIndex]})`;
-    slide2.style.backgroundImage = `url(${
-      images[(currentImageIndex + 1) % images.length]
-    })`;
+    slide2.style.backgroundImage = `url(${images[(currentImageIndex + 1) % images.length]
+      })`;
 
     const nextSlide = isSlide1Active ? slide2 : slide1;
     const currentSlide = isSlide1Active ? slide1 : slide2;
@@ -493,7 +492,7 @@ function MainLayout() {
             </div>
           </div>
         </div>
-
+        <ChatBot />
         {/* Footer */}
         <Footer />
       </div>
