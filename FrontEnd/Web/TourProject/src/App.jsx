@@ -5,6 +5,7 @@ import ListTour from "./page/ListTour";
 import Introduce from "./page/Introduce";
 import Account from "./page/Account";
 import Booking from "./page/Booking";
+import PaymentPage from "./page/Payment"
 function App() {
   return (
     <>

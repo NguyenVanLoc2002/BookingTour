@@ -1,30 +1,29 @@
 import React, { useState } from 'react';
 import {
-  AppstoreOutlined,
-  ContainerOutlined,
-  DesktopOutlined,
-  MailOutlined,
   MenuFoldOutlined,
   MenuUnfoldOutlined,
-  PieChartOutlined,
 } from '@ant-design/icons';
 import type { MenuProps } from 'antd';
 import { Button, Menu } from 'antd';
+import { useNavigate } from 'react-router-dom'; // Import useNavigate
 
 type MenuItem = Required<MenuProps>['items'][number];
 const items: MenuItem[] = [
   { key: 'users', label: 'Quản lý người dùng' },
-  { key: 'tours',label: 'Quản lý tour',children: [
-    { key: 'dsTour', label: 'Danh sách tour' },
-    { key: 'dangTour', label: 'Đăng tour' },
-    { key: 'taoTour', label: 'Tạo tour' },
-  ], },
-  { key: 'bookings', label: 'Quản lý đặt Tour',
+  {
+    key: 'tours', label: 'Quản lý tour', children: [
+      { key: 'dsTour', label: 'Danh sách tour' },
+      { key: 'dangTour', label: 'Đăng tour' },
+      { key: 'taoTour', label: 'Tạo tour' },
+    ],
+  },
+  {
+    key: 'bookings', label: 'Quản lý đặt Tour',
     children: [
       { key: 'huyTour', label: 'Danh sách yêu cầu hủy tour' },
       { key: 'tourRieng', label: 'Danh sách đặt tour riêng' },
     ],
-   },
+  },
   {
     key: 'thongKe',
     label: 'Thống kê',
@@ -57,14 +56,30 @@ const MenuManagement: React.FC = () => {
     city: "Hồ Chí Minh",
   };
   const [collapsed, setCollapsed] = useState(false);
-
+  const navigate = useNavigate();
   const toggleCollapsed = () => {
     setCollapsed(!collapsed);
   };
 
+  const handleMenuClick = (key: string) => {
+    switch (key) {
+      case 'dangTour':
+        navigate('/pushTour'); // Điều hướng đến trang Đăng tour
+        break;
+      case 'taoTour':
+        navigate('/createTour'); // Điều hướng đến trang Tạo tour
+        break;
+      case 'dsTour':
+        navigate('/listTour'); // Điều hướng đến trang Danh sách tour
+        break;
+      default:
+        break;
+    }
+  };
+
   return (
-    <div className="text-black w-[100%]">
-      <div className="flex items-center pb-4 pl-2">
+    <div className='border border-spacing-1 pb-2 rounded-xl border-[#3fd0d4] '>
+      <div className="flex items-center pb-2 pl-2">
         <img
           alt="User avatar"
           className="rounded-full"
@@ -79,19 +94,18 @@ const MenuManagement: React.FC = () => {
           </div>
         </div>
       </div>
-      
+
       <div style={{ width: 256 }}>
-      <Button type="primary" onClick={toggleCollapsed} style={{ marginBottom: 16 }}>
-        {collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
-      </Button>
-      <Menu
-        defaultSelectedKeys={['1']}
-        defaultOpenKeys={['sub1']}
-        mode="inline"
-        inlineCollapsed={collapsed}
-        items={items}
-      />
-    </div>
+        <Menu
+          defaultSelectedKeys={['dsTour']}
+          defaultOpenKeys={['tours']}
+          mode="inline"
+          inlineCollapsed={collapsed}
+          items={items}
+          onClick={({ key }) => handleMenuClick(key)}
+        />
+
+      </div>
     </div>
   );
 };
