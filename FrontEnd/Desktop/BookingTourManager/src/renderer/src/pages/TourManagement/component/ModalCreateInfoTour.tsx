@@ -17,10 +17,10 @@ import {
     Switch,
     TreeSelect,
     Upload,
-    Modal
+    Modal, UploadFile
 } from 'antd';
 import { useNavigate } from 'react-router-dom'; // Import useNavigate
-import { PlusOutlined } from '@ant-design/icons';
+import { PlusOutlined, UploadOutlined } from '@ant-design/icons';
 import type { DatePickerProps } from 'antd';
 import dayjs from 'dayjs';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
@@ -40,10 +40,53 @@ const normFile = (e: any) => {
 const ModalCreateInfo: React.FC = () => {
     const [showModalInfo, setShowModalInfo] = useState(true);
     const [editorContent, setEditorContent] = useState('');
+    const [formValues, setFormValues] = useState({
+        tenTour: '',
+        loaiTour: 'mh',
+        vungMien: 'mb',
+        thoiGian: '1n',
+        giaTour: '',
+        soLuong: '',
+        phuongTien: 'mb',
+        chatLuongChoO: 'ks5',
+        thanhPho: 'tp_ho_chi_minh',
+        ngayDi: dayjs(),
+        tanSuat: '2t1l',
+        ngayBatDau: dayjs(),
+        traiNghiem: '',
+    });
+    const [fileList, setFileList] = useState<UploadFile[]>([]);
+
+    const handleUpload = (info: { file: UploadFile, fileList: UploadFile[] }) => {
+        setFileList([info.file]);
+
+        // Kiểm tra trạng thái của file
+        if (info.file.status === 'uploading') {
+            console.log('Uploading...');
+        }
+        if (info.file.status === 'done') {
+            console.log('ok');
+        } else if (info.file.status === 'error') {
+            console.log('error');
+        }
+    };
+
+    // Hàm cập nhật các giá trị form vào state
+    const handleChange = (key: string, value: any) => {
+        setFormValues((prevValues) => ({
+            ...prevValues,
+            [key]: value,
+        }));
+    };
+    const handleSubmit = () => {
+        const formData = { ...formValues };
+        console.log(formData); // In ra formData khi submit
+    };
     const handleToggle = () => {
         setShowModalInfo(!showModalInfo); // Chuyển đổi trạng thái khi nhấn nút
+        console.log(formValues)
     };
-    const loaiTour = [
+    const loaiTours = [
         { value: 'mh', label: 'Mạo hiểm' },
         { value: 'tq', label: 'Tham quan' },
         { value: 'vh', label: 'Văn hóa' },
@@ -51,30 +94,30 @@ const ModalCreateInfo: React.FC = () => {
         { value: 'nd', label: 'Nghỉ dưỡng' },
         { value: 'tb', label: 'Team building' },
     ]
-    const vungMien = [
+    const vungMiens = [
         { value: 'mb', label: 'Miền Bắc' },
         { value: 'mtr', label: 'Miền Trung' },
         { value: 'mt', label: 'Miền Tây' },
         { value: 'mn', label: 'Miền Nam' },
     ]
-    const thoiGian = [
+    const thoiGians = [
         { value: '1n', label: 'Trong ngày' },
         { value: '2n1d', label: '2 ngày 1 đêm' },
         { value: '3n2d', label: '3 ngày 2 đêm' },
         { value: '4n3d', label: '4 ngày 3 đêm' },
     ]
-    const phuongTien = [
+    const phuongTiens = [
         { value: 'mb', label: 'Máy bay' },
         { value: 'bus', label: 'Xe buýt' },
         { value: 'oto', label: 'Ô tô' },
     ]
-    const chatLuongChoO = [
+    const chatLuongChoOs = [
         { value: 'ks5', label: 'Khách sạn 5 sao' },
         { value: 'ks4', label: 'Khách sạn 4 sao' },
         { value: 'ks3', label: 'Khách sạn 3 sao' },
         { value: 'motel', label: 'Nhà nghỉ' },
     ]
-    const thanhPho = [
+    const thanhPhos = [
         { value: 'an_giang', label: 'An Giang' },
         { value: 'ba_ria_vung_tau', label: 'Bà Rịa - Vũng Tàu' },
         { value: 'bac_lieu', label: 'Bạc Liêu' },
@@ -139,7 +182,7 @@ const ModalCreateInfo: React.FC = () => {
         { value: 'vinh_phuc', label: 'Vĩnh Phúc' },
         { value: 'yen_bai', label: 'Yên Bái' }
     ];
-    const tanSuat = [
+    const tanSuats = [
         { value: '1t1l', label: '1 tuần 1 lần' },
         { value: '2t1l', label: '2 tuần 1 lần' },
         { value: '3t1l', label: '3 tuần 1 lần' },
@@ -174,53 +217,82 @@ const ModalCreateInfo: React.FC = () => {
                     >
                         <Row className='pr-6 justify-between'>
                             <Col span={14} >
-                                <Form.Item label="Tên tour" className='custom-border'>
-                                    <Input />
+                                <Form.Item label="Tên tour" className='custom-border' name="tenTour"
+                                    rules={[{ required: true, },]} >
+                                    <Input value={formValues.tenTour}
+                                        onChange={(e) => handleChange('tenTour', e.target.value)} />
                                 </Form.Item>
                                 <Row className='justify-between'>
-                                    <Form.Item label="Loại tour" style={{ width: '40%' }} className='custom-border'>
+                                    <Form.Item label="Loại tour" name="loaiTour" style={{ width: '40%' }} className='custom-border'
+                                        rules={[{ required: true, },]} >
                                         <Select
-                                            defaultValue="mh"
-                                            options={loaiTour}
+                                            value={formValues.loaiTour}
+                                            defaultValue={formValues.loaiTour}
+                                            onChange={(value) => handleChange('loaiTour', value)}
+                                            options={loaiTours}
                                         />
                                     </Form.Item>
-                                    <Form.Item label="Vùng miền" style={{ width: '40%' }} className='custom-border'>
+                                    <Form.Item label="Vùng miền" name="vungMien" style={{ width: '40%' }} className='custom-border'
+                                        rules={[{ required: true, },]} >
                                         <Select
-                                            defaultValue="mb"
-                                            options={vungMien}
+                                            value={formValues.vungMien}
+                                            defaultValue={formValues.vungMien}
+                                            onChange={(value) => handleChange('vungMien', value)}
+                                            options={vungMiens}
                                         />
                                     </Form.Item>
                                 </Row>
                             </Col>
                             <Col span={8} >
-                                <Form.Item label="Ảnh đại diện" className='font-bold '>
-                                    <Upload action="/upload.do" listType="picture-card">
-                                        <button style={{ border: 0, background: 'none' }} type="button">
-                                            <PlusOutlined />
-                                            <div style={{ marginTop: 8 }}>Upload</div>
-                                        </button>
+                                <Form.Item label="Ảnh đại diện" className='font-bold '
+                                    name="Files"
+                                    rules={[
+                                        {
+                                            required: true,
+                                            validator: (_, value) =>
+                                                fileList.length > 0
+                                                    ? Promise.resolve()
+                                                    : Promise.reject(new Error('Vui lòng ảnh đại diện!')),
+                                        },
+                                    ]} >
+                                    <Upload
+                                        name="avatar"
+                                        listType="picture"
+                                        accept="image/*"
+                                        onChange={handleUpload}
+                                        fileList={fileList}
+                                    >
+                                        <Button icon={<UploadOutlined />}>Tải ảnh lên</Button>
                                     </Upload>
                                 </Form.Item>
+
                             </Col>
                         </Row>
                         <Row className='pr-6 justify-between'>
                             <Col span={14} >
 
                                 <Row className='justify-between'>
-                                    <Form.Item label="Thời gian" style={{ width: '40%' }} className='custom-border'>
+                                    <Form.Item label="Thời gian" name="thoiGian" style={{ width: '40%' }} className='custom-border'
+                                        rules={[{ required: true, },]} >
                                         <Select
-                                            defaultValue="1n"
-                                            options={thoiGian}
+                                            value={formValues.thoiGian}
+                                            defaultValue={formValues.thoiGian}
+                                            onChange={(value) => handleChange('thoiGian', value)}
+                                            options={thoiGians}
                                         />
                                     </Form.Item>
-                                    <Form.Item label="Giá Tour" style={{ width: '40%' }} className='custom-border'>
-                                        <Input />
+                                    <Form.Item label="Giá Tour" name="giaTour" style={{ width: '40%' }} className='custom-border'
+                                        rules={[{ required: true, },]} >
+                                        <Input value={formValues.giaTour}
+                                            onChange={(e) => handleChange('giaTour', e.target.value)} />
                                     </Form.Item>
                                 </Row>
                             </Col>
                             <Col span={8} >
-                                <Form.Item label="Số lượng" className='custom-border'>
-                                    <Input />
+                                <Form.Item label="Số lượng" name="soLuong" className='custom-border'
+                                    rules={[{ required: true, },]} >
+                                    <Input value={formValues.soLuong} type="number"
+                                        onChange={(e) => handleChange('soLuong', e.target.value)} />
                                 </Form.Item>
                             </Col>
                         </Row>
@@ -228,25 +300,34 @@ const ModalCreateInfo: React.FC = () => {
                             <Col span={14} >
 
                                 <Row className='justify-between' >
-                                    <Form.Item label="Phương tiện" style={{ width: '40%' }} className='custom-border'>
+                                    <Form.Item label="Phương tiện" name="phuongTien" style={{ width: '40%' }} className='custom-border'
+                                        rules={[{ required: true, },]} >
                                         <Select
-                                            defaultValue="mb"
-                                            options={phuongTien}
+                                            value={formValues.phuongTien}
+                                            defaultValue={formValues.phuongTien}
+                                            onChange={(value) => handleChange('phuongTien', value)}
+                                            options={phuongTiens}
                                         />
                                     </Form.Item>
-                                    <Form.Item label="Chất lượng chổ ở" style={{ width: '40%' }} className='custom-border'>
+                                    <Form.Item label="Chất lượng chổ ở" name="chatLuongChoO" style={{ width: '40%' }} className='custom-border'
+                                        rules={[{ required: true, },]} >
                                         <Select
-                                            defaultValue="ks5"
-                                            options={chatLuongChoO}
+                                            value={formValues.chatLuongChoO}
+                                            defaultValue={formValues.chatLuongChoO}
+                                            onChange={(value) => handleChange('chatLuongChoO', value)}
+                                            options={chatLuongChoOs}
                                         />
                                     </Form.Item>
                                 </Row>
                             </Col>
                             <Col span={8} >
-                                <Form.Item label="Nơi bắt đầu" className='custom-border' >
+                                <Form.Item label="Nơi bắt đầu" name="thanhPho" className='custom-border'
+                                    rules={[{ required: true, },]} >
                                     <Select
-                                        defaultValue="tp_ho_chi_minh"
-                                        options={thanhPho}
+                                        value={formValues.thanhPho}
+                                        defaultValue={formValues.thanhPho}
+                                        onChange={(value) => handleChange('thanhPho', value)}
+                                        options={thanhPhos}
                                     />
                                 </Form.Item>
                             </Col>
@@ -255,31 +336,41 @@ const ModalCreateInfo: React.FC = () => {
                             <Col span={14} >
 
                                 <Row className='justify-between'>
-                                    <Form.Item label="Ngày đi" style={{ width: '40%' }} className='custom-border'>
-                                        <DatePicker onChange={onChange} defaultValue={dayjs()} format={dateFormat} />
+                                    <Form.Item label="Ngày đi" name="ngayDi" style={{ width: '40%' }} className='custom-border'
+                                        rules={[{ required: true, },]} >
+                                        <DatePicker value={formValues.ngayDi} defaultValue={formValues.ngayDi}
+                                            onChange={(date) => handleChange('ngayDi', date)} format={dateFormat} />
                                     </Form.Item>
-                                    <Form.Item label="Tần suất" style={{ width: '40%' }} className='custom-border'>
+                                    <Form.Item label="Tần suất" name="tanSuat" style={{ width: '40%' }} className='custom-border'
+                                        rules={[{ required: true, },]} >
                                         <Select
-                                            defaultValue="2t1l"
-                                            options={tanSuat}
+                                            value={formValues.tanSuat}
+                                            defaultValue={formValues.tanSuat}
+                                            onChange={(value) => handleChange('tanSuat', value)}
+                                            options={tanSuats}
                                         />
                                     </Form.Item>
                                 </Row>
                             </Col>
                             <Col span={8} >
-                                <Form.Item label="Ngày bắt đầu" className='custom-border'>
-                                    <DatePicker onChange={onChange} defaultValue={dayjs()} format={dateFormat} />
+                                <Form.Item label="Ngày bắt đầu" name="ngayBatDau" className='custom-border'
+                                    rules={[{ required: true, },]} >
+                                    <DatePicker value={formValues.ngayBatDau} defaultValue={formValues.ngayBatDau}
+                                        onChange={(date) => handleChange('ngayBatDau', date)} format={dateFormat} />
                                 </Form.Item>
                             </Col>
                         </Row>
-                        <Form.Item label="Trải nghiệm" className='w-[97%] custom-border'>
-                            <TextArea rows={4} />
+                        <Form.Item label="Trải nghiệm" name="traiNghiem" className='w-[97%] custom-border'
+                            rules={[{ required: true, },]} >
+                            <TextArea value={formValues.traiNghiem}
+                                onChange={(e) => handleChange('traiNghiem', e.target.value)}
+                                rows={4} />
                         </Form.Item>
                         <Row className='justify-end w-[97%]'>
                             <Button className='pr-4 pl-4 p-2 bg-[#3fd0d4]' onClick={handleToggle} ><span className='font-bold text-white text-lg'>TIẾP TỤC</span></Button>
                         </Row>
                     </Form>
-                </div>) : (   <div className='border border-spacing-1  rounded-xl border-[#3fd0d4] p-4'>
+                </div>) : (<div className='border border-spacing-1  rounded-xl border-[#3fd0d4] p-4'>
                     <h2 className='font-bold text-xl mb-5 '>Chương trình tour</h2>
                     <Form
                         labelCol={{ span: 40 }}
@@ -288,15 +379,15 @@ const ModalCreateInfo: React.FC = () => {
                         className='w-full'
                     >
                         <div >
-                        <CKEditor
-                          
-                            editor={ClassicEditor} data={editorContent}
-                            onChange={(event, editor) => {
-                                const data = editor.getData();  // Lấy dữ liệu HTML
-                                setEditorContent(data);
-                            }}
-                           
-                        />
+                            <CKEditor
+
+                                editor={ClassicEditor} data={editorContent}
+                                onChange={(event, editor) => {
+                                    const data = editor.getData();  // Lấy dữ liệu HTML
+                                    setEditorContent(data);
+                                }}
+
+                            />
                         </div>
                         <Row className='justify-end w-[97%] m-4'>
 
@@ -305,8 +396,9 @@ const ModalCreateInfo: React.FC = () => {
                         </Row>
                     </Form>
                 </div>
-            )}
-        </div>
+            )
+            }
+        </div >
     );
 };
 
