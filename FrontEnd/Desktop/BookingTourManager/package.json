@@ -19,6 +19,8 @@
   },
   "dependencies": {
     "@ant-design/icons": "^5.5.1",
+    "@ckeditor/ckeditor5-build-classic": "^43.3.1",
+    "@ckeditor/ckeditor5-react": "^9.3.1",
     "@electron-toolkit/preload": "^3.0.1",
     "@electron-toolkit/utils": "^3.0.0",
     "@types/react": "^18.3.12",

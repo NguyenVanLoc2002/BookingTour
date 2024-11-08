@@ -1,10 +1,6 @@
 import React, { useState } from 'react';
-import {
-  MenuFoldOutlined,
-  MenuUnfoldOutlined,
-} from '@ant-design/icons';
 import type { MenuProps } from 'antd';
-import { Button, Menu } from 'antd';
+import { Menu } from 'antd';
 import { useNavigate } from 'react-router-dom'; // Import useNavigate
 
 type MenuItem = Required<MenuProps>['items'][number];
@@ -45,7 +41,12 @@ interface User {
   city: string;
 }
 
-const MenuManagement: React.FC = () => {
+interface MenuManagementProps {
+  initialVariable: string;
+}
+
+// const MenuManagement: React.FC = () => {
+  const MenuManagement: React.FC<MenuManagementProps> = ({ initialVariable }) => {
   const user: User = {
     name: "Bao Truc",
     url: "https://res.cloudinary.com/doqbelkif/image/upload/v1727453521/e015a22e-fa11-4f2c-86bf-322445d957ea.png",
@@ -97,7 +98,8 @@ const MenuManagement: React.FC = () => {
 
       <div style={{ width: 256 }}>
         <Menu
-          defaultSelectedKeys={['dsTour']}
+          defaultSelectedKeys={[initialVariable]}
+          // selectedKeys={[selectedKey]} 
           defaultOpenKeys={['tours']}
           mode="inline"
           inlineCollapsed={collapsed}

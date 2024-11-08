@@ -1,12 +1,11 @@
 // Import necessary hooks and components
 import React, { useEffect, useRef, useState } from "react";
 import MenuManagement from "../../components/Menu/MenuManagement";
-import { Space, Table, Tag, Select, DatePicker } from 'antd';
+import { Space, Table, Tag, Select, DatePicker, Card, Button } from 'antd';
 import dayjs from 'dayjs';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
 import { EditTwoTone, EyeTwoTone, DeleteTwoTone } from '@ant-design/icons';
 import type { TableColumnsType, TableProps } from 'antd';
-
 type TableRowSelection<T extends object = object> = TableProps<T>['rowSelection'];
 
 
@@ -80,12 +79,7 @@ const columns: TableColumnsType<Tour> = [
     key: 'soLuongVe',
   },
   {
-    title: 'Số Vé Đã Đặt',
-    dataIndex: 'soVeDaDat',
-    key: 'soVeDaDat',
-  },
-  {
-    title: 'Hành Động',
+    title: '#',
     key: 'action',
     render: (_, record: Tour) => (
       <div className="flex flex-col mt-[-8px] mb-[-8px]">
@@ -331,43 +325,48 @@ const PushTour: React.FC = () => {
       },
     ],
   };
-
+  const loaiTour = [
+    { value: 'mh', label: 'Mạo hiểm' },
+    { value: 'tq', label: 'Tham quan' },
+    { value: 'vh', label: 'Văn hóa' },
+    { value: 'st', label: 'Sinh thái' },
+    { value: 'nd', label: 'Nghỉ dưỡng' },
+    { value: 'tb', label: 'Team building' },
+  ]
+  const vungMien = [
+    { value: 'mb', label: 'Miền Bắc' },
+    { value: 'mtr', label: 'Miền Trung' },
+    { value: 'mt', label: 'Miền Tây' },
+    { value: 'mn', label: 'Miền Nam' },
+  ]
   // Return statement to render the UI
   return (
-    <div className=" bg-white  text-black text-base">
-      <div className="mr-4 fixed top-6 left-6"><MenuManagement /></div>
-      <div className=" fixed top-6 right-6 border border-spacing-1 rounded-xl border-[#3fd0d4]">
+    <div className=" bg-white  text-black text-sm">
+      <div className="mr-4 fixed top-6 left-6 "><MenuManagement initialVariable="dangTour" /></div>
+      <div className=" w-[70%] fixed top-6 right-6 border border-spacing-1 rounded-xl border-[#3fd0d4]">
         <div className="flex flex-row justify-between " >
           <h3 className="text-xl font-bold pl-5 pt-2">Đăng tour</h3>
           <Space wrap className="mr-5">
             <Select
               defaultValue="mb"
               style={{ width: 120 }}
-              options={[
-                { value: 'mb', label: 'Miền Bắc' },
-                { value: 'mtr', label: 'Miền Trung' },
-                { value: 'mt', label: 'Miền Tây' },
-                { value: 'mn', label: 'Miền Nam' },
-              ]}
+              options={vungMien}
             />
             <Select
               defaultValue="mh"
               style={{ width: 120 }}
-              options={[
-                { value: 'mh', label: 'Mạo hiểm' },
-                { value: 'tq', label: 'Tham quan' },
-                { value: 'vh', label: 'Văn hóa' },
-                { value: 'st', label: 'Sinh thái' },
-                { value: 'nd', label: 'Nghỉ dưỡng' },
-                { value: 'tb', label: 'Team building' },
-              ]}
+              options={loaiTour}
             />
             <RangePicker
               defaultValue={[dayjs(today, dateFormat), dayjs(today, dateFormat)]}
               format={dateFormat}
             />
           </Space></div>
-        <Table<Tour> columns={columns} rowSelection={rowSelection} dataSource={dataSource} />
+        <Card
+          className="w-full max-h-[500px] overflow-y-scroll mb-2 border-none" >
+          <Table<Tour> columns={columns} rowSelection={rowSelection} dataSource={dataSource} />
+        </Card>
+        <Button type="primary" className="fixed bottom-6 right-6">Đăng Tour</Button>
       </div>
     </div>
   );
