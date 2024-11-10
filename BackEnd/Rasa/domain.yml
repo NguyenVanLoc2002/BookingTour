@@ -8,8 +8,17 @@ intents:
   - mood_great
   - mood_unhappy
   - bot_challenge
+  - ask_tour_northern
+
+actions:
+  - action_show_northern_tours
+  - action_default_fallback
 
 responses:
+#  utter_tour_northern:
+#    - text: "Để lấy dữ liệu, vui lòng chờ trong giây lát..."  # Phản hồi tiếng Việt
+#    - text: "Please wait a moment while we fetch the data..."  # Phản hồi tiếng Anh
+
   utter_greet:
   - text: "Hey! How are you?"
 
@@ -28,6 +37,9 @@ responses:
 
   utter_iamabot:
   - text: "I am a bot, powered by Rasa."
+
+  utter_default:
+    - text: "Xin lỗi, tôi không hiểu câu hỏi của bạn. Vui lòng thử lại."  # Phản hồi fallback
 
 session_config:
   session_expiration_time: 60

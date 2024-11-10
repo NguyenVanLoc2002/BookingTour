@@ -28,3 +28,8 @@ stories:
   - action: utter_did_that_help
   - intent: deny
   - action: utter_goodbye
+
+- story: introduction tour north
+  steps:
+  - intent: ask_tour_northern
+  - action: action_show_northern_tours

@@ -89,3 +89,9 @@ nlu:
     - are you a human?
     - am I talking to a bot?
     - am I talking to a human?
+
+- intent: ask_tour_northern
+  examples: |
+    - Can you introduce tours in the North?
+    - Tell me about northern tours
+    - I want to know about tours in the North
