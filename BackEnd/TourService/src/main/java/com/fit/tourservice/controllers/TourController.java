@@ -14,6 +14,9 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.time.LocalDate;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/tours")
@@ -61,14 +64,30 @@ public class TourController {
 
     // API lấy danh sách tour theo region
     @GetMapping("/region")
-    public Mono<ResponseEntity<Flux<TourDTO>>> getTourByRegion(@RequestParam Region region) {
-        return tourService.getTourByRegion(region)
-                .collectList() // Chuyển đổi Flux<TourDTO> thành Mono<List<TourDTO>>
-                .map(tourList -> {
-                    if (tourList.isEmpty()) {
+    public Mono<ResponseEntity<Map<String, Object>>> getTourByRegion(
+            @RequestParam Region region,
+            @RequestParam int page,   // Trang hiện tại
+            @RequestParam int size) { // Số lượng tour mỗi trang
+
+        // Tính toán offset từ page và size
+        int offset = (page - 1) * size;  // offset = (page - 1) * size
+
+        // Gọi service để lấy danh sách tour
+        return tourService.getTourByRegion(region, offset, size)
+                .map(pageData -> {
+                    if (pageData.getContent().isEmpty()) {
                         return ResponseEntity.notFound().build(); // Trả về 404 nếu không tìm thấy tour
                     }
-                    return ResponseEntity.ok(Flux.fromIterable(tourList)); // Trả về 200 và danh sách tour
+
+                    // Tạo response chứa cả thông tin phân trang và danh sách tour
+                    Map<String, Object> response = new HashMap<>();
+                    response.put("content", pageData.getContent());
+                    response.put("totalElements", pageData.getTotalElements());
+                    response.put("totalPages", pageData.getTotalPages());
+                    response.put("size", pageData.getSize());
+                    response.put("number", pageData.getNumber() + 1); // Số trang bắt đầu từ 0 trong PageRequest, nên cần +1
+
+                    return ResponseEntity.ok(response); // Trả về 200 với dữ liệu phân trang
                 });
     }
 

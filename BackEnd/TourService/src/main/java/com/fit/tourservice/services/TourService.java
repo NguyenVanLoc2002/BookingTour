@@ -15,6 +15,10 @@ import com.google.gson.Gson;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -138,25 +142,42 @@ public class TourService {
                 .map(tour -> tour.getPrice() * numberOfGuests); // Tính tổng tiền trực tiếp trong luồng
     }
 
-    public Flux<TourDTO> getTourByRegion(Region region) {
-        return tourFeatureRepository.findAllByRegion(region)
-                .flatMap(tourFeature ->
-                        tourRepository.findById(tourFeature.getTourId())
-                                .flatMap(tour ->
-                                        tourTicketRepository.findClosestTourTicketByTourId(tour.getTourId())
-                                                .map(TourTicketDTO::convertToDTO)
-                                                .defaultIfEmpty(new TourTicketDTO())
-                                                .map(closestTicket -> {
-                                                    TourDTO tourDTO = TourDTO.convertToDTO(tour);
-                                                    tourDTO.setTourFeatureDTO(TourFeatureDTO.convertToDTO(tourFeature));
+    public Mono<Page<TourDTO>> getTourByRegion(Region region, int offset, int size) {
+        // Lấy tổng số phần tử trước
+        Mono<Long> totalCount = tourFeatureRepository.countToursByRegionAndStartDateAfter(region);
 
-                                                    // Set thêm departureDate và availableSlot từ closestTicket
-                                                    tourDTO.setDepartureDate(closestTicket.getDepartureDate());
-                                                    tourDTO.setAvailableSlot(closestTicket.getAvailableSlot());
-                                                    return tourDTO;
-                                                })
-                                )
-                );
+        return totalCount.flatMap(count -> {
+            // Lấy danh sách các tour cho trang hiện tại
+            return tourFeatureRepository.findAllByRegionAndStartDateAfter(region, size, offset)
+                    .flatMap(tourFeature ->
+                            tourRepository.findById(tourFeature.getTourId())
+                                    .flatMap(tour ->
+                                            tourTicketRepository.findClosestTourTicketByTourId(tour.getTourId())
+                                                    .map(TourTicketDTO::convertToDTO)
+                                                    .defaultIfEmpty(new TourTicketDTO())
+                                                    .map(closestTicket -> {
+                                                        TourDTO tourDTO = TourDTO.convertToDTO(tour);
+                                                        tourDTO.setTourFeatureDTO(TourFeatureDTO.convertToDTO(tourFeature));
+                                                        tourDTO.setDepartureDate(closestTicket.getDepartureDate());
+                                                        tourDTO.setAvailableSlot(closestTicket.getAvailableSlot());
+                                                        return tourDTO;
+                                                    })
+                                    )
+                    )
+                    .collectList()
+                    .map(tourList -> {
+                        // Tính số trang
+                        int totalPages = (int) Math.ceil((double) count / size);
+
+                        // Trả về một PageImpl với việc ghi đè số trang
+                        return new PageImpl<TourDTO>(tourList, PageRequest.of(offset / size, size), count) {
+                            @Override
+                            public int getTotalPages() {
+                                return totalPages;  // Trả về giá trị totalPages đã tính
+                            }
+                        };
+                    });
+        });
     }
 
 

@@ -139,16 +139,16 @@ function MainLayout() {
       const response = await axios.get(
         `http://localhost:8000/api/v1/tours/region`,
         {
-          params: { region },
+          params: { region, page: 1, size: 3 }, 
         }
       );
       // Cập nhật state tương ứng với miền
       if (region === "NORTH") {
-        setNorthernTours(response.data);
+        setNorthernTours(response.data.content);
       } else if (region === "CENTRAL") {
-        setCentralTours(response.data);
+        setCentralTours(response.data.content);
       } else if (region === "SOUTH") {
-        setSouthernTours(response.data);
+        setSouthernTours(response.data.content);
       }
     } catch (error) {
       console.error("Lỗi khi lấy dữ liệu:", error);
@@ -314,7 +314,7 @@ function MainLayout() {
             </div>
 
             <div className="flex flex-wrap justify-center space-x-4 p-4">
-              {northernTours.slice(0, 3).map((tour, index) => (
+              {northernTours.map((tour, index) => (
                 <button
                   key={tour.id || index}
                   onClick={() => {
@@ -330,7 +330,7 @@ function MainLayout() {
           {/* MT */}
           <div className="flex items-center space-x-6 mt-3 mb-3">
             <div className="flex flex-wrap justify-center space-x-4 p-4">
-              {centralTours.slice(0, 3).map((tour, index) => (
+              {centralTours.map((tour, index) => (
                 <button
                   key={tour.id || index}
                   onClick={() => handleNavigate(tour)}
@@ -373,7 +373,7 @@ function MainLayout() {
             </div>
 
             <div className="flex flex-wrap justify-center space-x-4 p-4">
-              {southernTours.slice(0, 3).map((tour, index) => (
+              {southernTours.map((tour, index) => (
                 <button
                   key={tour.id || index}
                   onClick={() => handleNavigate(tour)}
