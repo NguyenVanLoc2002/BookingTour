@@ -20,11 +20,12 @@ function Menu(name) {
   };
   const handleNavigateGioiThieu = () => {
     navigate('/Introduce'); // Điều hướng đến trang khác
-    console.log(name.name)
   };
   const handleNavigateTrangChu = () => {
     navigate('/'); // Điều hướng đến trang khác
-    console.log(name.name)
+  };
+  const handleNavigateBookings = () => {
+    navigate('/bookings'); // Điều hướng đến trang khác
   };
   return (
     <div className="w-screen max-w-full h-auto flex flex-col md:flex-row text-black bg-orange text-sm justify-between items-center">
@@ -36,18 +37,17 @@ function Menu(name) {
       </div>
 
       <div
-        className={`w-full md:w-[70%] flex flex-col md:flex-row items-center md:justify-center ${
-          isOpen ? "block" : "hidden"
-        } md:block`}
+        className={`w-full md:w-[70%] flex flex-col md:flex-row items-center md:justify-center ${isOpen ? "block" : "hidden"
+          } md:block`}
       >
         <ul className="w-full flex flex-col md:flex-row space-y-4 md:space-x-20 md:space-y-0 text-lg font-bold justify-center items-center">
-          <li className={name.name=="Home" ? "text-textColorCustom" : "underline-hover hover:text-textColorCustom "}>
-          <button  onClick={handleNavigateTrangChu}>TRANG CHỦ</button>
+          <li className={name.name == "Home" ? "text-textColorCustom" : "underline-hover hover:text-textColorCustom "}>
+            <button onClick={handleNavigateTrangChu}>TRANG CHỦ</button>
           </li>
           <li className="relative dropdown dropdown-hover">
             <a
               tabIndex="0"
-              className={name.name=="Tour" ? "flex items-center text-textColorCustom" : "flex items-center hover:text-textColorCustom underline-hover"}
+              className={name.name == "Tour" ? "flex items-center text-textColorCustom" : "flex items-center hover:text-textColorCustom underline-hover"}
             >
               TOUR <TiArrowSortedDown className="ml-2" size={20} />
             </a>
@@ -64,10 +64,36 @@ function Menu(name) {
               <li>
                 <a>MIỀN NAM</a>
               </li>
+              <li>
+                <a>TOUR PHÙ HỢP</a>
+              </li>
+              <li>
+                <a>TOUR GỢI Ý</a>
+              </li>
             </ul>
           </li>
-          <li className={name.name=="Introduce" ? "text-textColorCustom" : "underline-hover hover:text-textColorCustom "}>
-           <button  onClick={handleNavigateGioiThieu}> GIỚI THIỆU</button>
+          <li className="relative dropdown dropdown-hover">
+            <a
+              tabIndex="0"
+              className={name.name == "Booking" ? "flex items-center text-textColorCustom" : "flex items-center hover:text-textColorCustom underline-hover"}
+            >
+              BOOKINGS <TiArrowSortedDown className="ml-2" size={20} />
+            </a>
+            <ul
+              tabIndex="0"
+              className="dropdown-content menu bg-base-100 rounded-box z-[1] w-52 shadow"
+            >
+              <li>
+                <button onClick={handleNavigateBookings}>ĐẶT CHỔ CỦA TÔI</button>
+              </li>
+              <li>
+                <a>HOÀN TIỀN</a>
+              </li>
+
+            </ul>
+          </li>
+          <li className={name.name == "Introduce" ? "text-textColorCustom" : "underline-hover hover:text-textColorCustom "}>
+            <button onClick={handleNavigateGioiThieu}> GIỚI THIỆU</button>
           </li>
           <li className="underline-hover hover:text-textColorCustom">
             TIN TỨC
@@ -84,7 +110,7 @@ function Menu(name) {
             type="text"
             placeholder="Tìm kiếm tour..."
             className="focus:outline-none bg-gray-100 border-none placeholder-gray-300 font-semibold"
-           
+
           />
         </div>
         <HiOutlineSearchCircle

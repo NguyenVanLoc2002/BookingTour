@@ -27,9 +27,13 @@ import resort from "../../assets/iconTour/resort.png";
 import river from "../../assets/iconTour/river.png";
 import target from "../../assets/iconTour/target.png";
 import jungle from "../../assets/iconTour/jungle.png";
-
+import { useLocation } from "react-router-dom";
 
 function ListTour() {
+
+  const location = useLocation();
+  const { tours } = location.state || {};
+
   //Animation text
   useEffect(() => {
     const tourText = document.querySelector(".tour-text");
