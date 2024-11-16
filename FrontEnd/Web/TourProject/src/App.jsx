@@ -5,7 +5,8 @@ import ListTour from "./page/ListTour";
 import Introduce from "./page/Introduce";
 import Account from "./page/Account";
 import Booking from "./page/Booking";
-import PaymentPage from "./page/Payment"
+import PaymentPage from "./page/Payment";
+import Bookings from "./page/Bookings";
 function App() {
   return (
     <>
@@ -16,6 +17,7 @@ function App() {
         <Route path="/introduce" element={<Introduce />} />
         <Route path="/account" element={<Account />} />
         <Route path="/booking" element={<Booking />} />
+        <Route path="/bookings" element={<Bookings />} />
         <Route path="/payment" element={<PaymentPage />} />
       </Routes>
     </>

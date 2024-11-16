@@ -36,6 +36,10 @@ function Menu(name) {
     setIsOpen(false); 
   };
 
+  const handleNavigateBookings = () => {
+    navigate('/bookings'); // Điều hướng đến trang khác
+  };
+
   return (
     <div className="w-screen max-w-full h-auto flex flex-col md:flex-row text-black bg-orange text-sm justify-between items-center">
       <div className="w-full md:w-[15%] pl-14 flex justify-between items-center">
@@ -73,6 +77,26 @@ function Menu(name) {
                 </li>
               </ul>
             )}
+          </li>
+          <li className="relative dropdown dropdown-hover">
+            <a
+              tabIndex="0"
+              className={name.name == "Booking" ? "flex items-center text-textColorCustom" : "flex items-center hover:text-textColorCustom underline-hover"}
+            >
+              BOOKINGS <TiArrowSortedDown className="ml-2" size={20} />
+            </a>
+            <ul
+              tabIndex="0"
+              className="dropdown-content menu bg-base-100 rounded-box z-[1] w-52 shadow"
+            >
+              <li>
+                <button onClick={handleNavigateBookings}>ĐẶT CHỔ CỦA TÔI</button>
+              </li>
+              <li>
+                <a>HOÀN TIỀN</a>
+              </li>
+
+            </ul>
           </li>
           <li className={name.name === "Introduce" ? "text-textColorCustom" : "underline-hover hover:text-textColorCustom "}>
             <button onClick={handleNavigateGioiThieu}> GIỚI THIỆU</button>
