@@ -1,6 +1,10 @@
 package com.fit.tourservice.repositories.r2dbc;
 
 import com.fit.tourservice.dtos.TourDTO;
+import com.fit.tourservice.enums.AccommodationQuality;
+import com.fit.tourservice.enums.Region;
+import com.fit.tourservice.enums.TransportationMode;
+import com.fit.tourservice.enums.TypeTour;
 import com.fit.tourservice.models.Tour;
 import org.springframework.data.r2dbc.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -12,25 +16,27 @@ import java.util.List;
 
 public interface TourRepository extends ReactiveCrudRepository<Tour, Long> {
 
-    @Query("SELECT * FROM tours T " +
-            "JOIN tour_feature TF ON T.tour_id = TF.tour_id " +
-            "WHERE T.available_slot > 0 AND " +
-            "T.price <= :maxCost AND " +
-            "DATEDIFF(TF.end_date, TF.start_date) <= :maxDuration AND " +
-            "TF.start_date >= :startDate AND " +
-            "(:typeTour IS NULL OR TF.type_tour = :typeTour) AND " +
-            "(:accommodationQuality IS NULL OR TF.accommodation_quality = :accommodationQuality) AND " +
-            "(:region IS NULL OR TF.region = :region) AND " +
-            "(:transportationMode IS NULL OR TF.transportation_mode = :transportationMode) "
-
-    )
+    @Query("""
+                    SELECT DISTINCT T.* 
+                    FROM tours T
+                    JOIN tour_feature TF ON T.tour_id = TF.tour_id
+                    JOIN tour_tickets TT ON T.tour_id = TT.tour_id
+                    WHERE TT.available_slot > 0
+                      AND T.price <= :maxCost
+                      AND DATEDIFF(TF.end_date, TF.start_date) <= :maxDuration
+                      AND TF.start_date >= :startDate
+                      AND (:typeTour IS NULL OR TF.type_tour = :typeTour)
+                      AND (:accommodationQuality IS NULL OR TF.accommodation_quality = :accommodationQuality)
+                      AND (:region IS NULL OR TF.region = :region)
+                      AND (:transportationMode IS NULL OR TF.transportation_mode = :transportationMode)
+            """)
     Flux<TourDTO> findToursByCriteria(@Param("maxCost") double maxCost,
                                       @Param("maxDuration") int maxDuration,
                                       @Param("startDate") LocalDate startDate,
-                                      @Param("typeTour") Integer typeTour, // Sử dụng Integer
-                                      @Param("accommodationQuality") Integer accommodationQuality, // Sử dụng Integer
-                                      @Param("region") Integer region, // Sử dụng Integer
-                                      @Param("transportationMode") Integer transportationMode // Sử dụng Integer
+                                      @Param("typeTour") TypeTour typeTour, // Sử dụng Integer
+                                      @Param("accommodationQuality") AccommodationQuality accommodationQuality, // Sử dụng Integer
+                                      @Param("region") Region region, // Sử dụng Integer
+                                      @Param("transportationMode") TransportationMode transportationMode // Sử dụng Integer
     );
 
     Flux<Tour> findByTourIdIn(List<Long> tourIds);
@@ -40,10 +46,10 @@ public interface TourRepository extends ReactiveCrudRepository<Tour, Long> {
 
     @Query("SELECT * FROM tours T " +
             "JOIN tour_feature TF ON T.tour_id = TF.tour_id " +
-            "WHERE TF.start_date >= :startDate AND "+
-             "TF.end_date <= :endDate"
+            "WHERE TF.start_date >= :startDate AND " +
+            "TF.end_date <= :endDate"
     )
-    Flux<Tour> findToursByDayBetween(@Param("startDate") LocalDate startDate,@Param("endDate") LocalDate endDate);
+    Flux<Tour> findToursByDayBetween(@Param("startDate") LocalDate startDate, @Param("endDate") LocalDate endDate);
 
     Flux<Tour> findToursByPriceBetween(Double minPrice, Double maxPrice);
 

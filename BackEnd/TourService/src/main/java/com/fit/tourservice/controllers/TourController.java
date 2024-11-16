@@ -67,13 +67,44 @@ public class TourController {
     public Mono<ResponseEntity<Map<String, Object>>> getTourByRegion(
             @RequestParam Region region,
             @RequestParam int page,   // Trang hiện tại
-            @RequestParam int size) { // Số lượng tour mỗi trang
+            @RequestParam int size,
+            @RequestParam boolean isAscending) { // Số lượng tour mỗi trang
 
         // Tính toán offset từ page và size
         int offset = (page - 1) * size;  // offset = (page - 1) * size
 
         // Gọi service để lấy danh sách tour
-        return tourService.getTourByRegion(region, offset, size)
+        return tourService.getTourByRegion(region, offset, size,isAscending)
+                .map(pageData -> {
+                    if (pageData.getContent().isEmpty()) {
+                        return ResponseEntity.notFound().build(); // Trả về 404 nếu không tìm thấy tour
+                    }
+
+                    // Tạo response chứa cả thông tin phân trang và danh sách tour
+                    Map<String, Object> response = new HashMap<>();
+                    response.put("content", pageData.getContent());
+                    response.put("totalElements", pageData.getTotalElements());
+                    response.put("totalPages", pageData.getTotalPages());
+                    response.put("size", pageData.getSize());
+                    response.put("number", pageData.getNumber() + 1); // Số trang bắt đầu từ 0 trong PageRequest, nên cần +1
+
+                    return ResponseEntity.ok(response); // Trả về 200 với dữ liệu phân trang
+                });
+    }
+
+
+    @GetMapping("/region-order-by-price-desc")
+    public Mono<ResponseEntity<Map<String, Object>>> getToursByRegionOrderByPriceDesc(
+            @RequestParam Region region,
+            @RequestParam int page,   // Trang hiện tại
+            @RequestParam int size,
+            @RequestParam boolean isAscending) { // Số lượng tour mỗi trang
+
+        // Tính toán offset từ page và size
+        int offset = (page - 1) * size;  // offset = (page - 1) * size
+
+        // Gọi service để lấy danh sách tour
+        return tourService.findToursByRegionOrderByPrice(region, offset, size,isAscending)
                 .map(pageData -> {
                     if (pageData.getContent().isEmpty()) {
                         return ResponseEntity.notFound().build(); // Trả về 404 nếu không tìm thấy tour

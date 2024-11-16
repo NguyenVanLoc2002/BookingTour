@@ -8,6 +8,7 @@ import com.fit.tourservice.dtos.TourTicketDTO;
 import com.fit.tourservice.enums.Region;
 import com.fit.tourservice.events.EventProducer;
 import com.fit.tourservice.models.Tour;
+import com.fit.tourservice.models.TourFeature;
 import com.fit.tourservice.repositories.r2dbc.TourFeatureRepository;
 import com.fit.tourservice.repositories.r2dbc.TourRepository;
 import com.fit.tourservice.repositories.r2dbc.TourTicketRepository;
@@ -24,8 +25,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.time.LocalDate;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 @Slf4j
@@ -115,10 +115,10 @@ public class TourService {
                 criteria.getMaxCost(),
                 criteria.getMaxDuration(),
                 criteria.getStartDate(),
-                criteria.getTypeTourValue(), // Chuyển đổi thành int
-                criteria.getAccommodationQualityValue(), // Chuyển đổi thành int
-                criteria.getRegionValue(), // Chuyển đổi thành int
-                criteria.getTransportationModeValue() // Chuyển đổi thành int
+                criteria.getTypeTour(), // Chuyển đổi thành int
+                criteria.getAccommodationQuality(), // Chuyển đổi thành int
+                criteria.getRegion(), // Chuyển đổi thành int
+                criteria.getTransportationMode() // Chuyển đổi thành int
         );
     }
 
@@ -142,20 +142,25 @@ public class TourService {
                 .map(tour -> tour.getPrice() * numberOfGuests); // Tính tổng tiền trực tiếp trong luồng
     }
 
-    public Mono<Page<TourDTO>> getTourByRegion(Region region, int offset, int size) {
+    public Mono<Page<TourDTO>> getTourByRegion(Region region, int offset, int size, boolean isAscending) {
         // Lấy tổng số phần tử trước
         Mono<Long> totalCount = tourFeatureRepository.countToursByRegionAndStartDateAfter(region);
 
+        // Lấy các TourFeature với trang hiện tại
+        Flux<TourFeature> tourFeatures = isAscending
+                ? tourFeatureRepository.findAllByRegionAndStartDateAfter(region, size, offset)
+                : tourFeatureRepository.findAllByRegionAndStartDateBefore(region, size, offset);
+
         return totalCount.flatMap(count -> {
             // Lấy danh sách các tour cho trang hiện tại
-            return tourFeatureRepository.findAllByRegionAndStartDateAfter(region, size, offset)
-                    .flatMap(tourFeature ->
+            return tourFeatures.concatMap(tourFeature ->
                             tourRepository.findById(tourFeature.getTourId())
                                     .flatMap(tour ->
                                             tourTicketRepository.findClosestTourTicketByTourId(tour.getTourId())
                                                     .map(TourTicketDTO::convertToDTO)
                                                     .defaultIfEmpty(new TourTicketDTO())
                                                     .map(closestTicket -> {
+                                                        // Tạo DTO cho tour
                                                         TourDTO tourDTO = TourDTO.convertToDTO(tour);
                                                         tourDTO.setTourFeatureDTO(TourFeatureDTO.convertToDTO(tourFeature));
                                                         tourDTO.setDepartureDate(closestTicket.getDepartureDate());
@@ -164,20 +169,86 @@ public class TourService {
                                                     })
                                     )
                     )
-                    .collectList()
+                    .collectList()  // Thu thập kết quả vào Mono<List<TourDTO>>
                     .map(tourList -> {
+                        if (tourList != null && !tourList.isEmpty()) {
+                            // Sắp xếp theo ngày bắt đầu (startDate) theo thứ tự tăng dần hoặc giảm dần
+                            if (isAscending) {
+                                // Sắp xếp tăng dần
+                                tourList.sort(Comparator.comparing(tourDTO ->
+                                        Optional.ofNullable(tourDTO.getTourFeatureDTO())
+                                                .map(TourFeatureDTO::getStartDate)
+                                                .orElse(LocalDate.MAX)));
+                            } else {
+                                tourList.sort(Comparator.comparing((TourDTO tourDTO) ->
+                                        Optional.ofNullable(tourDTO.getTourFeatureDTO())
+                                                .map(TourFeatureDTO::getStartDate)
+                                                .orElse(LocalDate.MAX), Comparator.reverseOrder()));
+                            }
+                        }
+
                         // Tính số trang
                         int totalPages = (int) Math.ceil((double) count / size);
 
-                        // Trả về một PageImpl với việc ghi đè số trang
+                        // Trả về PageImpl
                         return new PageImpl<TourDTO>(tourList, PageRequest.of(offset / size, size), count) {
                             @Override
                             public int getTotalPages() {
-                                return totalPages;  // Trả về giá trị totalPages đã tính
+                                return totalPages; // Trả về giá trị totalPages đã tính
                             }
                         };
                     });
         });
+    }
+
+
+
+
+    public Mono<Page<TourDTO>> findToursByRegionOrderByPrice(Region region, int offset, int size, boolean isAscending) {
+        // Lấy tổng số phần tử trước
+        Mono<Long> totalCount = tourFeatureRepository.countToursByRegionAndStartDateAfter(region);
+
+        // Chọn query theo thứ tự sắp xếp
+        Flux<TourFeature> tourFeatures = isAscending
+                ? tourFeatureRepository.findAllByRegionAndStartDateAfterOrderByPriceAsc(region, size, offset)
+                : tourFeatureRepository.findAllByRegionAndStartDateAfterOrderByPriceDesc(region, size, offset);
+        return totalCount.flatMap(count ->
+                tourFeatures.flatMap(tourFeature ->
+                                tourRepository.findById(tourFeature.getTourId())
+                                        .flatMap(tour ->
+                                                tourTicketRepository.findClosestTourTicketByTourId(tour.getTourId())
+                                                        .map(TourTicketDTO::convertToDTO)
+                                                        .defaultIfEmpty(new TourTicketDTO())
+                                                        .map(closestTicket -> {
+                                                            TourDTO tourDTO = TourDTO.convertToDTO(tour);
+                                                            tourDTO.setTourFeatureDTO(TourFeatureDTO.convertToDTO(tourFeature));
+                                                            tourDTO.setDepartureDate(closestTicket.getDepartureDate());
+                                                            tourDTO.setAvailableSlot(closestTicket.getAvailableSlot());
+                                                            return tourDTO;
+                                                        })
+                                        )
+                        )
+                        .collectList()
+                        .map(tourList -> {
+                            // Nếu cần thiết, sắp xếp lại trong Java
+                            if (isAscending) {
+                                tourList.sort(Comparator.comparingDouble(TourDTO::getPrice));
+                            } else {
+                                tourList.sort(Comparator.comparingDouble(TourDTO::getPrice).reversed());
+                            }
+
+                            // Tính tổng số trang
+                            int totalPages = (int) Math.ceil((double) count / size);
+
+                            // Trả về PageImpl
+                            return new PageImpl<TourDTO>(tourList, PageRequest.of(offset / size, size), count) {
+                                @Override
+                                public int getTotalPages() {
+                                    return totalPages;
+                                }
+                            };
+                        })
+        );
     }
 
 
