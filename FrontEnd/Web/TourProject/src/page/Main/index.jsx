@@ -26,6 +26,7 @@ function MainLayout() {
   const [northernTours, setNorthernTours] = useState([]);
   const [centralTours, setCentralTours] = useState([]);
   const [southernTours, setSouthernTours] = useState([]);
+  const [isAscending, setIsAscending] = useState(true);
 
   const images = [bn1, bn2];
 
@@ -147,7 +148,7 @@ function MainLayout() {
       const response = await axios.get(
         `http://localhost:8000/api/v1/tours/region`,
         {
-          params: { region, page: 1, size: 3 }, 
+          params: { region, page: 1, size: 3 , isAscending}, 
         }
       );
       // Cập nhật state tương ứng với miền
@@ -168,10 +169,6 @@ function MainLayout() {
     fetchToursByRegion("CENTRAL");
     fetchToursByRegion("SOUTH");
   }, []);
-
-  console.log("North: ", northernTours);
-  console.log("MT: ", centralTours);
-  console.log("MN: ", southernTours);
 
   // Hàm định dạng giá tiền
   const formatCurrency = (amount) => {
@@ -641,6 +638,10 @@ function MainLayout() {
       </div>
     );
   };
+
+  console.log("North: ", northernTours);
+  console.log("MT: ", centralTours);
+  console.log("MN: ", southernTours);
 
   return (
     <>

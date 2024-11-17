@@ -37,36 +37,59 @@ function ListTour() {
   const region = queryParams.get("region");
 
   const [currentPage, setCurrentPage] = useState(1);
-  const [toursPerPage, setToursPerPage] = useState(12); 
+  const [toursPerPage, setToursPerPage] = useState(12);
   const [tourList, setTourList] = useState([]); // Danh sách tour
   const [totalPages, setTotalPages] = useState(1); // Tổng số trang
+  const [sortType, setSortType] = useState("");
+
+  const fetchTours = async () => {
+    try {
+      let url = `http://localhost:8000/api/v1/tours/region`;
+      const params = {
+        region,
+        page: currentPage,
+        size: toursPerPage,
+        isAscending: true,
+      };
+
+      switch (sortType) {
+        case "startDateNew": // Mới nhất
+          params.isAscending = false; // Ngày giảm dần
+          break;
+
+        case "priceDesc": // Giá cao nhất
+          url = `http://localhost:8000/api/v1/tours/region-order-by-price`;
+          params.isAscending = false;
+          break;
+
+        case "priceAsc": // Giá thấp nhất
+          url = `http://localhost:8000/api/v1/tours/region-order-by-price`;
+          params.isAscending = true;
+          break;
+        case "departureDateAsc": // Khởi hành sớm nhất
+          url = `http://localhost:8000/api/v1/tours/region-order-by-departure-date`;
+          params.isAscending = true;
+          break;
+        case "departureDateDesc": // Khởi hành muộn nhất
+          url = `http://localhost:8000/api/v1/tours/region-order-by-departure-date`;
+          params.isAscending = false;
+          break;
+        default:
+          // Nếu không có sortType, giữ nguyên URL và params mặc định
+          break;
+      }
+
+      const response = await axios.get(url, { params });
+      setTourList(response.data.content); // Lưu danh sách tour
+      setTotalPages(response.data?.totalPages || 0); // Tổng số trang
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   useEffect(() => {
-    const fetchToursByRegion = async () => {
-      try {
-        const response = await axios.get(
-          `http://localhost:8000/api/v1/tours/region`,
-          {
-            params: {
-              region,
-              page: currentPage,
-              size: toursPerPage,
-            },
-          }
-        );
-
-        // Lưu danh sách tour và tổng số trang từ response
-        setTourList(response.data.content); // Vì API trả trực tiếp danh sách tour trong response
-        // Ví dụ: response.data là mảng các tour, không phải object chứa 'tours'
-
-        // Cập nhật tổng số trang, nếu có
-        setTotalPages(response.data?.totalPages); // Sửa lại logic theo cách bạn cần
-      } catch (error) {
-        console.error("Lỗi khi lấy dữ liệu:", error);
-      }
-    };
-    fetchToursByRegion();
-  }, [region, currentPage, toursPerPage]);
+    fetchTours();
+  }, [region, currentPage, toursPerPage, sortType]);
   console.log("List Tour:", tourList);
 
   //Animation text
@@ -302,23 +325,38 @@ function ListTour() {
         <hr className="border-3 border-gray-500 w-full mb-4" />
 
         <div className="bg-white container mx-auto px-8  w-3/4 py-6 flex justify-around text-center text-sm text-gray-700">
-          <div className={"flex flex-col items-center justify-center"}>
+          <div
+            className={"flex flex-col items-center justify-center"}
+            onClick={() => setSortType("startDateNew")}
+          >
             <img src={news} alt="Logo" className="w-[32px] h-auto" />
             <div>Mới nhất</div>
           </div>
-          <div className={"flex flex-col items-center justify-center"}>
+          <div
+            className={"flex flex-col items-center justify-center"}
+            onClick={() => setSortType("priceDesc")}
+          >
             <img src={arrows} alt="Logo" className="w-[32px] h-auto" />
             <div>Giá cao nhất</div>
           </div>
-          <div className={"flex flex-col items-center justify-center"}>
+          <div
+            className={"flex flex-col items-center justify-center"}
+            onClick={() => setSortType("priceAsc")}
+          >
             <img src={arrows} alt="Logo" className="w-[32px] h-auto" />
             <div>Giá thấp nhất</div>
           </div>
-          <div className={"flex flex-col items-center justify-center"}>
+          <div
+            className={"flex flex-col items-center justify-center"}
+            onClick={() => setSortType("departureDateAsc")}
+          >
             <img src={early} alt="Logo" className="w-[32px] h-auto" />
             <div>Khởi hành sớm nhất</div>
           </div>
-          <div className={"flex flex-col items-center justify-center"}>
+          <div
+            className={"flex flex-col items-center justify-center"}
+            onClick={() => setSortType("departureDateDesc")}
+          >
             <img src={history} alt="Logo" className="w-[32px] h-auto" />
             <div>Khởi hành muộn nhất</div>
           </div>
@@ -339,7 +377,7 @@ function ListTour() {
           <div className="flex flex-wrap justify-center space-x-4 p-4">
             {tourList.map((tour, index) => (
               <button
-                key={tour.tourId || index}
+                key={tour.tourId ? tour.tourId : `${index}`}
                 onClick={() => handleNavigateDetailTour(tour)}
                 className="mb-8"
               >

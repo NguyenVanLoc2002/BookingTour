@@ -65,7 +65,7 @@ function TongQuan({ tour }) {
   return (
     <>
       <div className="w-full h-full flex flex-col">
-        <body className="bg-gray-100">
+        <div className="bg-gray-100">
           <div className="w-full mx-auto p-4 bg-white shadow-md">
             <div className="flex justify-around mb-6">
               <img
@@ -213,7 +213,7 @@ function TongQuan({ tour }) {
               </div>
             </div>
           </div>
-        </body>
+        </div>
       </div>
     </>
   );
