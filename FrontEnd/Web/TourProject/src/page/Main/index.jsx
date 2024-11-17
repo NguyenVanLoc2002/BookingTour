@@ -5,6 +5,7 @@ import Menu from "../../layouts/Menu";
 import bn1 from "/src/assets/banner/h1-slider-img-1-.jpg";
 import bn2 from "/src/assets/banner/h1-slider-img-2-.jpg";
 import haLongImage from "/src/assets/famous-landmark/ha-long_MB.jpg";
+import thacNuocImage from "/src/assets/famous-landmark/thac-nuoc-goi-y.jpg";
 import HoiAnImage from "/src/assets/famous-landmark/HoiAn_MT.jpg";
 import PhuQuocImage from "/src/assets/famous-landmark/PhuQuoc_MN.jpg";
 import BaDenImage from "/src/assets/famous-landmark/Nui-ba-den-Tay-Ninh.jpg";
@@ -12,7 +13,7 @@ import {
   IoIosArrowDropleftCircle,
   IoIosArrowDroprightCircle,
 } from "react-icons/io";
-import { FaBus, FaCar, FaTrain } from "react-icons/fa6";
+import { FaBus, FaCar, FaTrain, FaAngleRight } from "react-icons/fa6";
 import { GiCommercialAirplane, GiShipBow } from "react-icons/gi";
 import { BsCalendar4Week, BsCalendarHeart } from "react-icons/bs";
 import { TiWeatherPartlySunny } from "react-icons/ti";
@@ -133,6 +134,13 @@ function MainLayout() {
     navigate("/detail", { state: { tour } }); // Điều hướng đến trang khác
   };
 
+  const handleNavigatePhuHop = (tours) => {
+    navigate('/listTour', { state: { tours } }); // Điều hướng đến trang khác
+  };
+  const handleNavigateGoiY = (tours) => {
+    navigate('/listTour', { state: { tours } }); // Điều hướng đến trang khác
+  };
+
   //Call API Tour by Region
   const fetchToursByRegion = async (region) => {
     try {
@@ -183,10 +191,405 @@ function MainLayout() {
     return `${day}/${month}/${year}`; // Trả về định dạng "dd/mm/yyyy"
   };
 
+  const [listMienBac, setListMienBac] = useState([
+    {
+      id: 1,
+      urlImage: ["https://res.cloudinary.com/doqbelkif/image/upload/v1731599270/e242afdc-8a8a-439f-b36c-02de8787a06f.png"],
+      price: 6500000,
+      oldPrice: 8500000,
+      name: 'Vịnh Hạ Long-Quảng Ninh',
+      tourFeatureDTO: { transportationMode: "BUS" },
+      ngayKhoiHanh: "05-09-2024",
+      thoiGian: "3 ngày 2 đêm",
+      availableSlot: 25,
+      departureDate: "05-11-2024",
+      thoiTiet: "nang",
+      soLuongVe: 50,
+      soVeDaDat: 32,
+      day: 3,
+      night: 2,
+      noiKhoiHanh: "Hồ Chí Minh",
+      diemThamQuan: "Vịnh Hạ Long-Quảng Ninh-Núi Đá",
+      noiNghiNgoi: "Khách sạn",
+      amThuc: "03 bữa sáng + 03 bữa trưa + 02 bữa tối.",
+      phuongTien: "may bay, xe du lịch",
+      ngayKetThuc: "08-09-2024",
+      noiKetThuc: "Phú Quốc",
+      listAnh: ["https://res.cloudinary.com/doqbelkif/image/upload/v1726605863/968c81c7-7e7b-447c-962c-7f2c62af98c5.png",
+        "https://res.cloudinary.com/doqbelkif/image/upload/v1726605863/968c81c7-7e7b-447c-962c-7f2c62af98c5.png",
+        "https://res.cloudinary.com/doqbelkif/image/upload/v1726605834/fb61f333-e383-44d1-b1d6-7727f04c7ad1.png"],
+      traiNghiem: "Nằm dọc vùng Duyên hải Nam Trung Bộ, Mũi Né là một thị trấn nghỉ dưỡng yên tĩnh, nổi tiếng với những bãi biển tuyệt đẹp, cồn cát rực rỡ và thời tiết nắng ấm quanh năm. Từng là bí mật, giờ đây Mũi Né đã trở thành điểm đến phổ biến cho những người tìm kiếm sự thư giãn, hoạt động ngoài trời và vẻ đẹp tự nhiên.",
+      chuongTrinh: [{
+        title: "Phan Thiết- Nui Tà Cù",
+        detail: " Đến với Bình Thuận Quý khách dừng chân và tham quan:  + NÚI TÀ CÚ: là một địa điểm leo núi, khung cảnh nơi đây hoang sơ, ký vỹ với núi non trùng điệp, thấp thoáng mái chùa có kính ấn sau rừng cây. "
+      },
+      {
+        title: "Khu du lịch Bàu Sen",
+        detail: "  Đoàn dùng bữa trưa tại nhà hàng KDL TA CŨ dưới chân núi. Tại đây, quý khách có thể thu giân thưởng thức món giải khát thanh nhiệt, nổi tiếng Bình Thuận: MỦ TRÔM ĐƯỜNG PHÊN hoặc mua làm quà cho người thân.  "
+      },
+      {
+        title: "Biển Mũi Né",
+        detail: "Quý khách dùng bữa tối. Sau đó tự do nghỉ ngơi hoặc dạo biển đêm Mũi"
+      }
+      ],
+      thongTinTapTrung: {
+        ngay: "05-09-2024",
+        noi: "Sân bay tân sơn nhất, HCM"
+      },
+      thongTinHuongDanVien: {
+        doan: "Bảo Trúc",
+        tien: "Mai"
+      },
+      dieuKien: {
+        baoGom: "Khách sạn: Phòng tiện nghi điều hoà, tivi, nóng lạnh khép kín 02-03 người/phòng.Phương tiện: 01 xe ô tô chỗ du lịch hiện đại, điều hòa, đời mới đưa ",
+        khongBaoGom: "Bữa chính: 03 bữa sáng + 03 bữa trưa + 02 bữa tối.Vé thắng cảnh vào cổng các điểm du lịch theo chương trình.",
+        giaveTreEm: "Mỗi gia đình chỉ có tiêu chuẩn là 1 trẻ em, trẻ em thứ 2 tính như người lớn, tính 100% giá tour.Dưới 05 tuổi: Miễn phí giá tour. Bố Mẹ tự lo ăn, nghỉ, vé thăm quan - nếu có.",
+        huyTour: "+ Quy định hủy đối với ngày lễ, tết - Hủy trước 10 ngày khởi hành hoàn 50% phí tour - Hủy trước 03-09 ngày khởi hành hoàn 25% phí  .",
+        thanhToan: "Quý khách nộp hồ sơ và đặt cọc 50% chi phí dịch vụ và 100% chi phí phát sinh (nếu có) khi đặt chổ."
+      }
+    },
+    {
+      id: 2,
+      urlImage: ["https://res.cloudinary.com/doqbelkif/image/upload/v1731599241/78905ba3-dba0-4abf-9497-1ede46f990a6.png"],
+      price: 6500000,
+      oldPrice: 8500000,
+      name: 'Vịnh Hạ Long-Quảng Ninh',
+      tourFeatureDTO: { transportationMode: "BUS" },
+      ngayKhoiHanh: "05-09-2024",
+      thoiGian: "3 ngày 2 đêm",
+      availableSlot: 25,
+      departureDate: "05-11-2024",
+      thoiTiet: "nang",
+      soLuongVe: 50,
+      soVeDaDat: 32,
+      day: 3,
+      night: 2,
+      noiKhoiHanh: "Hồ Chí Minh",
+      diemThamQuan: "Vịnh Hạ Long-Quảng Ninh-Núi Đá",
+      noiNghiNgoi: "Khách sạn",
+      amThuc: "03 bữa sáng + 03 bữa trưa + 02 bữa tối.",
+      phuongTien: "may bay, xe du lịch",
+      ngayKetThuc: "08-09-2024",
+      noiKetThuc: "Phú Quốc",
+      listAnh: ["https://res.cloudinary.com/doqbelkif/image/upload/v1726605863/968c81c7-7e7b-447c-962c-7f2c62af98c5.png",
+        "https://res.cloudinary.com/doqbelkif/image/upload/v1726605863/968c81c7-7e7b-447c-962c-7f2c62af98c5.png",
+        "https://res.cloudinary.com/doqbelkif/image/upload/v1726605834/fb61f333-e383-44d1-b1d6-7727f04c7ad1.png"],
+      traiNghiem: "Nằm dọc vùng Duyên hải Nam Trung Bộ, Mũi Né là một thị trấn nghỉ dưỡng yên tĩnh, nổi tiếng với những bãi biển tuyệt đẹp, cồn cát rực rỡ và thời tiết nắng ấm quanh năm. Từng là bí mật, giờ đây Mũi Né đã trở thành điểm đến phổ biến cho những người tìm kiếm sự thư giãn, hoạt động ngoài trời và vẻ đẹp tự nhiên.",
+      chuongTrinh: [{
+        title: "Phan Thiết- Nui Tà Cù",
+        detail: " Đến với Bình Thuận Quý khách dừng chân và tham quan:  + NÚI TÀ CÚ: là một địa điểm leo núi, khung cảnh nơi đây hoang sơ, ký vỹ với núi non trùng điệp, thấp thoáng mái chùa có kính ấn sau rừng cây. "
+      },
+      {
+        title: "Khu du lịch Bàu Sen",
+        detail: "  Đoàn dùng bữa trưa tại nhà hàng KDL TA CŨ dưới chân núi. Tại đây, quý khách có thể thu giân thưởng thức món giải khát thanh nhiệt, nổi tiếng Bình Thuận: MỦ TRÔM ĐƯỜNG PHÊN hoặc mua làm quà cho người thân.  "
+      },
+      {
+        title: "Biển Mũi Né",
+        detail: "Quý khách dùng bữa tối. Sau đó tự do nghỉ ngơi hoặc dạo biển đêm Mũi"
+      }
+      ],
+      thongTinTapTrung: {
+        ngay: "05-09-2024",
+        noi: "Sân bay tân sơn nhất, HCM"
+      },
+      thongTinHuongDanVien: {
+        doan: "Bảo Trúc",
+        tien: "Mai"
+      },
+      dieuKien: {
+        baoGom: "Khách sạn: Phòng tiện nghi điều hoà, tivi, nóng lạnh khép kín 02-03 người/phòng.Phương tiện: 01 xe ô tô chỗ du lịch hiện đại, điều hòa, đời mới đưa ",
+        khongBaoGom: "Bữa chính: 03 bữa sáng + 03 bữa trưa + 02 bữa tối.Vé thắng cảnh vào cổng các điểm du lịch theo chương trình.",
+        giaveTreEm: "Mỗi gia đình chỉ có tiêu chuẩn là 1 trẻ em, trẻ em thứ 2 tính như người lớn, tính 100% giá tour.Dưới 05 tuổi: Miễn phí giá tour. Bố Mẹ tự lo ăn, nghỉ, vé thăm quan - nếu có.",
+        huyTour: "+ Quy định hủy đối với ngày lễ, tết - Hủy trước 10 ngày khởi hành hoàn 50% phí tour - Hủy trước 03-09 ngày khởi hành hoàn 25% phí  .",
+        thanhToan: "Quý khách nộp hồ sơ và đặt cọc 50% chi phí dịch vụ và 100% chi phí phát sinh (nếu có) khi đặt chổ."
+      }
+    },
+    {
+      id: 3,
+      urlImage: ["https://res.cloudinary.com/doqbelkif/image/upload/v1726605863/968c81c7-7e7b-447c-962c-7f2c62af98c5.png"],
+      price: 6500000,
+      oldPrice: 8500000,
+      name: 'Vịnh Hạ Long-Quảng Ninh',
+      tourFeatureDTO: { transportationMode: "BUS" },
+      ngayKhoiHanh: "05-09-2024",
+      thoiGian: "3 ngày 2 đêm",
+      availableSlot: 25,
+      departureDate: "05-11-2024",
+      thoiTiet: "nang",
+      soLuongVe: 50,
+      soVeDaDat: 32,
+      day: 3,
+      night: 2,
+      noiKhoiHanh: "Hồ Chí Minh",
+      diemThamQuan: "Vịnh Hạ Long-Quảng Ninh-Núi Đá",
+      noiNghiNgoi: "Khách sạn",
+      amThuc: "03 bữa sáng + 03 bữa trưa + 02 bữa tối.",
+      phuongTien: "may bay, xe du lịch",
+      ngayKetThuc: "08-09-2024",
+      noiKetThuc: "Phú Quốc",
+      listAnh: ["https://res.cloudinary.com/doqbelkif/image/upload/v1726605863/968c81c7-7e7b-447c-962c-7f2c62af98c5.png",
+        "https://res.cloudinary.com/doqbelkif/image/upload/v1726605863/968c81c7-7e7b-447c-962c-7f2c62af98c5.png",
+        "https://res.cloudinary.com/doqbelkif/image/upload/v1726605834/fb61f333-e383-44d1-b1d6-7727f04c7ad1.png"],
+      traiNghiem: "Nằm dọc vùng Duyên hải Nam Trung Bộ, Mũi Né là một thị trấn nghỉ dưỡng yên tĩnh, nổi tiếng với những bãi biển tuyệt đẹp, cồn cát rực rỡ và thời tiết nắng ấm quanh năm. Từng là bí mật, giờ đây Mũi Né đã trở thành điểm đến phổ biến cho những người tìm kiếm sự thư giãn, hoạt động ngoài trời và vẻ đẹp tự nhiên.",
+      chuongTrinh: [{
+        title: "Phan Thiết- Nui Tà Cù",
+        detail: " Đến với Bình Thuận Quý khách dừng chân và tham quan:  + NÚI TÀ CÚ: là một địa điểm leo núi, khung cảnh nơi đây hoang sơ, ký vỹ với núi non trùng điệp, thấp thoáng mái chùa có kính ấn sau rừng cây. "
+      },
+      {
+        title: "Khu du lịch Bàu Sen",
+        detail: "  Đoàn dùng bữa trưa tại nhà hàng KDL TA CŨ dưới chân núi. Tại đây, quý khách có thể thu giân thưởng thức món giải khát thanh nhiệt, nổi tiếng Bình Thuận: MỦ TRÔM ĐƯỜNG PHÊN hoặc mua làm quà cho người thân.  "
+      },
+      {
+        title: "Biển Mũi Né",
+        detail: "Quý khách dùng bữa tối. Sau đó tự do nghỉ ngơi hoặc dạo biển đêm Mũi"
+      }
+      ],
+      thongTinTapTrung: {
+        ngay: "05-09-2024",
+        noi: "Sân bay tân sơn nhất, HCM"
+      },
+      thongTinHuongDanVien: {
+        doan: "Bảo Trúc",
+        tien: "Mai"
+      },
+      dieuKien: {
+        baoGom: "Khách sạn: Phòng tiện nghi điều hoà, tivi, nóng lạnh khép kín 02-03 người/phòng.Phương tiện: 01 xe ô tô chỗ du lịch hiện đại, điều hòa, đời mới đưa ",
+        khongBaoGom: "Bữa chính: 03 bữa sáng + 03 bữa trưa + 02 bữa tối.Vé thắng cảnh vào cổng các điểm du lịch theo chương trình.",
+        giaveTreEm: "Mỗi gia đình chỉ có tiêu chuẩn là 1 trẻ em, trẻ em thứ 2 tính như người lớn, tính 100% giá tour.Dưới 05 tuổi: Miễn phí giá tour. Bố Mẹ tự lo ăn, nghỉ, vé thăm quan - nếu có.",
+        huyTour: "+ Quy định hủy đối với ngày lễ, tết - Hủy trước 10 ngày khởi hành hoàn 50% phí tour - Hủy trước 03-09 ngày khởi hành hoàn 25% phí  .",
+        thanhToan: "Quý khách nộp hồ sơ và đặt cọc 50% chi phí dịch vụ và 100% chi phí phát sinh (nếu có) khi đặt chổ."
+      }
+    },
+    {
+      id: 4,
+      urlImage: ["https://res.cloudinary.com/doqbelkif/image/upload/v1726605863/968c81c7-7e7b-447c-962c-7f2c62af98c5.png"],
+      price: '6500000',
+      oldPrice: '8500000',
+      name: 'Vịnh Hạ Long-Quảng Ninh',
+      tourFeatureDTO: { transportationMode: "BUS" },
+      ngayKhoiHanh: "05-09-2024",
+      thoiGian: "3 ngày 2 đêm",
+      availableSlot: 25,
+      departureDate: "05-11-2024",
+      thoiTiet: "nang",
+      soLuongVe: 50,
+      soVeDaDat: 32,
+      day: 3,
+      night: 2,
+      noiKhoiHanh: "Hồ Chí Minh",
+      diemThamQuan: "Vịnh Hạ Long-Quảng Ninh-Núi Đá",
+      noiNghiNgoi: "Khách sạn",
+      amThuc: "03 bữa sáng + 03 bữa trưa + 02 bữa tối.",
+      phuongTien: "may bay, xe du lịch",
+      ngayKetThuc: "08-09-2024",
+      noiKetThuc: "Phú Quốc",
+      listAnh: ["https://res.cloudinary.com/doqbelkif/image/upload/v1726605863/968c81c7-7e7b-447c-962c-7f2c62af98c5.png",
+        "https://res.cloudinary.com/doqbelkif/image/upload/v1726605863/968c81c7-7e7b-447c-962c-7f2c62af98c5.png",
+        "https://res.cloudinary.com/doqbelkif/image/upload/v1726605834/fb61f333-e383-44d1-b1d6-7727f04c7ad1.png"],
+      traiNghiem: "Nằm dọc vùng Duyên hải Nam Trung Bộ, Mũi Né là một thị trấn nghỉ dưỡng yên tĩnh, nổi tiếng với những bãi biển tuyệt đẹp, cồn cát rực rỡ và thời tiết nắng ấm quanh năm. Từng là bí mật, giờ đây Mũi Né đã trở thành điểm đến phổ biến cho những người tìm kiếm sự thư giãn, hoạt động ngoài trời và vẻ đẹp tự nhiên.",
+      chuongTrinh: [{
+        title: "Phan Thiết- Nui Tà Cù",
+        detail: " Đến với Bình Thuận Quý khách dừng chân và tham quan:  + NÚI TÀ CÚ: là một địa điểm leo núi, khung cảnh nơi đây hoang sơ, ký vỹ với núi non trùng điệp, thấp thoáng mái chùa có kính ấn sau rừng cây. "
+      },
+      {
+        title: "Khu du lịch Bàu Sen",
+        detail: "  Đoàn dùng bữa trưa tại nhà hàng KDL TA CŨ dưới chân núi. Tại đây, quý khách có thể thu giân thưởng thức món giải khát thanh nhiệt, nổi tiếng Bình Thuận: MỦ TRÔM ĐƯỜNG PHÊN hoặc mua làm quà cho người thân.  "
+      },
+      {
+        title: "Biển Mũi Né",
+        detail: "Quý khách dùng bữa tối. Sau đó tự do nghỉ ngơi hoặc dạo biển đêm Mũi"
+      }
+      ],
+      thongTinTapTrung: {
+        ngay: "05-09-2024",
+        noi: "Sân bay tân sơn nhất, HCM"
+      },
+      thongTinHuongDanVien: {
+        doan: "Bảo Trúc",
+        tien: "Mai"
+      },
+      dieuKien: {
+        baoGom: "Khách sạn: Phòng tiện nghi điều hoà, tivi, nóng lạnh khép kín 02-03 người/phòng.Phương tiện: 01 xe ô tô chỗ du lịch hiện đại, điều hòa, đời mới đưa ",
+        khongBaoGom: "Bữa chính: 03 bữa sáng + 03 bữa trưa + 02 bữa tối.Vé thắng cảnh vào cổng các điểm du lịch theo chương trình.",
+        giaveTreEm: "Mỗi gia đình chỉ có tiêu chuẩn là 1 trẻ em, trẻ em thứ 2 tính như người lớn, tính 100% giá tour.Dưới 05 tuổi: Miễn phí giá tour. Bố Mẹ tự lo ăn, nghỉ, vé thăm quan - nếu có.",
+        huyTour: "+ Quy định hủy đối với ngày lễ, tết - Hủy trước 10 ngày khởi hành hoàn 50% phí tour - Hủy trước 03-09 ngày khởi hành hoàn 25% phí  .",
+        thanhToan: "Quý khách nộp hồ sơ và đặt cọc 50% chi phí dịch vụ và 100% chi phí phát sinh (nếu có) khi đặt chổ."
+      }
+    },
+    {
+      id: 5,
+      urlImage: ["https://res.cloudinary.com/doqbelkif/image/upload/v1726605863/968c81c7-7e7b-447c-962c-7f2c62af98c5.png"],
+      price: '6500000',
+      oldPrice: '8500000',
+      name: 'Vịnh Hạ Long-Quảng Ninh',
+      tourFeatureDTO: { transportationMode: "BUS" },
+      ngayKhoiHanh: "05-09-2024",
+      thoiGian: "3 ngày 2 đêm",
+      availableSlot: 25,
+      departureDate: "05-11-2024",
+      thoiTiet: "nang",
+      soLuongVe: 50,
+      soVeDaDat: 32,
+      day: 3,
+      night: 2,
+      noiKhoiHanh: "Hồ Chí Minh",
+      diemThamQuan: "Vịnh Hạ Long-Quảng Ninh-Núi Đá",
+      noiNghiNgoi: "Khách sạn",
+      amThuc: "03 bữa sáng + 03 bữa trưa + 02 bữa tối.",
+      phuongTien: "may bay, xe du lịch",
+      ngayKetThuc: "08-09-2024",
+      noiKetThuc: "Phú Quốc",
+      listAnh: ["https://res.cloudinary.com/doqbelkif/image/upload/v1726605863/968c81c7-7e7b-447c-962c-7f2c62af98c5.png",
+        "https://res.cloudinary.com/doqbelkif/image/upload/v1726605863/968c81c7-7e7b-447c-962c-7f2c62af98c5.png",
+        "https://res.cloudinary.com/doqbelkif/image/upload/v1726605834/fb61f333-e383-44d1-b1d6-7727f04c7ad1.png"],
+      traiNghiem: "Nằm dọc vùng Duyên hải Nam Trung Bộ, Mũi Né là một thị trấn nghỉ dưỡng yên tĩnh, nổi tiếng với những bãi biển tuyệt đẹp, cồn cát rực rỡ và thời tiết nắng ấm quanh năm. Từng là bí mật, giờ đây Mũi Né đã trở thành điểm đến phổ biến cho những người tìm kiếm sự thư giãn, hoạt động ngoài trời và vẻ đẹp tự nhiên.",
+      chuongTrinh: [{
+        title: "Phan Thiết- Nui Tà Cù",
+        detail: " Đến với Bình Thuận Quý khách dừng chân và tham quan:  + NÚI TÀ CÚ: là một địa điểm leo núi, khung cảnh nơi đây hoang sơ, ký vỹ với núi non trùng điệp, thấp thoáng mái chùa có kính ấn sau rừng cây. "
+      },
+      {
+        title: "Khu du lịch Bàu Sen",
+        detail: "  Đoàn dùng bữa trưa tại nhà hàng KDL TA CŨ dưới chân núi. Tại đây, quý khách có thể thu giân thưởng thức món giải khát thanh nhiệt, nổi tiếng Bình Thuận: MỦ TRÔM ĐƯỜNG PHÊN hoặc mua làm quà cho người thân.  "
+      },
+      {
+        title: "Biển Mũi Né",
+        detail: "Quý khách dùng bữa tối. Sau đó tự do nghỉ ngơi hoặc dạo biển đêm Mũi"
+      }
+      ],
+      thongTinTapTrung: {
+        ngay: "05-09-2024",
+        noi: "Sân bay tân sơn nhất, HCM"
+      },
+      thongTinHuongDanVien: {
+        doan: "Bảo Trúc",
+        tien: "Mai"
+      },
+      dieuKien: {
+        baoGom: "Khách sạn: Phòng tiện nghi điều hoà, tivi, nóng lạnh khép kín 02-03 người/phòng.Phương tiện: 01 xe ô tô chỗ du lịch hiện đại, điều hòa, đời mới đưa ",
+        khongBaoGom: "Bữa chính: 03 bữa sáng + 03 bữa trưa + 02 bữa tối.Vé thắng cảnh vào cổng các điểm du lịch theo chương trình.",
+        giaveTreEm: "Mỗi gia đình chỉ có tiêu chuẩn là 1 trẻ em, trẻ em thứ 2 tính như người lớn, tính 100% giá tour.Dưới 05 tuổi: Miễn phí giá tour. Bố Mẹ tự lo ăn, nghỉ, vé thăm quan - nếu có.",
+        huyTour: "+ Quy định hủy đối với ngày lễ, tết - Hủy trước 10 ngày khởi hành hoàn 50% phí tour - Hủy trước 03-09 ngày khởi hành hoàn 25% phí  .",
+        thanhToan: "Quý khách nộp hồ sơ và đặt cọc 50% chi phí dịch vụ và 100% chi phí phát sinh (nếu có) khi đặt chổ."
+      }
+    },
+    {
+      id: 6,
+      urlImage: ["https://res.cloudinary.com/doqbelkif/image/upload/v1726605863/968c81c7-7e7b-447c-962c-7f2c62af98c5.png"],
+      price: '6500000',
+      oldPrice: '8500000',
+      name: 'Vịnh Hạ Long-Quảng Ninh',
+      tourFeatureDTO: { transportationMode: "BUS" },
+      ngayKhoiHanh: "05-09-2024",
+      thoiGian: "3 ngày 2 đêm",
+      availableSlot: 25,
+      departureDate: "05-11-2024",
+      thoiTiet: "nang",
+      soLuongVe: 50,
+      soVeDaDat: 32,
+      day: 3,
+      night: 2,
+      noiKhoiHanh: "Hồ Chí Minh",
+      diemThamQuan: "Vịnh Hạ Long-Quảng Ninh-Núi Đá",
+      noiNghiNgoi: "Khách sạn",
+      amThuc: "03 bữa sáng + 03 bữa trưa + 02 bữa tối.",
+      phuongTien: "may bay, xe du lịch",
+      ngayKetThuc: "08-09-2024",
+      noiKetThuc: "Phú Quốc",
+      listAnh: ["https://res.cloudinary.com/doqbelkif/image/upload/v1726605863/968c81c7-7e7b-447c-962c-7f2c62af98c5.png",
+        "https://res.cloudinary.com/doqbelkif/image/upload/v1726605863/968c81c7-7e7b-447c-962c-7f2c62af98c5.png",
+        "https://res.cloudinary.com/doqbelkif/image/upload/v1726605834/fb61f333-e383-44d1-b1d6-7727f04c7ad1.png"],
+      traiNghiem: "Nằm dọc vùng Duyên hải Nam Trung Bộ, Mũi Né là một thị trấn nghỉ dưỡng yên tĩnh, nổi tiếng với những bãi biển tuyệt đẹp, cồn cát rực rỡ và thời tiết nắng ấm quanh năm. Từng là bí mật, giờ đây Mũi Né đã trở thành điểm đến phổ biến cho những người tìm kiếm sự thư giãn, hoạt động ngoài trời và vẻ đẹp tự nhiên.",
+      chuongTrinh: [{
+        title: "Phan Thiết- Nui Tà Cù",
+        detail: " Đến với Bình Thuận Quý khách dừng chân và tham quan:  + NÚI TÀ CÚ: là một địa điểm leo núi, khung cảnh nơi đây hoang sơ, ký vỹ với núi non trùng điệp, thấp thoáng mái chùa có kính ấn sau rừng cây. "
+      },
+      {
+        title: "Khu du lịch Bàu Sen",
+        detail: "  Đoàn dùng bữa trưa tại nhà hàng KDL TA CŨ dưới chân núi. Tại đây, quý khách có thể thu giân thưởng thức món giải khát thanh nhiệt, nổi tiếng Bình Thuận: MỦ TRÔM ĐƯỜNG PHÊN hoặc mua làm quà cho người thân.  "
+      },
+      {
+        title: "Biển Mũi Né",
+        detail: "Quý khách dùng bữa tối. Sau đó tự do nghỉ ngơi hoặc dạo biển đêm Mũi"
+      }
+      ],
+      thongTinTapTrung: {
+        ngay: "05-09-2024",
+        noi: "Sân bay tân sơn nhất, HCM"
+      },
+      thongTinHuongDanVien: {
+        doan: "Bảo Trúc",
+        tien: "Mai"
+      },
+      dieuKien: {
+        baoGom: "Khách sạn: Phòng tiện nghi điều hoà, tivi, nóng lạnh khép kín 02-03 người/phòng.Phương tiện: 01 xe ô tô chỗ du lịch hiện đại, điều hòa, đời mới đưa ",
+        khongBaoGom: "Bữa chính: 03 bữa sáng + 03 bữa trưa + 02 bữa tối.Vé thắng cảnh vào cổng các điểm du lịch theo chương trình.",
+        giaveTreEm: "Mỗi gia đình chỉ có tiêu chuẩn là 1 trẻ em, trẻ em thứ 2 tính như người lớn, tính 100% giá tour.Dưới 05 tuổi: Miễn phí giá tour. Bố Mẹ tự lo ăn, nghỉ, vé thăm quan - nếu có.",
+        huyTour: "+ Quy định hủy đối với ngày lễ, tết - Hủy trước 10 ngày khởi hành hoàn 50% phí tour - Hủy trước 03-09 ngày khởi hành hoàn 25% phí  .",
+        thanhToan: "Quý khách nộp hồ sơ và đặt cọc 50% chi phí dịch vụ và 100% chi phí phát sinh (nếu có) khi đặt chổ."
+      }
+    },
+    {
+      id: 7,
+      urlImage: ["https://res.cloudinary.com/doqbelkif/image/upload/v1726605863/968c81c7-7e7b-447c-962c-7f2c62af98c5.png"],
+      price: '6500000',
+      oldPrice: '8500000',
+      name: 'Vịnh Hạ Long-Quảng Ninh',
+      tourFeatureDTO: { transportationMode: "BUS" },
+      ngayKhoiHanh: "05-09-2024",
+      thoiGian: "3 ngày 2 đêm",
+      availableSlot: 25,
+      departureDate: "05-11-2024",
+      thoiTiet: "nang",
+      soLuongVe: 50,
+      soVeDaDat: 32,
+      day: 3,
+      night: 2,
+      noiKhoiHanh: "Hồ Chí Minh",
+      diemThamQuan: "Vịnh Hạ Long-Quảng Ninh-Núi Đá",
+      noiNghiNgoi: "Khách sạn",
+      amThuc: "03 bữa sáng + 03 bữa trưa + 02 bữa tối.",
+      phuongTien: "may bay, xe du lịch",
+      ngayKetThuc: "08-09-2024",
+      noiKetThuc: "Phú Quốc",
+      listAnh: ["https://res.cloudinary.com/doqbelkif/image/upload/v1726605863/968c81c7-7e7b-447c-962c-7f2c62af98c5.png",
+        "https://res.cloudinary.com/doqbelkif/image/upload/v1726605863/968c81c7-7e7b-447c-962c-7f2c62af98c5.png",
+        "https://res.cloudinary.com/doqbelkif/image/upload/v1726605834/fb61f333-e383-44d1-b1d6-7727f04c7ad1.png"],
+      traiNghiem: "Nằm dọc vùng Duyên hải Nam Trung Bộ, Mũi Né là một thị trấn nghỉ dưỡng yên tĩnh, nổi tiếng với những bãi biển tuyệt đẹp, cồn cát rực rỡ và thời tiết nắng ấm quanh năm. Từng là bí mật, giờ đây Mũi Né đã trở thành điểm đến phổ biến cho những người tìm kiếm sự thư giãn, hoạt động ngoài trời và vẻ đẹp tự nhiên.",
+      chuongTrinh: [{
+        title: "Phan Thiết- Nui Tà Cù",
+        detail: " Đến với Bình Thuận Quý khách dừng chân và tham quan:  + NÚI TÀ CÚ: là một địa điểm leo núi, khung cảnh nơi đây hoang sơ, ký vỹ với núi non trùng điệp, thấp thoáng mái chùa có kính ấn sau rừng cây. "
+      },
+      {
+        title: "Khu du lịch Bàu Sen",
+        detail: "  Đoàn dùng bữa trưa tại nhà hàng KDL TA CŨ dưới chân núi. Tại đây, quý khách có thể thu giân thưởng thức món giải khát thanh nhiệt, nổi tiếng Bình Thuận: MỦ TRÔM ĐƯỜNG PHÊN hoặc mua làm quà cho người thân.  "
+      },
+      {
+        title: "Biển Mũi Né",
+        detail: "Quý khách dùng bữa tối. Sau đó tự do nghỉ ngơi hoặc dạo biển đêm Mũi"
+      }
+      ],
+      thongTinTapTrung: {
+        ngay: "05-09-2024",
+        noi: "Sân bay tân sơn nhất, HCM"
+      },
+      thongTinHuongDanVien: {
+        doan: "Bảo Trúc",
+        tien: "Mai"
+      },
+      dieuKien: {
+        baoGom: "Khách sạn: Phòng tiện nghi điều hoà, tivi, nóng lạnh khép kín 02-03 người/phòng.Phương tiện: 01 xe ô tô chỗ du lịch hiện đại, điều hòa, đời mới đưa ",
+        khongBaoGom: "Bữa chính: 03 bữa sáng + 03 bữa trưa + 02 bữa tối.Vé thắng cảnh vào cổng các điểm du lịch theo chương trình.",
+        giaveTreEm: "Mỗi gia đình chỉ có tiêu chuẩn là 1 trẻ em, trẻ em thứ 2 tính như người lớn, tính 100% giá tour.Dưới 05 tuổi: Miễn phí giá tour. Bố Mẹ tự lo ăn, nghỉ, vé thăm quan - nếu có.",
+        huyTour: "+ Quy định hủy đối với ngày lễ, tết - Hủy trước 10 ngày khởi hành hoàn 50% phí tour - Hủy trước 03-09 ngày khởi hành hoàn 25% phí  .",
+        thanhToan: "Quý khách nộp hồ sơ và đặt cọc 50% chi phí dịch vụ và 100% chi phí phát sinh (nếu có) khi đặt chổ."
+      }
+    },
+  ]);
+
   //Tour Card By Region
   const TourCard = ({ tour }) => {
     return (
-      <div className="flex flex-col justify-between font-sriracha w-80 h-80 shadow-2xl shadow-gray-500/50 rounded-lg group overflow-hidden">
+      <div className="bg-white flex flex-col justify-between font-sriracha w-80 h-80 shadow-2xl shadow-gray-500/50 rounded-lg group overflow-hidden">
         <img
           src={tour.urlImage[0]}
           alt={tour.name}
@@ -293,13 +696,52 @@ function MainLayout() {
             Trọn vẹn kì nghỉ
           </p>
         </div>
-
         {/* Tour 4 miền */}
         <div className="flex flex-col justify-center items-center space-y-5 mt-5">
+          {/*  list phù hợp */}
+          <div className="bg-[#a0e9e5] rounded-2xl ">
+            <div className="flex justify-between items-center space-x-6  ">
+              <h2 className=" text-2xl font-sriracha font-bold pl-4 text-[#2c7a7b]">Tour phù hợp với bạn</h2>
+              <button onClick={() => { handleNavigatePhuHop(listMienBac); }} className="pl-4 pr-4 p-2 bg-[#2c7a7b] bg-opacity-65 rounded-bl-2xl rounded-tr-2xl text-xl font-bold flex justify-center items-center text-[#e0fffa]">Xem tất cả  <FaAngleRight /></button>
+            </div>
+            <div className="flex flex-wrap justify-center space-x-4 p-4 ">
+              {listMienBac.slice(0, 4).map((tour, index) => (
+                <button
+                  key={tour.id || index}
+                  onClick={() => {
+                    handleNavigate(tour);
+                  }}
+                >
+                  <TourCard tour={tour} />
+                </button>
+              ))}
+            </div>
+          </div>
+          {/*  list gợi ý */}
+          <div className="bg-[#a0e8c5] rounded-2xl  ">
+            <div className="flex justify-between items-center space-x-6  ">
+              <h2 className=" text-2xl font-sriracha font-bold pl-4 text-[#00a86b]">Tour dành cho bạn</h2>
+              <button
+                onClick={() => { handleNavigateGoiY(listMienBac); }}
+                className="pl-4 pr-4 p-2 bg-[#00a86b]  rounded-bl-2xl rounded-tr-2xl text-xl font-bold flex justify-center items-center text-[#f5f5dc]">Xem tất cả  <FaAngleRight /></button>
+            </div>
+            <div className="flex flex-wrap justify-center space-x-4 p-4 ">
+              {listMienBac.slice(0, 4).map((tour, index) => (
+                <button
+                  key={tour.id || index}
+                  onClick={() => {
+                    handleNavigate(tour);
+                  }}
+                >
+                  <TourCard tour={tour} />
+                </button>
+              ))}
+            </div>
+          </div>
           {/* MB */}
           <div className="flex items-center space-x-6 mt-3 mb-3">
             <div
-              ref={(el) => (elementRefs.current[0] = el)}
+              ref={(el) => (elementRefs.current[4] = el)}
               data-direction="left"
               className="group overflow-hidden relative w-72 h-72 rounded-full "
             >
