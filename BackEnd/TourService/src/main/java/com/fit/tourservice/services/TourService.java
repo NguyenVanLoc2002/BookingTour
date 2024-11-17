@@ -144,7 +144,7 @@ public class TourService {
 
     public Mono<Page<TourDTO>> getTourByRegion(Region region, int offset, int size, boolean isAscending) {
         // Lấy tổng số phần tử trước
-        Mono<Long> totalCount = tourFeatureRepository.countToursByRegionAndStartDateAfter(region);
+        Mono<Long> totalCount = tourFeatureRepository.countToursByRegionAndDepartureDateAfter(region);
 
         // Lấy các TourFeature với trang hiện tại
         Flux<TourFeature> tourFeatures = isAscending
@@ -202,16 +202,14 @@ public class TourService {
     }
 
 
-
-
     public Mono<Page<TourDTO>> findToursByRegionOrderByPrice(Region region, int offset, int size, boolean isAscending) {
         // Lấy tổng số phần tử trước
-        Mono<Long> totalCount = tourFeatureRepository.countToursByRegionAndStartDateAfter(region);
+        Mono<Long> totalCount = tourFeatureRepository.countToursByRegionAndDepartureDateAfter(region);
 
         // Chọn query theo thứ tự sắp xếp
         Flux<TourFeature> tourFeatures = isAscending
-                ? tourFeatureRepository.findAllByRegionAndStartDateAfterOrderByPriceAsc(region, size, offset)
-                : tourFeatureRepository.findAllByRegionAndStartDateAfterOrderByPriceDesc(region, size, offset);
+                ? tourFeatureRepository.findAllByRegionAndDepartureDateAfterOrderByPriceAsc(region, size, offset)
+                : tourFeatureRepository.findAllByRegionAndDepartureDateAfterOrderByPriceDesc(region, size, offset);
         return totalCount.flatMap(count ->
                 tourFeatures.flatMap(tourFeature ->
                                 tourRepository.findById(tourFeature.getTourId())
@@ -251,5 +249,61 @@ public class TourService {
         );
     }
 
+
+    public Mono<Page<TourDTO>> findToursByRegionOrderByDepartureDate(Region region, int offset, int size, boolean isAscending) {
+        // Lấy tổng số phần tử trước
+        Mono<Long> totalCount = tourFeatureRepository.countToursByRegionAndDepartureDateAfter(region);
+
+        // Chọn query theo thứ tự sắp xếp
+        Flux<Tour> tours = isAscending
+                ? tourRepository.findToursWithEarliestDepartureByRegion(region, size, offset)
+                : tourRepository.findToursWithLatestDepartureByRegion(region, size, offset);
+
+        return totalCount.flatMap(count ->
+                        tours.flatMap(tour ->
+                                        tourFeatureRepository.findById(tour.getTourId())
+                                                .flatMap(tourFeature ->
+                                                        tourTicketRepository.findClosestTourTicketByTourId(tour.getTourId())
+                                                                .map(TourTicketDTO::convertToDTO)
+                                                                .defaultIfEmpty(new TourTicketDTO())
+                                                                .map(closestTicket -> {
+                                                                    TourDTO tourDTO = TourDTO.convertToDTO(tour);
+                                                                    tourDTO.setTourFeatureDTO(TourFeatureDTO.convertToDTO(tourFeature));
+                                                                    tourDTO.setDepartureDate(closestTicket.getDepartureDate());
+                                                                    tourDTO.setAvailableSlot(closestTicket.getAvailableSlot());
+                                                                    return tourDTO;
+                                                                })
+                                                )
+                                )
+                                .collectList()
+                                .map(tourList -> {
+                                    // Sắp xếp lại nếu cần thiết
+                                    tourList.forEach(tourDTO -> {
+                                        log.info("TourDTO Departure Date: " + tourDTO.getDepartureDate());
+                                    });
+
+                                    if (isAscending) {
+                                        tourList.sort(Comparator.comparing(TourDTO::getDepartureDate));
+                                    } else {
+                                        tourList.sort(Comparator.comparing(TourDTO::getDepartureDate).reversed());
+                                    }
+
+                                    tourList.forEach(tourDTO -> {
+                                        log.info("Sorted TourDTO Departure Date: " + tourDTO.getDepartureDate());
+                                    });
+
+                                    // Tính tổng số trang
+                                    int totalPages = (int) Math.ceil((double) count / size);
+
+                                    // Trả về PageImpl
+                                    return new PageImpl<TourDTO>(tourList, PageRequest.of(offset / size, size), count) {
+                                        @Override
+                                        public int getTotalPages() {
+                                            return totalPages;
+                                        }
+                                    };
+                                })
+        );
+    }
 
 }
