@@ -3,9 +3,18 @@ import axios from "axios";
 import Header from "../../layouts/Header";
 import Menu from "../../layouts/Menu";
 import Footer from "../../layouts/Footer";
-
+import ModalSetCriteria from "../../components/ModalSetCriteria";
 function Account() {
   // gioi tinh 1: nu, 2 nam
+  const customer = {
+    name: "Bao Truc",
+    url: "https://res.cloudinary.com/doqbelkif/image/upload/v1727453521/e015a22e-fa11-4f2c-86bf-322445d957ea.png",
+    gioiTinh: 1,
+    ngaySinh: "06/05/2002",
+    email: "baotruc123@gmail.com",
+    phone: "0338030541",
+    city: "Hồ Chí Minh",
+  };
   const user = {
     name: "Bao Truc",
     url: "https://res.cloudinary.com/doqbelkif/image/upload/v1727453521/e015a22e-fa11-4f2c-86bf-322445d957ea.png",
@@ -17,13 +26,19 @@ function Account() {
   };
 
   const [loading, setLoading] = useState(true);
-  const [customer, setCustomer] = useState(null);
+  // const [customer, setCustomer] = useState(null);
   const [isDisabled, setIsDisabled] = useState(true);
   const [gioiTinh, setGioiTinh] = useState(false);
   const [day, setDay] = useState("");
   const [month, setMonth] = useState("");
   const [year, setYear] = useState("");
-
+  // Modal
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const showModal = () => {
+    setIsModalVisible(true);
+    console.log("hihi show modal")
+  }
+  const handleClose = () => setIsModalVisible(false);
   const token = localStorage.getItem("token"); // Lấy token từ localStorage
 
   const handleChinhSua = () => {
@@ -49,80 +64,86 @@ function Account() {
     : 31;
   const days = Array.from({ length: daysInMonth }, (_, i) => i + 1);
 
-  useEffect(() => {
-    const fetchCustomer = async () => {
-      if (!token) {
-        console.error("No token found");
-        setLoading(false);
-        return;
-      }
+  // useEffect(() => {
+  //   const fetchCustomer = async () => {
+  //     if (!token) {
+  //       console.error("No token found");
+  //       setLoading(false);
+  //       return;
+  //     }
 
-      try {
-        const response = await axios.get(
-          "http://localhost:8000/api/v1/customers/by-email",
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
+  //     try {
+  //       const response = await axios.get(
+  //         "http://localhost:8000/api/v1/customers/by-email",
+  //         {
+  //           headers: {
+  //             Authorization: `Bearer ${token}`,
+  //           },
+  //         }
+  //       );
 
-        setCustomer(response.data);
-        console.log("customer: ", response.data);
-        setGioiTinh(response.data.gender);
+  //       setCustomer(response.data);
+  //       console.log("customer: ", response.data);
+  //       setGioiTinh(response.data.gender);
 
-        const dateParts = response.data.dateOfBirth.split("-");
-        if (dateParts.length === 3) {
-          setYear(dateParts[0]); // Lấy năm
-          setMonth(dateParts[1]); // Lấy tháng
-          setDay(dateParts[2]); // Lấy ngày
-        }
-      } catch (error) {
-        console.error("Error fetching customer data:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
+  //       const dateParts = response.data.dateOfBirth.split("-");
+  //       if (dateParts.length === 3) {
+  //         setYear(dateParts[0]); // Lấy năm
+  //         setMonth(dateParts[1]); // Lấy tháng
+  //         setDay(dateParts[2]); // Lấy ngày
+  //       }
+  //     } catch (error) {
+  //       console.error("Error fetching customer data:", error);
+  //     } finally {
+  //       setLoading(false);
+  //     }
+  //   };
 
-    fetchCustomer();
-  }, [token]);
+  //   fetchCustomer();
+  // }, [token]);
 
-  const handleSave = async () => {
-    const updatedCustomer = {
-      name: customer.name,
-      gender: gioiTinh,
-      dateOfBirth: `${day}/${month}/${year}`,
-      // Add other fields as needed
-    };
+  // const handleSave = async () => {
+  //   const updatedCustomer = {
+  //     name: customer.name,
+  //     gender: gioiTinh,
+  //     dateOfBirth: `${day}/${month}/${year}`,
+  //     // Add other fields as needed
+  //   };
 
-    try {
-      await axios.put(
-        "http://localhost:8000/api/v1/customers/update",
-        updatedCustomer,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-      alert("Information updated successfully!");
-      setIsDisabled(true);
-    } catch (error) {
-      console.error("Error updating customer data:", error);
-      alert("Failed to update information. Please try again.");
-    }
-  };
+  //   try {
+  //     await axios.put(
+  //       "http://localhost:8000/api/v1/customers/update",
+  //       updatedCustomer,
+  //       {
+  //         headers: {
+  //           Authorization: `Bearer ${token}`,
+  //         },
+  //       }
+  //     );
+  //     alert("Information updated successfully!");
+  //     setIsDisabled(true);
+  //   } catch (error) {
+  //     console.error("Error updating customer data:", error);
+  //     alert("Failed to update information. Please try again.");
+  //   }
+  // };
 
-  if (loading) {
-    return <p>Loading...</p>; // Hiển thị thông báo khi đang tải
-  }
+  // if (loading) {
+  //   return <p>Loading...</p>; // Hiển thị thông báo khi đang tải
+  // }
+
+
+
+
 
   return (
     <>
       <div className="w-full h-full flex flex-col bg-slate-200">
         <Header />
         <Menu />
+
         <div className="flex mt-4 container mx-auto">
+
           <div className="w-1/4 bg-white p-4 shadow rounded-lg">
             <div className="flex items-center space-x-4">
               <img
@@ -147,9 +168,14 @@ function Account() {
               <a className="flex items-center space-x-2 text-blue-600" href="#">
                 <span>Hoàn tiền</span>
               </a>
+              <button onClick={() => { showModal() }} className="flex items-center space-x-2 text-blue-600">
+                <span>Thiết lập tiêu chí</span>
+              </button>
             </div>
           </div>
+
           <div className="w-3/4 bg-white p-4 shadow ml-4 rounded-lg">
+          
             <h2 className="text-2xl font-bold">Tài khoản và bảo mật</h2>
             <div className="mt-4">
               <div className="flex space-x-4 border-b">
@@ -187,12 +213,17 @@ function Account() {
                       disabled={isDisabled}
                     />
                   </div>
+                  <div className="z-500 ">
+              <ModalSetCriteria
+                visible={isModalVisible}
+                onClose={handleClose}
+              /></div>
                   <div className="flex space-x-4 mb-4">
                     <div className="flex-1">
                       <label className="block text-gray-700 text-sm font-medium mb-2">
                         Giới tính
                       </label>
-                      <div className="relative">
+                      <div className="z-30">
                         <select
                           disabled={isDisabled}
                           name="gioiTinh"

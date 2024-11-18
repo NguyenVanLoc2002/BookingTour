@@ -1,5 +1,4 @@
 #!/bin/bash
-
 # Kiểm tra biến môi trường RUN_ACTION_SERVER
 if [ "$RUN_ACTION_SERVER" = "true" ]; then
   echo "Running Action Server..."
