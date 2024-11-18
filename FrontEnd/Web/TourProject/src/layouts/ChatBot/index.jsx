@@ -77,7 +77,7 @@ const ChatBot = () => {
 
       <Modal
         title={<div className="text-xl font-bold">ChatBot</div>}
-        visible={isModalVisible}
+        open={isModalVisible}
         onCancel={handleClose}
         footer={null}
         width={450}

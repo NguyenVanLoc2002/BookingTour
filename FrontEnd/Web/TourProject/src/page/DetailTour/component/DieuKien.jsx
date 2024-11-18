@@ -14,15 +14,15 @@ function DieuKien() {
   return (
     <>
 
-      <div class=" border  mb-4 rounded-lg border-textColorCustom w-2/3 text-base">
-        <h2 class="font-bold p-4">
+      <div className=" border  mb-4 rounded-lg border-textColorCustom w-2/3 text-base">
+        <h2 className="font-bold p-4">
           Điều kiện tour
         </h2>
-        <hr class="border-3 border-textColorCustom w-full mb-4" />
-        <ul class="list-disc list-inside p-4">
-          <li class="pb-5">
+        <hr className="border-3 border-textColorCustom w-full mb-4" />
+        <ul className="list-disc list-inside p-4">
+          <li className="pb-5">
             <strong>Tour bao gồm:</strong>
-            <ul class="list-none pl-5 space-y-1">
+            <ul className="list-none pl-5 space-y-1">
               <li>- Khách sạn: Phòng tiện nghi điều hoà, tivi, nóng lạnh khép kín 02-03 người/phòng.</li>
               <li>- 01 xe ô tô chỗ du lịch hiện đại, điều hòa, đời mới đưa đón theo chương trình</li>
               <li>- Bữa chính: 03 bữa sáng + 03 bữa trưa + 02 bữa tối theo chương trình.</li>
@@ -33,9 +33,9 @@ function DieuKien() {
               <li>- Thuốc, Y tế phục vụ theo tour.</li>
             </ul>
           </li>
-          <li class="pb-5">
+          <li className="pb-5">
             <strong>Tour không bao gồm:</strong>
-            <ul class="list-none pl-5 space-y-1">
+            <ul className="list-none pl-5 space-y-1">
               <li>- Chi phí ngủ phòng đơn và các chi phí cá nhân ngoài chương trình.</li>
               <li>- Vé vận trượt, vào vườn thanh long, xe địa hình.</li>
               <li>- Phí chênh lệch vé tham quan theo chiều cao của trẻ em tại các khu du lịch.</li>
@@ -43,9 +43,9 @@ function DieuKien() {
             </ul>
           </li>
 
-          <li class="pb-5">
+          <li className="pb-5">
             <strong>Lưu ý:</strong>
-            <ul class="list-none pl-5 space-y-1">
+            <ul className="list-none pl-5 space-y-1">
               <li>- Mỗi gia đình chỉ có tiêu chuẩn là 1 trẻ em, trẻ em thứ 2 tính như người lớn, tính 100% giá tour.</li>
               <li>- Dưới 05 tuổi: Miễn phí giá tour. Bố mẹ tự lo ăn, nghỉ, vé thăm quan - nếu có.</li>
               <li>- Từ 05 - 10 tuổi: Tính 50% giá trọn gói: 01 suất ăn, vé thăm quan, bảo hiểm du lịch, 01 chỗ ngồi trên xe. Ngủ với cha mẹ.</li>
@@ -53,9 +53,9 @@ function DieuKien() {
               <li>- Từ 10 tuổi trở lên: Vui lòng thanh toán như người lớn.</li>
             </ul>
           </li>
-          <li class="pb-5">
+          <li className="pb-5">
             <strong>Quy định hủy tour:</strong>
-            <ul class="list-none pl-5 space-y-1">
+            <ul className="list-none pl-5 space-y-1">
               <li><strong>+ Quy định hủy đối với ngày lễ, tết</strong></li>
               <li>- Hủy trước 10 ngày khởi hành hoàn 50% phí tour</li>
               <li>- Hủy trước 03-09 ngày khởi hành hoàn 25% phí tour</li>

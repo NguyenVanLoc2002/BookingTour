@@ -46,7 +46,7 @@ function DetailTour() {
       <div className="w-full h-full flex flex-col">
         <Header />
         <Menu />
-        <body className="bg-gray-100">
+        <div className="bg-gray-100">
           <div className="w-full mx-auto p-4 bg-white shadow-md">
             <div className="flex justify-between items-center">
               <div>
@@ -130,7 +130,7 @@ function DetailTour() {
               </div>
             )}
           </div>
-        </body>
+        </div>
         {/* Footer */}
         <Footer />
       </div>

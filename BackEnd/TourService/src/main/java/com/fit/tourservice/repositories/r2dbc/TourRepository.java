@@ -60,11 +60,55 @@ public interface TourRepository extends ReactiveCrudRepository<Tour, Long> {
     Flux<Tour> findToursByTypeTour(@Param("typeTour") int typeTour);
 
 
-    @Query("SELECT * FROM tours T " +
+    @Query("SELECT T.* " +
+            "FROM tours T " +
             "JOIN tour_feature TF ON T.tour_id = TF.tour_id " +
-            "WHERE TF.end_date >= CURRENT_DATE " +
-            "AND T.available_slot > 0"
-    )
+            "JOIN tour_tickets TT ON T.tour_id = TT.tour_id " +
+            "WHERE TF.start_date >= CURRENT_DATE " +
+            "AND TT.departure_date >= CURRENT_DATE " +
+            "AND TT.available_slot > 0 " +
+            "GROUP BY T.tour_id " +
+            "HAVING MIN(TT.departure_date) >= CURRENT_DATE")
     Flux<Tour> findAvailableTours();
+
+
+    @Query("""
+       SELECT t.*
+       FROM tours t
+       JOIN (
+           SELECT tour_id, MAX(departure_date) AS latestDepartureDate, available_slot
+           FROM tour_tickets
+           WHERE departure_date > CURRENT_DATE
+                 AND available_slot > 0
+           GROUP BY tour_id
+       ) tt ON t.tour_id = tt.tour_id
+       JOIN tour_feature tf ON t.tour_id = tf.tour_id
+       WHERE tf.region = :region
+       ORDER BY tt.latestDepartureDate DESC
+       LIMIT :limit OFFSET :offset
+       """)
+    Flux<Tour> findToursWithLatestDepartureByRegion(@Param("region") Region region,
+                                                    @Param("limit") int limit,
+                                                    @Param("offset") int offset);
+
+
+    @Query("""
+       SELECT t.*
+       FROM tours t
+       JOIN (
+           SELECT tour_id, MIN(departure_date) AS earliestDepartureDate, available_slot
+           FROM tour_tickets
+           WHERE departure_date > CURRENT_DATE
+                 AND available_slot > 0
+           GROUP BY tour_id
+       ) tt ON t.tour_id = tt.tour_id
+       JOIN tour_feature tf ON t.tour_id = tf.tour_id
+       WHERE tf.region = :region
+       ORDER BY tt.earliestDepartureDate ASC
+       LIMIT :limit OFFSET :offset
+       """)
+    Flux<Tour> findToursWithEarliestDepartureByRegion(@Param("region") Region region,
+                                                      @Param("limit") int limit,
+                                                      @Param("offset") int offset);
 
 }
