@@ -25,8 +25,6 @@ public class Tour {
     private int night;
     //Điểm den
     private String destination;
-    //    Dia diem khoi hanh
-    private String departureLocation;
 //    private int availableSlot;
     private List<String> urlImage;
     private boolean includePromotions;

@@ -74,7 +74,7 @@ public class TourController {
         int offset = (page - 1) * size;  // offset = (page - 1) * size
 
         // Gọi service để lấy danh sách tour
-        return tourService.getTourByRegion(region, offset, size,isAscending)
+        return tourService.getTourByRegion(region, offset, size, isAscending)
                 .map(pageData -> {
                     if (pageData.getContent().isEmpty()) {
                         return ResponseEntity.notFound().build(); // Trả về 404 nếu không tìm thấy tour
@@ -104,7 +104,7 @@ public class TourController {
         int offset = (page - 1) * size;  // offset = (page - 1) * size
 
         // Gọi service để lấy danh sách tour
-        return tourService.findToursByRegionOrderByPrice(region, offset, size,isAscending)
+        return tourService.findToursByRegionOrderByPrice(region, offset, size, isAscending)
                 .map(pageData -> {
                     if (pageData.getContent().isEmpty()) {
                         return ResponseEntity.notFound().build(); // Trả về 404 nếu không tìm thấy tour
@@ -134,7 +134,7 @@ public class TourController {
         int offset = (page - 1) * size;  // offset = (page - 1) * size
 
         // Gọi service để lấy danh sách tour
-        return tourService.findToursByRegionOrderByDepartureDate(region, offset, size,isAscending)
+        return tourService.findToursByRegionOrderByDepartureDate(region, offset, size, isAscending)
                 .map(pageData -> {
                     if (pageData.getContent().isEmpty()) {
                         return ResponseEntity.notFound().build(); // Trả về 404 nếu không tìm thấy tour
@@ -199,11 +199,23 @@ public class TourController {
     }
 
     @PostMapping("/getFilteredTours")
-    public Mono<ResponseEntity<Flux<TourDTO>>> getLstTourByCriteria(@RequestBody TourFilterCriteriaRequest tourFilterCriteriaRequest) {
-        return Mono.just(ResponseEntity.ok(tourService.findToursByCriteria(tourFilterCriteriaRequest)))
-                .onErrorResume(e -> {
-                    log.error("Error fetching tours by criteria: {}", e.getMessage());
-                    return Mono.just(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build());
+    public Mono<ResponseEntity<Map<String, Object>>> getLstTourByCriteria(@RequestBody TourFilterCriteriaRequest tourFilterCriteriaRequest, @RequestParam int page,
+                                                                          @RequestParam int size) {
+        return tourService.findToursByCriteria(tourFilterCriteriaRequest, page, size)
+                .map(pageData -> {
+                    if (pageData.getContent().isEmpty()) {
+                        return ResponseEntity.notFound().build(); // Trả về 404 nếu không tìm thấy tour
+                    }
+
+                    // Tạo response chứa cả thông tin phân trang và danh sách tour
+                    Map<String, Object> response = new HashMap<>();
+                    response.put("content", pageData.getContent());
+                    response.put("totalElements", pageData.getTotalElements());
+                    response.put("totalPages", pageData.getTotalPages());
+                    response.put("size", pageData.getSize());
+                    response.put("number", pageData.getNumber() + 1); // Số trang bắt đầu từ 0 trong PageRequest, nên cần +1
+
+                    return ResponseEntity.ok(response); // Trả về 200 với dữ liệu phân trang
                 });
     }
 

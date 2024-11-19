@@ -35,7 +35,6 @@ public class TourDTO {
         tour.setDay(tourDTO.getDay());
         tour.setNight(tourDTO.getNight());
         tour.setDestination(tourDTO.getDestination());
-        tour.setDepartureLocation(tourDTO.getDepartureLocation());
         tour.setUrlImage(tourDTO.getUrlImage());
         tour.setIncludePromotions(tourDTO.isIncludePromotions());
         return tour;
@@ -50,7 +49,6 @@ public class TourDTO {
         tourDTO.setDay(tour.getDay());
         tourDTO.setNight(tour.getNight());
         tourDTO.setDestination(tour.getDestination());
-        tourDTO.setDepartureLocation(tour.getDepartureLocation());
         tourDTO.setUrlImage(tour.getUrlImage());
         tourDTO.setIncludePromotions(tour.isIncludePromotions());
         return tourDTO;

@@ -4,7 +4,7 @@ import * as Icons from "react-icons/ai";
 import { useNavigate } from "react-router-dom";
 
 function TongQuan({ tour }) {
-  const navigate = useNavigate();
+ 
 
   const IconDisplay = ({ iconName }) => {
     const IconComponent = Icons[iconName]; // Lấy biểu tượng dựa trên tên truyền vào
@@ -18,49 +18,7 @@ function TongQuan({ tour }) {
     );
   };
 
-  //Call API Ticket Tour
-  const [tickets, setTickets] = useState([]);
-  useEffect(() => {
-    const fetchTickets = async () => {
-      if (tour) {
-        try {
-          const response = await axios.get(
-            `http://localhost:8000/api/v1/tours/tour-tickets/by-tour/${tour.tourId}`
-          );
-          setTickets(response.data);
-        } catch (error) {
-          console.error("Error fetching Ticket Tour data:", error);
-        }
-      }
-    };
-    fetchTickets();
-  }, [tour]);
-
-  console.log("Ticket: ", tickets);
-
-  // Hàm định dạng giá tiền
-  const formatCurrency = (amount) => {
-    return amount.toLocaleString("vi-VN", {
-      style: "currency",
-      currency: "VND",
-      minimumFractionDigits: 0, // không hiển thị số thập phân
-      maximumFractionDigits: 0,
-    });
-  };
-
-  const formatDate = (dateString) => {
-    const date = new Date(dateString);
-    const day = String(date.getDate()).padStart(2, "0"); // Lấy ngày và đảm bảo có 2 chữ số
-    const month = String(date.getMonth() + 1).padStart(2, "0"); // Lấy tháng (tháng 0 bắt đầu từ 0)
-    const year = date.getFullYear(); // Lấy năm
-    return `${day}/${month}/${year}`; // Trả về định dạng "dd/mm/yyyy"
-  };
-
-  //Navigate booking
-  const handleChooseTicket = (ticket_tour) => {
-    // Chuyển hướng sang trang /booking và truyền dữ liệu ticket_tour
-    navigate("/booking", { state: { ticket: ticket_tour, tour: tour } });
-  };
+  
 
   return (
     <>
@@ -158,59 +116,6 @@ function TongQuan({ tour }) {
                 phiêu lưu ngoài trời và khám phá văn hóa, đó chính là Mũi Né,
                 một viên ngọc quý của Việt Nam.
               </p>
-            </div>
-            <div className="border pt-4 pb-4 border-textColorCustom rounded-lg">
-              <h2 className="font-bold mb-2 pl-4">Vé trống cho bạn</h2>
-              <hr className="border-3 border-[#3FD0D4] w-full mb-4" />
-              <button className="bg-gray-200 text-gray-700 ml-4 px-4 py-2 rounded mb-4 flex">
-                <IconDisplay iconName="AiOutlineCalendar" />
-                Chọn ngày
-              </button>
-
-              <div className="space-y-4 pl-4">
-                {tickets.map((ticket_tour) => (
-                  <div
-                    className="flex justify-between items-center border p-4 rounded"
-                    key={ticket_tour.ticketId}
-                  >
-                    <div>
-                      <h3 className="font-bold">
-                        Tour ghép - Khởi hành từ {tour.departureLocation}
-                      </h3>
-                      <div className="flex">
-                        <IconDisplay iconName="AiOutlineCalendar" />
-                        <p className="ml-1">
-                          {" "}
-                          Ngày khởi hành: {formatDate(ticket_tour.departureDate)}
-                        </p>
-                      </div>
-                      <div className="flex">
-                        <Icons.AiOutlineUser className="mr-2" size={20} />
-                        <p>
-                          Số chỗ:{" "}
-                          {ticket_tour.availableSlot > 0
-                            ? `Còn ${ticket_tour.availableSlot} chỗ trống`
-                            : "Hết chỗ"}
-                        </p>
-                      </div>
-                      <a className="text-teal-500" href="#">
-                        Xem chi tiết
-                      </a>
-                    </div>
-                    <div className="text-right">
-                      <div className="text-red-500 text-lg font-bold">
-                        {formatCurrency(tour.price)}
-                      </div>
-                      <button
-                        className="bg-teal-500 text-white px-4 py-2 rounded"
-                        onClick={() => handleChooseTicket(ticket_tour)}
-                      >
-                        Chọn vé
-                      </button>
-                    </div>
-                  </div>
-                ))}
-              </div>
             </div>
           </div>
         </div>

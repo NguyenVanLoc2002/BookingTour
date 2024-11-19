@@ -45,3 +45,4 @@ public class MahoutRecommendationService {
                 .collect(Collectors.toList());
     }
 }
+

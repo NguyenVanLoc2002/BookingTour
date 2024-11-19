@@ -12,11 +12,14 @@ class ActionShowNorthernTours(Action):
             tracker: Tracker,
             domain: dict) -> list:
         # Gọi API của TourService để lấy thông tin các tour miền Bắc
-        tour_service_url = "http://api_gateway:8000/api/v1/tours/region?region=NORTH"  # URL của TourService qua API Gateway
+        tour_service_url = "http://api_gateway:8000/api/v1/tours/region?region=NORTH&page=1&size=4&isAscending=false"  # URL của TourService qua API Gateway
         try:
             response = requests.get(tour_service_url)
             response.raise_for_status()
-            tours = response.json()
+            data = response.json()  # Lấy dữ liệu JSON từ phản hồi của API
+
+            # Lấy danh sách các tour từ trường 'content'
+            tours = data.get('content', [])
 
             # Tạo câu trả lời từ dữ liệu tour với trường 'day' thay vì 'days'
             tour_list = [f"{tour['name']}: {tour['day']} ngày, giá {tour['price']} VNĐ." for tour in tours]

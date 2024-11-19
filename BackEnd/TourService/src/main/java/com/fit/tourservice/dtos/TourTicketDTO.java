@@ -16,6 +16,7 @@ public class TourTicketDTO {
     private Long ticketId;
     private Long tourId;
     private LocalDate departureDate;
+    private String departureLocation;
     private int availableSlot;
 
     // Phương thức chuyển đổi từ TourTicket sang TourTicketDTO
@@ -27,6 +28,7 @@ public class TourTicketDTO {
                 tourTicket.getTicketId(),
                 tourTicket.getTourId(),
                 tourTicket.getDepartureDate(),
+                tourTicket.getDepartureLocation(),
                 tourTicket.getAvailableSlot()
         );
     }
@@ -40,6 +42,7 @@ public class TourTicketDTO {
                 tourTicketDTO.getTicketId(),
                 tourTicketDTO.getTourId(),
                 tourTicketDTO.getDepartureDate(),
+                tourTicketDTO.getDepartureLocation(),
                 tourTicketDTO.getAvailableSlot()
         );
     }

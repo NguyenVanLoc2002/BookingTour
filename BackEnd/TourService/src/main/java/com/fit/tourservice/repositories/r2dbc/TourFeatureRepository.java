@@ -73,4 +73,6 @@ public interface TourFeatureRepository extends ReactiveCrudRepository<TourFeatur
             @Param("limit") int limit,
             @Param("offset") int offset
     );
+
+    Flux<TourFeature> findTourFeatureByTourId(Long tourId);
 }

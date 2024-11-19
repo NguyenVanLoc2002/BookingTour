@@ -15,6 +15,9 @@
             <column name="departure_date" type="date">
                 <constraints nullable="false"/>
             </column>
+            <column name="departure_location" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
             <column name="available_slot" type="int">
                 <constraints nullable="false"/>
             </column>
@@ -27,6 +30,8 @@
                                  constraintName="fk_tour_ticket_tour"/>
     </changeSet>
 
-
+    <changeSet id="table-ticket-init" author="NguyenVanLoc2002">
+        <sqlFile path="db/sql/table-ticket-init.sql"/>
+    </changeSet>
 
 </databaseChangeLog>
