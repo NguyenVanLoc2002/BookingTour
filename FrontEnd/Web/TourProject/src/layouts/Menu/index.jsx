@@ -39,6 +39,9 @@ function Menu(name) {
   const handleNavigateBookings = () => {
     navigate('/bookings'); // Điều hướng đến trang khác
   };
+  const handleNavigateRefund= () => {
+    navigate('/refund'); // Điều hướng đến trang khác
+  };
 
   return (
     <div className="w-screen max-w-full h-auto flex flex-col md:flex-row text-black bg-orange text-sm justify-between items-center">
@@ -93,7 +96,7 @@ function Menu(name) {
                 <button onClick={handleNavigateBookings}>ĐẶT CHỔ CỦA TÔI</button>
               </li>
               <li>
-                <a>HOÀN TIỀN</a>
+              <button onClick={handleNavigateRefund}>HOÀN TIỀN</button>
               </li>
 
             </ul>

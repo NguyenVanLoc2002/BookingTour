@@ -7,6 +7,7 @@ import Account from "./page/Account";
 import Booking from "./page/Booking";
 import PaymentPage from "./page/Payment";
 import Bookings from "./page/Bookings";
+import Refund from "./page/Refund";
 function App() {
   return (
     <>
@@ -19,6 +20,7 @@ function App() {
         <Route path="/booking" element={<Booking />} />
         <Route path="/bookings" element={<Bookings />} />
         <Route path="/payment" element={<PaymentPage />} />
+        <Route path="/refund" element={<Refund />} />
       </Routes>
     </>
   );

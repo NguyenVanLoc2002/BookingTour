@@ -3,11 +3,12 @@ import Header from "../../layouts/Header";
 import Menu from "../../layouts/Menu";
 import Footer from "../../layouts/Footer";
 import DetailBooking from "./component/DetailBooking";
+import ModalCancelTour from "./component/ModalCancelTour";
 import { Button, Input, Space, Table, Tag } from "antd";
 import {CheckCircleOutlined, ClockCircleOutlined, CloseCircleOutlined,DeleteOutlined, SyncOutlined, EyeOutlined } from '@ant-design/icons';
 function Bookings() {
   const [tabNameSelect, setTabNameSelect] = useState("ordered");
-  const [textMaDatTour, setTextMaDatTour] = useState("");
+  const [textBookingId, setTextBookingId] = useState("");
   const [textMail, setTextMail] = useState("");
   const [tourData, setTourData] = useState({});
   const columns = [
@@ -84,7 +85,7 @@ function Bookings() {
                 <Button type="primary" icon={<EyeOutlined />} className="mr-2"  onClick={()=>{showModal(record)}}>
                   Xem chi tiết
                 </Button>
-                <Button type="primary" icon={<DeleteOutlined />} danger>
+                <Button type="primary" icon={<DeleteOutlined />} danger  onClick={()=>{showModalCancel(record)}}>
                   Hủy Tour
                 </Button>
               </div>
@@ -365,9 +366,6 @@ function Bookings() {
   const dataCompleted = dataBookings.filter(item => item.status === "completed");
   const dataProcessing = dataBookings.filter(item => item.status === "processing");
   const [isModalVisible, setIsModalVisible] = useState(false);
-
-  
-
   const showModal = (record) => {
     
     setTourData(record);
@@ -375,6 +373,14 @@ function Bookings() {
     
   }
   const handleClose = () => setIsModalVisible(false);
+  const [isModalCancelVisible, setIsModalCancelVisible] = useState(false);
+  const showModalCancel = (record) => {
+    
+    setTourData(record);
+    setIsModalCancelVisible(true);
+    
+  }
+  const handleCloseCancel = () => setIsModalCancelVisible(false);
 
   return (
     <>
@@ -385,6 +391,11 @@ function Bookings() {
           <DetailBooking
             visible={isModalVisible}
             onClose={handleClose}
+            tourData={tourData}
+          />
+          <ModalCancelTour
+            visible={isModalCancelVisible}
+            onClose={handleCloseCancel}
             tourData={tourData}
           />
           <div className="w-full mx-auto p-4 bg-white shadow-md">
@@ -457,8 +468,8 @@ function Bookings() {
 
                   <Input
                     placeholder="Mã đặt tour"
-                    value={textMaDatTour}
-                    onChange={(e) => setTextMaDatTour(e.target.value)}
+                    value={textBookingId}
+                    onChange={(e) => setTextBookingId(e.target.value)}
                     className="rounded-xl h-10 mr-2  text-base" style={{ width: 300 }}
                   />
                   <Input
@@ -468,7 +479,7 @@ function Bookings() {
                     onChange={(e) => setTextMail(e.target.value)}
                     className="rounded-xl h-10 mr-2  text-base required:" style={{ width: 500 }}
                   />
-                  <Button className="rounded-xl h-10 pl-8 pr-8 font-bold mr-2 bg-customColor text-lg ">Tìm kiếm</Button>
+                  <Button type="primary" className="rounded-xl h-10 pl-8 pr-8 font-bold mr-2 bg-customColor text-lg ">Tìm kiếm</Button>
 
 
                 </div>
