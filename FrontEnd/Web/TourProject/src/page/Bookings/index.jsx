@@ -369,6 +369,7 @@ function Bookings() {
   
 
   const showModal = (record) => {
+    
     setTourData(record);
     setIsModalVisible(true);
     
