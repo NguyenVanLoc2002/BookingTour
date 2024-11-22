@@ -19,12 +19,18 @@ public class RouterValidator {
 //            Pattern.compile("/api/v1/auth/get-claims"),
             Pattern.compile("/eureka"),
             //Tour
+            Pattern.compile("/api/v1/tours/getFilteredTours"),
+            Pattern.compile("/api/v1/tours/getToursByIds"),
             Pattern.compile("/api/v1/tours/region"),
+            Pattern.compile("/api/v1/tours/by-name"),
+            Pattern.compile("/api/v1/tours/by-type"),
             Pattern.compile("/api/v1/tours/region-order-by-price"),
             Pattern.compile("/api/v1/tours/region-order-by-departure-date"),
             Pattern.compile("/api/v1/itineraries/by-tour"),
             Pattern.compile("/api/v1/itineraries/activities/by-itinerary"),
             Pattern.compile("/api/v1/tours/tour-tickets/by-tour/.+"),
+            //Recommendation
+            Pattern.compile("/api/v1/recommendation/.*"),
             //Payment
             Pattern.compile("/api/v1/booking/bookTour"),
             Pattern.compile("/api/v1/booking/verify-booking-tour"),

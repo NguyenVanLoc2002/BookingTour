@@ -1,6 +1,7 @@
 package com.fit.recommendationservice.builder;
 
 import com.fit.recommendationservice.dtos.response.CustomerInteractionDTO;
+import com.fit.recommendationservice.dtos.response.TourDTO;
 import com.fit.recommendationservice.enums.InteractionType;
 import com.fit.recommendationservice.repositories.CustomerInteractionRepository;
 import org.apache.mahout.cf.taste.impl.common.FastByIDMap;
@@ -12,6 +13,7 @@ import org.apache.mahout.cf.taste.model.Preference;
 import org.apache.mahout.cf.taste.model.PreferenceArray;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Mono;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -21,27 +23,30 @@ public class MahoutDataModelBuilder {
     @Autowired
     private CustomerInteractionRepository customerInteractionRepository;
 
-    public DataModel buildDataModel() {
-        List<CustomerInteractionDTO> customerInteractionDTOList = customerInteractionRepository.findAll()
-                .map(CustomerInteractionDTO::convertToDTO)
-                .collectList()
-                .block();
+    public Mono<DataModel> buildDataModel() {
+        return customerInteractionRepository.findAll() // Lấy tất cả các tương tác của khách hàng
+                .map(CustomerInteractionDTO::convertToDTO) // Chuyển đổi thành DTO
+                .collectList() // Thu thập thành danh sách
+                .map(customerInteractionDTOList -> {
+                    FastByIDMap<PreferenceArray> userPreferences = new FastByIDMap<>(); // Tạo FastByIDMap để lưu trữ Preferences
 
-        FastByIDMap<PreferenceArray> userPreferences = new FastByIDMap<>();//lưu trữ các ánh xạ giữa các ID và đối tượng PreferenceArray
-        customerInteractionDTOList.stream()
-                .collect(Collectors.groupingBy(CustomerInteractionDTO::getCusId))
-                .forEach((cusId, customerInteractionDTOS) -> {
-                    List<Preference> preferences = customerInteractionDTOS.stream()
-                            .map(i -> new GenericPreference(i.getCusId(), i.getTourId(), calculateScore(i)))
-                            .collect(Collectors.toList());
+                    customerInteractionDTOList.stream()
+                            .collect(Collectors.groupingBy(CustomerInteractionDTO::getCusId))
+                            .forEach((cusId, customerInteractionDTOS) -> {
+                                List<Preference> preferences = customerInteractionDTOS.stream()
+                                        .map(i -> new GenericPreference(i.getCusId(), i.getTourId(), calculateScore(i)))
+                                        .collect(Collectors.toList());
 
-                    PreferenceArray preferenceArray = new GenericUserPreferenceArray(preferences);
-                    userPreferences.put(cusId, preferenceArray);
+                                PreferenceArray preferenceArray = new GenericUserPreferenceArray(preferences);
+                                userPreferences.put(cusId, preferenceArray);
+                            });
+
+                    return new GenericDataModel(userPreferences); // Trả về DataModel sau khi đã xây dựng
                 });
-        return new GenericDataModel(userPreferences);
     }
 
-    private float calculateScore(CustomerInteractionDTO customerInteractionDTO) {
+
+    public float calculateScore(CustomerInteractionDTO customerInteractionDTO) {
         InteractionType interactionType = InteractionType.fromValue(customerInteractionDTO.getInteractionType().getValue());
 
         switch (interactionType) {

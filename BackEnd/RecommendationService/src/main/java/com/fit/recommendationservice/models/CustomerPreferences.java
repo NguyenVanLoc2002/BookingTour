@@ -24,6 +24,7 @@ public class CustomerPreferences {
     private Long cusId;
     private Double price;
     private int maxDuration;
+    private String departureLocation;
     private LocalDate startDate;
     private TypeTour typeTour; // Enum
     private Region region; // Enum

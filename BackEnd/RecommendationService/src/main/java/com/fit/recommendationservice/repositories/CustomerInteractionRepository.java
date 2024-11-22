@@ -7,5 +7,6 @@ import reactor.core.publisher.Flux;
 
 @Repository
 public interface CustomerInteractionRepository  extends ReactiveCrudRepository<CustomerInteraction, String> {
-    Flux<CustomerInteraction> findByCusId(String cusId);
+    Flux<CustomerInteraction> findByCusId(Long cusId);
+    Flux<CustomerInteraction> findByTourId(Long tourId);
 }

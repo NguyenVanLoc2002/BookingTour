@@ -184,7 +184,7 @@ public class EventConsumer {
                     if (tourIds != null && !tourIds.isEmpty()) {
                         log.info("Received valid tourIds: {}", tourIds);
                         // Lọc các tour theo tourId và chuyển đổi thành Flux<TourDTO>
-                        return tourService.findToursByIds(tourIds)
+                            return tourService.findToursByIds(tourIds)
                                 // Xử lý từng TourDTO
                                 .doOnNext(tourDTO -> {
                                     log.info("Found tour: {}", tourDTO);
@@ -252,7 +252,8 @@ public class EventConsumer {
                     }
 
                     // Tìm kiếm tour dựa trên tiêu chí và xử lý kết quả cho từng customerId
-                    return tourService.findToursByCriteria(criteriaRequest)
+                    return tourService.findToursByCriteria(criteriaRequest, 1, 10) // Chọn page và size tùy yêu cầu
+                            .flatMapMany(page -> Flux.fromIterable(page.getContent()))
                             .doOnNext(tour -> {
                                 log.info("Emitting tour for CustomerId {}: {}", customerId, tour);
                                 // Gửi từng tour tới subscribers thông qua sink, có thể tạo sink riêng cho mỗi customerId
