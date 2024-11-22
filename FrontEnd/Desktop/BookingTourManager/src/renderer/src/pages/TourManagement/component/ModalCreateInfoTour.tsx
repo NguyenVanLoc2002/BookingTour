@@ -367,7 +367,7 @@ const ModalCreateInfo: React.FC = () => {
                                 rows={4} />
                         </Form.Item>
                         <Row className='justify-end w-[97%]'>
-                            <Button className='pr-4 pl-4 p-2 bg-[#3fd0d4]' onClick={handleToggle} ><span className='font-bold text-white text-lg'>TIẾP TỤC</span></Button>
+                            <Button type="primary" className='pr-4 pl-4 p-2 bg-[#3fd0d4]' onClick={handleToggle} ><span className='font-bold text-white text-lg'>TIẾP TỤC</span></Button>
                         </Row>
                     </Form>
                 </div>) : (<div className='border border-spacing-1  rounded-xl border-[#3fd0d4] p-4'>
@@ -391,8 +391,8 @@ const ModalCreateInfo: React.FC = () => {
                         </div>
                         <Row className='justify-end w-[97%] m-4'>
 
-                            <Button className='pr-4 pl-4 p-2 mr-5 bg-[#3fd0d4]' onClick={handleToggle} ><span className='font-bold text-white text-lg'>QUAY LẠI</span></Button>
-                            <Button className='pr-4 pl-4 p-2 bg-[#3fd0d4]' onClick={submit} ><span className='font-bold text-white text-lg'>XÁC NHẬN</span></Button>
+                            <Button type="primary" className='pr-4 pl-4 p-2 mr-5 bg-[#3fd0d4]' onClick={handleToggle} ><span className='font-bold text-white text-lg'>QUAY LẠI</span></Button>
+                            <Button type="primary" className='pr-4 pl-4 p-2 bg-[#3fd0d4]' onClick={submit} ><span className='font-bold text-white text-lg'>XÁC NHẬN</span></Button>
                         </Row>
                     </Form>
                 </div>

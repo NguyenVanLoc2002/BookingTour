@@ -1,5 +1,9 @@
 package com.fit.recommendationservice.repositories;
 
+import com.fit.recommendationservice.enums.AccommodationQuality;
+import com.fit.recommendationservice.enums.Region;
+import com.fit.recommendationservice.enums.TransportationMode;
+import com.fit.recommendationservice.enums.TypeTour;
 import com.fit.recommendationservice.models.CustomerPreferences;
 import org.springframework.data.r2dbc.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -18,15 +22,18 @@ public interface CustomerPreferencesRepository extends ReactiveCrudRepository<Cu
     @Query("SELECT max_duration FROM customer_preferences WHERE cus_id = :customerId GROUP BY max_duration ORDER BY start_date DESC LIMIT 1")
     Mono<Integer> findLatestDuration(@Param("customerId") Long customerId);
 
+    @Query("SELECT departure_location FROM customer_preferences WHERE cus_id = :customerId GROUP BY departure_location ORDER BY COUNT(*) DESC LIMIT 1")
+    Mono<String> findPopularDepartureLocation(@Param("customerId") Long customerId);
+
     @Query("SELECT type_tour FROM customer_preferences WHERE cus_id = :customerId GROUP BY type_tour ORDER BY COUNT(*) DESC LIMIT 1")
-    Mono<Integer> findPopularTypeTour(@Param("customerId") Long customerId);
+    Mono<String> findPopularTypeTour(@Param("customerId") Long customerId);
 
     @Query("SELECT region FROM customer_preferences WHERE cus_id = :customerId GROUP BY region ORDER BY COUNT(*) DESC LIMIT 1")
-    Mono<Integer> findPopularRegion(Long customerId);
+    Mono<String> findPopularRegion(Long customerId);
 
     @Query("SELECT accommodation_quality FROM customer_preferences WHERE cus_id = :customerId GROUP BY accommodation_quality ORDER BY COUNT(*) DESC LIMIT 1")
-    Mono<Integer> findPopularAccommodationQuality(Long customerId);
+    Mono<String> findPopularAccommodationQuality(Long customerId);
 
     @Query("SELECT transportation_mode FROM customer_preferences WHERE cus_id = :customerId GROUP BY transportation_mode ORDER BY COUNT(*) DESC LIMIT 1")
-    Mono<Integer> findPopularTransportationMode(Long customerId);
+    Mono<String> findPopularTransportationMode(Long customerId);
 }

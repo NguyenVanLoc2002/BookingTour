@@ -3,27 +3,43 @@ import axios from "axios";
 import Header from "../../layouts/Header";
 import Menu from "../../layouts/Menu";
 import Footer from "../../layouts/Footer";
-
+import ModalSetCriteria from "../../components/ModalSetCriteria";
 function Account() {
   // gioi tinh 1: nu, 2 nam
-  const user = {
-    name: "Bao Truc",
-    url: "https://res.cloudinary.com/doqbelkif/image/upload/v1727453521/e015a22e-fa11-4f2c-86bf-322445d957ea.png",
-    gioiTinh: 1,
-    ngaySinh: "06/05/2002",
-    email: "baotruc123@gmail.com",
-    phone: "0338030541",
-    city: "Hồ Chí Minh",
-  };
+  // const customer = {
+  //   name: "Bao Truc",
+  //   url: "https://res.cloudinary.com/doqbelkif/image/upload/v1727453521/e015a22e-fa11-4f2c-86bf-322445d957ea.png",
+  //   gioiTinh: 1,
+  //   ngaySinh: "06/05/2002",
+  //   email: "baotruc123@gmail.com",
+  //   phone: "0338030541",
+  //   city: "Hồ Chí Minh",
+  // };
+  // const user = {
+  //   name: "Bao Truc",
+  //   url: "https://res.cloudinary.com/doqbelkif/image/upload/v1727453521/e015a22e-fa11-4f2c-86bf-322445d957ea.png",
+  //   gioiTinh: 1,
+  //   ngaySinh: "06/05/2002",
+  //   email: "baotruc123@gmail.com",
+  //   phone: "0338030541",
+  //   city: "Hồ Chí Minh",
+  // };
 
+  const [customer, setCustomer] = useState();
   const [loading, setLoading] = useState(true);
-  const [customer, setCustomer] = useState(null);
+  // const [customer, setCustomer] = useState(null);
   const [isDisabled, setIsDisabled] = useState(true);
   const [gioiTinh, setGioiTinh] = useState(false);
   const [day, setDay] = useState("");
   const [month, setMonth] = useState("");
   const [year, setYear] = useState("");
-
+  // Modal
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const showModal = () => {
+    setIsModalVisible(true);
+    console.log("hihi show modal")
+  }
+  const handleClose = () => setIsModalVisible(false);
   const token = localStorage.getItem("token"); // Lấy token từ localStorage
 
   const handleChinhSua = () => {
@@ -117,17 +133,23 @@ function Account() {
     return <p>Loading...</p>; // Hiển thị thông báo khi đang tải
   }
 
+
+
+
+
   return (
     <>
       <div className="w-full h-full flex flex-col bg-slate-200">
         <Header />
         <Menu />
+
         <div className="flex mt-4 container mx-auto">
+
           <div className="w-1/4 bg-white p-4 shadow rounded-lg">
             <div className="flex items-center space-x-4">
               <img
                 className="h-24 w-24 bg-gray-300 rounded-full flex items-center justify-center text-xl font-bold border border-blue-300"
-                src={user.url}
+                src={customer?.url || "https://res.cloudinary.com/doqbelkif/image/upload/v1727453521/e015a22e-fa11-4f2c-86bf-322445d957ea.png"} alt="User Avatar" 
               />
               <div>
                 <div className="font-bold text-lg">{customer.name}</div>
@@ -147,9 +169,14 @@ function Account() {
               <a className="flex items-center space-x-2 text-blue-600" href="#">
                 <span>Hoàn tiền</span>
               </a>
+              <button onClick={() => { showModal() }} className="flex items-center space-x-2 text-blue-600">
+                <span>Thiết lập tiêu chí</span>
+              </button>
             </div>
           </div>
+
           <div className="w-3/4 bg-white p-4 shadow ml-4 rounded-lg">
+          
             <h2 className="text-2xl font-bold">Tài khoản và bảo mật</h2>
             <div className="mt-4">
               <div className="flex space-x-4 border-b">
@@ -187,12 +214,17 @@ function Account() {
                       disabled={isDisabled}
                     />
                   </div>
+                  <div className="z-500 ">
+              <ModalSetCriteria
+                visible={isModalVisible}
+                onClose={handleClose}
+              /></div>
                   <div className="flex space-x-4 mb-4">
                     <div className="flex-1">
                       <label className="block text-gray-700 text-sm font-medium mb-2">
                         Giới tính
                       </label>
-                      <div className="relative">
+                      <div className="z-30">
                         <select
                           disabled={isDisabled}
                           name="gioiTinh"
@@ -291,7 +323,7 @@ function Account() {
                           : "block appearance-none w-full bg-white border border-textColorCustom text-gray-700 py-2 px-3 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
                       }
                       type="text"
-                      value={user?.city ? user.city : ""}
+                      value={customer?.address ? customer.address : ""}
                     />
                   </div>
                   <div className="flex justify-end space-x-4">
@@ -338,7 +370,7 @@ function Account() {
                   </div>
                   <div className="flex justify-between items-center border-t border-gray-200 pt-4">
                     <div>
-                      <p className="text-gray-800 font-medium">{user?.phone}</p>
+                      <p className="text-gray-800 font-medium">{customer?.phoneNumber}</p>
                       <p className="text-green-600 text-sm">
                         Nơi nhận thông báo
                       </p>

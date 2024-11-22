@@ -21,6 +21,7 @@ function Booking() {
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
+  
   const [diaChi, setDiaChi] = useState("");
   const listTinh = [
     { label: "Hồ Chí Minh", value: "Hồ Chí Minh" },

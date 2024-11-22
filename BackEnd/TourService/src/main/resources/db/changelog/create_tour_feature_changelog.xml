@@ -22,7 +22,7 @@
             <column name="accommodation_quality" type="VARCHAR(50)">
                 <constraints nullable="false"/>
             </column>
-            <column name="transportation_mode" type="TEXT">
+            <column name="transportation_mode" type="VARCHAR(50)">
                 <constraints nullable="false"/>
             </column>
             <column name="start_date" type="DATE">

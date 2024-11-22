@@ -29,6 +29,7 @@ import target from "../../assets/iconTour/target.png";
 import jungle from "../../assets/iconTour/jungle.png";
 import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
+import ModalSetCriteria from "../../components/ModalSetCriteria";
 
 function ListTour() {
   const navigate = useNavigate();
@@ -41,6 +42,13 @@ function ListTour() {
   const [tourList, setTourList] = useState([]); // Danh sách tour
   const [totalPages, setTotalPages] = useState(1); // Tổng số trang
   const [sortType, setSortType] = useState("");
+
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const showModal = () => {
+    setIsModalVisible(true);
+    console.log("hihi show modal")
+  }
+  const handleClose = () => setIsModalVisible(false);
 
   const fetchTours = async () => {
     try {
@@ -360,8 +368,20 @@ function ListTour() {
             <img src={history} alt="Logo" className="w-[32px] h-auto" />
             <div>Khởi hành muộn nhất</div>
           </div>
+          <div
+            className={"flex flex-col items-center justify-center"}
+            onClick={() => showModal()}
+          >
+            <img src={history} alt="Logo" className="w-[32px] h-auto" />
+            <div>Lọc</div>
+          </div>
         </div>
         {/* Tittle */}
+        <div className="">
+          <ModalSetCriteria
+            visible={isModalVisible}
+            onClose={handleClose}
+          /></div>
         <div className="flex flex-col justify-center items-center space-y-5 mt-5">
           <p className="tour-text text-4xl hidden-animation text-textColorCustom font-dancing-script">
             Tour hấp dẫn
@@ -402,11 +422,10 @@ function ListTour() {
               <button
                 key={page}
                 onClick={() => handlePageChange(page)}
-                className={`px-4 py-2 rounded ${
-                  page === currentPage
+                className={`px-4 py-2 rounded ${page === currentPage
                     ? "bg-blue-500 text-white"
                     : "bg-gray-300"
-                }`}
+                  }`}
               >
                 {page}
               </button>

@@ -23,7 +23,7 @@ public class TourFeatureDTO {
     private TypeTour typeTour;
     private Region region;
     private AccommodationQuality accommodationQuality;
-    private List<TransportationMode> transportationMode;
+    private TransportationMode transportationMode;
     private LocalDate startDate;
     private LocalDate endDate;
 

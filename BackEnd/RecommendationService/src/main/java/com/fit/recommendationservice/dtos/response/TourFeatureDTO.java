@@ -1,16 +1,13 @@
-package com.fit.tourservice.models;
+package com.fit.recommendationservice.dtos.response;
 
-import com.fit.tourservice.enums.AccommodationQuality;
-import com.fit.tourservice.enums.Region;
-import com.fit.tourservice.enums.TransportationMode;
-import com.fit.tourservice.enums.TypeTour;
+import com.fit.recommendationservice.enums.AccommodationQuality;
+import com.fit.recommendationservice.enums.Region;
+import com.fit.recommendationservice.enums.TransportationMode;
+import com.fit.recommendationservice.enums.TypeTour;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.relational.core.mapping.Column;
-import org.springframework.data.relational.core.mapping.Table;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -19,9 +16,7 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "tour_feature")
-public class TourFeature {
-    @Id
+public class TourFeatureDTO {
     private Long featureId;
     private Long tourId;
     private TypeTour typeTour;
@@ -31,3 +26,4 @@ public class TourFeature {
     private LocalDate startDate;
     private LocalDate endDate;
 }
+

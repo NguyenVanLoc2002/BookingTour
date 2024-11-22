@@ -6,6 +6,7 @@ import com.fit.tourservice.dtos.TourDTO;
 import com.fit.tourservice.dtos.TourFeatureDTO;
 import com.fit.tourservice.dtos.TourTicketDTO;
 import com.fit.tourservice.enums.Region;
+import com.fit.tourservice.enums.TypeTour;
 import com.fit.tourservice.events.EventProducer;
 import com.fit.tourservice.models.Tour;
 import com.fit.tourservice.models.TourFeature;
@@ -95,8 +96,8 @@ public class TourService {
                 .take(size);
     }
 
-    public Flux<TourDTO> getToursByTypeTour(int type, int page, int size) {
-        return tourRepository.findToursByTypeTour(type)
+    public Flux<TourDTO> getToursByTypeTour(TypeTour type,Region region, int page, int size) {
+        return tourRepository.findToursByTypeTour(type,region)
                 .map(TourDTO::convertToDTO)
                 .skip((long) (page - 1) * size)
                 .take(size);

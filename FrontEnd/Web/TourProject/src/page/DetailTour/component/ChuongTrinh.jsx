@@ -131,7 +131,7 @@ function ChuongTrinh({ tour }) {
             <img
               alt="Beautiful beach"
               className="rounded h-96 w-1/3 object-cover"
-              src={tour.urlImage[index]}
+              src={tour?.urlImage[index]||["C:\BaoTruc\KLTN\KLTN2\BookingTour\FrontEnd\Web\TourProject\src\assets\banner\h1-slider-img-1-.jpg"]}
             />
             <div className="bg-white p-4 rounded-lg shadow-md text-base border border-textColorCustom w-7/12 flex flex-col ">
               <div className="flex items-center mb-10">

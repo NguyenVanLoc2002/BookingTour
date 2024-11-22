@@ -78,8 +78,9 @@ public interface TourRepository extends ReactiveCrudRepository<Tour, Long> {
 
     Flux<Tour> findToursByPriceBetween(Double minPrice, Double maxPrice);
 
-    @Query("SELECT * FROM tours T " + "JOIN tour_feature TF ON T.tour_id = TF.tour_id " + "WHERE TF.type_tour = :typeTour")
-    Flux<Tour> findToursByTypeTour(@Param("typeTour") int typeTour);
+    @Query("SELECT * FROM tours T " + "JOIN tour_feature TF ON T.tour_id = TF.tour_id " + "WHERE TF.type_tour = :typeTour AND TF.region = :region")
+    Flux<Tour> findToursByTypeTour(@Param("typeTour") TypeTour typeTour,
+                                   @Param("region") Region region);
 
 
     @Query("SELECT T.* " + "FROM tours T " + "JOIN tour_feature TF ON T.tour_id = TF.tour_id " + "JOIN tour_tickets TT ON T.tour_id = TT.tour_id " + "WHERE TF.start_date >= CURRENT_DATE " + "AND TT.departure_date >= CURRENT_DATE " + "AND TT.available_slot > 0 " + "GROUP BY T.tour_id " + "HAVING MIN(TT.departure_date) >= CURRENT_DATE")

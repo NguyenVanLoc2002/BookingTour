@@ -184,7 +184,7 @@ public class EventConsumer {
                     if (tourIds != null && !tourIds.isEmpty()) {
                         log.info("Received valid tourIds: {}", tourIds);
                         // Lọc các tour theo tourId và chuyển đổi thành Flux<TourDTO>
-                        return tourService.findToursByIds(tourIds)
+                            return tourService.findToursByIds(tourIds)
                                 // Xử lý từng TourDTO
                                 .doOnNext(tourDTO -> {
                                     log.info("Found tour: {}", tourDTO);
