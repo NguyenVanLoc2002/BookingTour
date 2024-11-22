@@ -18,7 +18,8 @@ import { BsCalendar4Week, BsCalendarHeart } from "react-icons/bs";
 import { TiWeatherPartlySunny } from "react-icons/ti";
 import Footer from "../../layouts/Footer";
 import mountain from "../../assets/iconTour/mountain.png";
-import arrows from "../../assets/iconTour/arrows.png";
+import arrows_top from "../../assets/iconTour/arrows_top.png";
+import arrows_bot from "../../assets/iconTour/arrows_bot.png";
 import buddhist from "../../assets/iconTour/buddhist.png";
 import early from "../../assets/iconTour/early.png";
 import history from "../../assets/iconTour/history.png";
@@ -344,14 +345,14 @@ function ListTour() {
             className={"flex flex-col items-center justify-center"}
             onClick={() => setSortType("priceDesc")}
           >
-            <img src={arrows} alt="Logo" className="w-[32px] h-auto" />
+            <img src={arrows_bot} alt="Logo" className="w-[32px] h-auto" />
             <div>Giá cao nhất</div>
           </div>
           <div
             className={"flex flex-col items-center justify-center"}
             onClick={() => setSortType("priceAsc")}
           >
-            <img src={arrows} alt="Logo" className="w-[32px] h-auto" />
+            <img src={arrows_top} alt="Logo" className="w-[32px] h-auto" />
             <div>Giá thấp nhất</div>
           </div>
           <div
