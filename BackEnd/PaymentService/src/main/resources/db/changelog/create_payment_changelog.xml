@@ -12,6 +12,9 @@
             <column name="booking_id" type="VARCHAR(50)">
                 <constraints nullable="false"/>
             </column>
+            <column name="transaction_id" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
             <column name="discount_id" type="VARCHAR(50)">
                 <constraints nullable="true"/>
             </column>

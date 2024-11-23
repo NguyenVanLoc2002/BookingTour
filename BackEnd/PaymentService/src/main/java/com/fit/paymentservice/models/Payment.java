@@ -21,6 +21,7 @@ public class Payment {
     private String paymentId;
     private String bookingId;
     private String discountId; // Optional, in case discounts apply
+    private String transactionId;
     private double amount;
     private PaymentMethod paymentMethod;
     private PaymentStatus paymentStatus;

@@ -12,6 +12,9 @@
             <column name="payment_id" type="VARCHAR(50)">
                 <constraints nullable="false"/>
             </column>
+            <column name="transaction_id" type="VARCHAR(50)">
+                <constraints nullable="true"/>
+            </column>
             <column name="refund_date" type="DATE">
                 <constraints nullable="false"/>
             </column>

@@ -1,6 +1,5 @@
 package com.fit.tourservice.repositories.r2dbc;
 
-import com.fit.tourservice.dtos.TourDTO;
 import com.fit.tourservice.enums.AccommodationQuality;
 import com.fit.tourservice.enums.Region;
 import com.fit.tourservice.enums.TransportationMode;
@@ -71,16 +70,33 @@ public interface TourRepository extends ReactiveCrudRepository<Tour, Long> {
     Flux<Tour> findByTourIdIn(List<Long> tourIds);
 
 
-    Flux<Tour> findToursByNameContainingIgnoreCase(String name);
+    @Query("SELECT COUNT(*) FROM tours WHERE LOWER(name) LIKE LOWER(CONCAT('%', :name, '%'))")
+    Mono<Long> countToursByNameContainingIgnoreCase(@Param("name") String name);
+
+    @Query("SELECT * FROM tours WHERE LOWER(name) LIKE LOWER(CONCAT('%', :name, '%')) LIMIT :limit OFFSET :offset")
+    Flux<Tour> findToursByNameContainingIgnoreCaseWithPagination(@Param("name") String name, @Param("limit") int limit, @Param("offset") int offset);
+
 
     @Query("SELECT * FROM tours T " + "JOIN tour_feature TF ON T.tour_id = TF.tour_id " + "WHERE TF.start_date >= :startDate AND " + "TF.end_date <= :endDate")
     Flux<Tour> findToursByDayBetween(@Param("startDate") LocalDate startDate, @Param("endDate") LocalDate endDate);
 
     Flux<Tour> findToursByPriceBetween(Double minPrice, Double maxPrice);
 
-    @Query("SELECT * FROM tours T " + "JOIN tour_feature TF ON T.tour_id = TF.tour_id " + "WHERE TF.type_tour = :typeTour AND TF.region = :region")
+    @Query("SELECT * FROM tours T " +
+            "JOIN tour_feature TF ON T.tour_id = TF.tour_id " +
+            "WHERE TF.type_tour = :typeTour AND TF.region = :region " +
+            "LIMIT :limit OFFSET :offset")
     Flux<Tour> findToursByTypeTour(@Param("typeTour") TypeTour typeTour,
-                                   @Param("region") Region region);
+                                   @Param("region") Region region,
+                                   @Param("limit") int limit,
+                                   @Param("offset") int offset);
+
+    @Query("SELECT COUNT(*) FROM tours T " +
+            "JOIN tour_feature TF ON T.tour_id = TF.tour_id " +
+            "WHERE TF.type_tour = :typeTour AND TF.region = :region")
+    Mono<Long> countToursByTypeTour(@Param("typeTour") TypeTour typeTour,
+                                    @Param("region") Region region);
+
 
 
     @Query("SELECT T.* " + "FROM tours T " + "JOIN tour_feature TF ON T.tour_id = TF.tour_id " + "JOIN tour_tickets TT ON T.tour_id = TT.tour_id " + "WHERE TF.start_date >= CURRENT_DATE " + "AND TT.departure_date >= CURRENT_DATE " + "AND TT.available_slot > 0 " + "GROUP BY T.tour_id " + "HAVING MIN(TT.departure_date) >= CURRENT_DATE")

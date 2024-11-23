@@ -8,9 +8,11 @@ import reactor.core.publisher.Mono;
 
 import java.time.LocalDate;
 
-public interface BookingRepository extends ReactiveCrudRepository<Booking, Long> {
+public interface BookingRepository extends ReactiveCrudRepository<Booking, String> {
     @Override
-    Mono<Booking> findById(Long aLong);
+    Mono<Booking> findById(String String);
+
+    Mono<Booking> findBookingByCustomerId(Long customerId);
 
     // Phương thức thêm booking mới
     @Query("INSERT INTO booking (booking_id, tour_id, ticket_id, booking_date, status_booking, total_amount, quantity, adults, children, toddlers, infants, customer_id, email, user_name, phone_number, city, district, ward, address) " +

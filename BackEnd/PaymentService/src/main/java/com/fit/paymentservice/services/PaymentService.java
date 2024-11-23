@@ -33,6 +33,7 @@ public class PaymentService {
         return paymentRepository.insertPayment(
                         paymentId,  // Sử dụng paymentId mới được tạo
                         payment.getBookingId(),
+                        payment.getTransactionId(),
                         payment.getDiscountId(),
                         payment.getAmount(),
                         PaymentMethod.PAYPAL.name(),  // Chuyển đổi PaymentMethod thành String

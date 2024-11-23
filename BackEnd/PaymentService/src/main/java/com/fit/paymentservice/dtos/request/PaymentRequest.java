@@ -15,4 +15,5 @@ public class PaymentRequest {
     private String bookingId;
     private String discountId;
     private double amount;
+    private String transactionId;
 }

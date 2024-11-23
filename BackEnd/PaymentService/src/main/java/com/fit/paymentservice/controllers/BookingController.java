@@ -12,9 +12,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.net.URI;
+import java.util.List;
 
 @RestController
 @RequestMapping("/booking")
@@ -39,7 +41,7 @@ public class BookingController {
                 .flatMap(bookingResponse -> {
                     if (bookingResponse != null && bookingResponse.isAvailable()) {
                         BookingDTO bookingDTO = bookingService.mapBookingResponseToDTO(bookingRequest, bookingResponse);
-                        return bookingService.saveBookingTourFromRedis(bookingDTO)
+                        return redisService.saveBookingTourFromRedis(bookingDTO)
                                 .flatMap(saved -> {
                                     if (saved) {
                                         return bookingService.sendBookingNotification(bookingDTO)
@@ -73,6 +75,13 @@ public class BookingController {
                 .doOnError(throwable -> log.error("Error retrieving booking from Redis: {}", throwable.getMessage()));
     }
 
+    // Endpoint lấy danh sách bookings của customer
+    @GetMapping("/redis/customer/{customerId}")
+    @ResponseStatus(HttpStatus.OK)
+    public Flux<List<BookingDTO>> getBookingsByCustomerId(@PathVariable String customerId) {
+        return redisService.getBookingsByCustomerId(customerId);
+    }
+
     @GetMapping("/verify-booking-tour")
     public Mono<ResponseEntity<Object>> verifyBookingTour(@RequestParam("bookingId") String bookingId, @RequestParam("redirectUrl") String redirectUrl) {
         Claims claims = jwtUtils.extractAllClaims(bookingId);
@@ -81,7 +90,7 @@ public class BookingController {
         return redisService.getDataAsBookingDTO(key) // Phải trả về Mono<BookingDTO>
                 .flatMap(bookingDTO -> {
                     bookingDTO.setStatusBooking(StatusBooking.CONFIRMED);
-                    return redisService.saveData(key, bookingDTO)
+                    return redisService.saveBookingTourFromRedis(bookingDTO)
                             .flatMap(success -> {
                                 if (success) {
                                     // Thêm bookingId vào redirectUrl

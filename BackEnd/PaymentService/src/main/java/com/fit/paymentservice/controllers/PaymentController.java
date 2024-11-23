@@ -2,10 +2,13 @@ package com.fit.paymentservice.controllers;
 
 import com.fit.paymentservice.dtos.PaymentDTO;
 import com.fit.paymentservice.dtos.request.PaymentRequest;
+import com.fit.paymentservice.dtos.response.RefundResponseDTO;
+import com.fit.paymentservice.enums.RefundStatus;
 import com.fit.paymentservice.enums.StatusBooking;
 import com.fit.paymentservice.services.BookingService;
 import com.fit.paymentservice.services.PaymentService;
 import com.fit.paymentservice.services.RedisService;
+import com.fit.paymentservice.services.RefundService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -24,24 +27,20 @@ public class PaymentController {
     private BookingService bookingService;
     @Autowired
     private RedisService redisService;
+    @Autowired
+    private RefundService refundService;
 
-
-//    @PostMapping("/create")
-//    public Mono<RedirectView> makePayment() {
-//        log.info("Making payment request");
-//        return paymentService.createPayment(100.00, Currency.USD, PaymentMethod.PAYPAL, "sale", "Booking Tour Payment",
-//                        "http://localhost:9004/api/v1/payments/cancel",
-//                        "http://localhost:9004/api/v1/payments/success")
-//                .flatMap(payment -> {
-//                    for (Links links : payment.getLinks()) {
-//                        if (links.getRel().equals("approval_url")) {
-//                            return Mono.just(new RedirectView(links.getHref()));
-//                        }
-//                    }
-//                    return Mono.just(new RedirectView("/api/v1/payments/error"));
-//                })
-//                .onErrorReturn(new RedirectView("/api/v1/payments/error")); // Handle errors by redirecting to error page
-//    }
+    @PostMapping("/process-refund")
+    public Mono<ResponseEntity<RefundResponseDTO>> processRefund( @RequestParam String bookingId) {
+        return refundService.processRefund(bookingId)
+                .map(transactionId -> {
+                    RefundResponseDTO response = new RefundResponseDTO();
+                    response.setTransactionId(transactionId);
+                    response.setStatus(RefundStatus.COMPLETED);
+                    return new ResponseEntity<>(response, HttpStatus.OK);
+                })
+                .onErrorResume(error -> Mono.just(new ResponseEntity<>(new RefundResponseDTO(error.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR)));
+    }
 
     @PostMapping("/success")
     public Mono<ResponseEntity<PaymentDTO>> successPayment(@RequestBody PaymentRequest paymentRequest) {
@@ -60,9 +59,5 @@ public class PaymentController {
                     return Mono.just(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null));
                 });
     }
-
-//    @GetMapping("/cancel")
-//    public Mono<String> cancelPayment() {
-//        return Mono.just("Payment canceled");
-//    }
+    
 }
