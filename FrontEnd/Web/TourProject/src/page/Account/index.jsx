@@ -5,27 +5,7 @@ import Menu from "../../layouts/Menu";
 import Footer from "../../layouts/Footer";
 import ModalSetCriteria from "../../components/ModalSetCriteria";
 function Account() {
-  // gioi tinh 1: nu, 2 nam
-  // const customer = {
-  //   name: "Bao Truc",
-  //   url: "https://res.cloudinary.com/doqbelkif/image/upload/v1727453521/e015a22e-fa11-4f2c-86bf-322445d957ea.png",
-  //   gioiTinh: 1,
-  //   ngaySinh: "06/05/2002",
-  //   email: "baotruc123@gmail.com",
-  //   phone: "0338030541",
-  //   city: "Hồ Chí Minh",
-  // };
-  // const user = {
-  //   name: "Bao Truc",
-  //   url: "https://res.cloudinary.com/doqbelkif/image/upload/v1727453521/e015a22e-fa11-4f2c-86bf-322445d957ea.png",
-  //   gioiTinh: 1,
-  //   ngaySinh: "06/05/2002",
-  //   email: "baotruc123@gmail.com",
-  //   phone: "0338030541",
-  //   city: "Hồ Chí Minh",
-  // };
-
-  const [customer, setCustomer] = useState();
+  const [customer, setCustomer] = useState(null);
   const [loading, setLoading] = useState(true);
   // const [customer, setCustomer] = useState(null);
   const [isDisabled, setIsDisabled] = useState(true);
@@ -132,10 +112,6 @@ function Account() {
   if (loading) {
     return <p>Loading...</p>; // Hiển thị thông báo khi đang tải
   }
-
-
-
-
 
   return (
     <>

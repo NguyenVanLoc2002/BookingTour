@@ -11,10 +11,10 @@ import {
   IoIosArrowDropleftCircle,
   IoIosArrowDroprightCircle,
 } from "react-icons/io";
-
+import { FaRegListAlt } from "react-icons/fa";
 import { FaBus, FaCar, FaTrain } from "react-icons/fa6";
 import { GiCommercialAirplane, GiShipBow } from "react-icons/gi";
-import { BsCalendar4Week, BsCalendarHeart } from "react-icons/bs";
+import { BsCalendar4Week, BsCalendarHeart, BsGrid3X3Gap } from "react-icons/bs";
 import { TiWeatherPartlySunny } from "react-icons/ti";
 import Footer from "../../layouts/Footer";
 import mountain from "../../assets/iconTour/mountain.png";
@@ -23,22 +23,22 @@ import arrows_bot from "../../assets/iconTour/arrows_bot.png";
 import buddhist from "../../assets/iconTour/buddhist.png";
 import early from "../../assets/iconTour/early.png";
 import history from "../../assets/iconTour/history.png";
-import filter from "../../assets/iconTour/filter.png";
 import news from "../../assets/iconTour/new.png";
-import resort from "../../assets/iconTour/resort.png";
+import filter from "../../assets/iconTour/filter.png";
 import river from "../../assets/iconTour/river.png";
 import target from "../../assets/iconTour/target.png";
 import jungle from "../../assets/iconTour/jungle.png";
 import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
 import ModalSetCriteria from "../../components/ModalSetCriteria";
+import { Button } from "antd";
 
 function ListTour() {
   const navigate = useNavigate();
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
-  const region = queryParams.get("region");
-
+  // const region = queryParams.get("region");
+  const [showList, setShowList] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const [toursPerPage, setToursPerPage] = useState(12);
   const [tourList, setTourList] = useState([]); // Danh sách tour
@@ -56,7 +56,7 @@ function ListTour() {
     try {
       let url = `http://localhost:8000/api/v1/tours/region`;
       const params = {
-        region,
+        region: 'NORTH',
         page: currentPage,
         size: toursPerPage,
         isAscending: true,
@@ -99,7 +99,7 @@ function ListTour() {
 
   useEffect(() => {
     fetchTours();
-  }, [region, currentPage, toursPerPage, sortType]);
+  }, [currentPage, toursPerPage, sortType]);
   console.log("List Tour:", tourList);
 
   //Animation text
@@ -191,13 +191,79 @@ function ListTour() {
   };
 
   //Tour Card By Region
-  const TourCard = ({ tour }) => {
+  const TourCardList = ({ tour }) => {
     return (
-      <div className="flex flex-col justify-between font-sriracha w-80 h-80 shadow-2xl shadow-gray-500/50 rounded-lg group overflow-hidden">
+      <div className="flex flex-row justify-between font-sriracha  shadow-2xl shadow-gray-500/50 rounded-lg group overflow-hidden">
         <img
-          src={tour.urlImage?.[0] || "default-image-url.jpg"}
+          src={tour.urlImage?.[0] || "https://res.cloudinary.com/doqbelkif/image/upload/v1726605769/9ae475e5-ab3e-4762-acd8-82a7a6e05086.png"}
           alt={tour.name}
-          className="h-44 rounded-t-lg object-cover transform transition-transform duration-1000 ease-in-out group-hover:scale-105"
+          className="h-[300px] w-[35%] object-cover transform transition-transform duration-1000 ease-in-out group-hover:scale-105"
+        />
+        <div className="flex flex-col justify-between w-[40%] pt-4">
+          <p className="text-black font-bold text-xl pb-[100px]">{tour.name}</p>
+
+          <div className="pb-[25px] ">
+            <div className="flex flex-row pb-3">
+              <div className="pr-4">
+                {tour?.tourFeatureDTO?.transportationMode.includes("AIRPLANE") && (
+                  <GiCommercialAirplane size={20} />
+                )}
+                {tour?.tourFeatureDTO?.transportationMode.includes("BUS") && (
+                  <FaBus size={20} />
+                )}
+                {tour?.tourFeatureDTO?.transportationMode.includes("TRAIN") && (
+                  <FaTrain size={20} />
+                )}
+                {tour?.tourFeatureDTO?.transportationMode.includes(
+                  "PRIVATE_CAR"
+                ) && <FaCar size={20} />}
+
+              </div>
+              <TiWeatherPartlySunny size={20} className="mr-2" />
+            </div>
+            <div className="flex space-x-2 pb-3 items-center">
+              <BsCalendarHeart />
+              <p>
+                Thời gian: {tour.day} ngày {tour.night} đêm
+              </p>
+            </div>
+            <div className="flex ml-1 justify-between items-center text-sm">
+              {/* Số chỗ trống di chuyển sát lề phải */}
+              <p className="text-sm text-green-600 mr-2">
+                {tour.availableSlot > 0
+                  ? `Còn ${tour.availableSlot} chỗ trống`
+                  : "Hết chỗ"}
+              </p>
+            </div>
+          </div>
+        </div>
+        <div className="flex flex-col  items-end pr-6 w-[20%] pt-4">
+          <div className="flex space-x-2 items-center pb-[100px]">
+            <BsCalendar4Week />
+            <p>Khởi hành: {formatDate(tour.departureDate)}</p>
+          </div>
+          <div className="pb-[50px]">
+            <p className="text-gray-400 text-sm ml-1 line-through self-start text-end">
+              {formatCurrency(tour.oldPrice || 10000000)}
+            </p>
+            <p className="text-xl text-red-500">{formatCurrency(tour.price)}</p>
+          </div>
+          <Button type="primary" className="rounded-xl  h-10 pl-8 pr-8 font-bold mr-2 bg-customColor text-lg ">Xem tour {'>'}</Button>
+
+
+        </div>
+
+
+      </div>
+    );
+  };
+  const TourCardGrid = ({ tour }) => {
+    return (
+      <div className="flex flex-col justify-between font-sriracha w-[370px] h-[370px] shadow-2xl shadow-gray-500/50 rounded-lg group overflow-hidden">
+        <img
+          src={tour.urlImage?.[0] || "https://res.cloudinary.com/doqbelkif/image/upload/v1726605769/9ae475e5-ab3e-4762-acd8-82a7a6e05086.png"}
+          alt={tour.name}
+          className="h-52 rounded-t-lg object-cover transform transition-transform duration-1000 ease-in-out group-hover:scale-105"
         />
         <p className="text-black font-bold m-1 mt-2 text-xl">{tour.name}</p>
         <div className="flex ml-1 justify-between">
@@ -290,159 +356,140 @@ function ListTour() {
       <div className="w-full h-full flex flex-col">
         <Header />
         <Menu name="Tour" />
-        <div className="w-full p-8 px-4 py-4 flex items-center justify-between">
-          <div className="text-xl pl-[40px] font-bold">MIỀN TÂY</div>
-          <div className="text-gray-600 pr-[40px]">
-            Khám phá Miền Tây sông nước – Vùng đất yên bình với những trải
-            nghiệm văn hóa, ẩm thực và thiên nhiên độc đáo.
-          </div>
-        </div>
-        <div className="relative w-full pl-[50px] pr-[50px] mx-auto">
-          <img
-            alt="Aerial view of a coastal area with cable cars and boats"
-            className="w-full  h-[600px] object-cover "
-            src="https://res.cloudinary.com/doqbelkif/image/upload/v1726605769/9ae475e5-ab3e-4762-acd8-82a7a6e05086.png"
-          />
-        </div>
-
-        <div className="bg-white container mx-auto px-8  w-3/4 py-6 flex justify-around text-center text-sm text-gray-700">
-          <div className={"flex flex-col items-center justify-around"}>
-            <img src={mountain} alt="Logo" className="w-[32px] h-auto" />
-            <div>Tour mạo hiểm</div>
-          </div>
-          <div className={"flex flex-col items-center justify-center"}>
-            <img src={river} alt="Logo" className="w-[32px] h-auto" />
-
-            <div>Tour tham quan</div>
-          </div>
-          <div className={"flex flex-col items-center justify-center"}>
-            <img src={buddhist} alt="Logo" className="w-[32px] h-auto" />
-            <div>Tour văn hóa</div>
-          </div>
-          <div className={"flex flex-col items-center justify-center"}>
-            <img src={jungle} alt="Logo" className="w-[32px] h-auto" />
-            <div>Tour sinh thái</div>
-          </div>
-          <div className={"flex flex-col items-center justify-center"}>
-            <img src={resort} alt="Logo" className="w-[32px] h-auto" />
-            <div>Tour nghỉ dưỡng</div>
-          </div>
-          <div className={"flex flex-col items-center justify-center"}>
-            <img src={target} alt="Logo" className="w-[32px] h-auto" />
-            <div>Tour team building</div>
-          </div>
-        </div>
-        <hr className="border-3 border-gray-500 w-full mb-4" />
-
-        <div className="bg-white container mx-auto px-8  w-3/4 py-6 flex justify-around text-center text-sm text-gray-700">
-          <div
-            className={"flex flex-col items-center justify-center"}
-            onClick={() => setSortType("startDateNew")}
-          >
-            <img src={news} alt="Logo" className="w-[32px] h-auto" />
-            <div>Mới nhất</div>
-          </div>
-          <div
-            className={"flex flex-col items-center justify-center"}
-            onClick={() => setSortType("priceDesc")}
-          >
-            <img src={arrows_bot} alt="Logo" className="w-[32px] h-auto" />
-            <div>Giá cao nhất</div>
-          </div>
-          <div
-            className={"flex flex-col items-center justify-center"}
-            onClick={() => setSortType("priceAsc")}
-          >
-            <img src={arrows_top} alt="Logo" className="w-[32px] h-auto" />
-            <div>Giá thấp nhất</div>
-          </div>
-          <div
-            className={"flex flex-col items-center justify-center"}
-            onClick={() => setSortType("departureDateAsc")}
-          >
-            <img src={early} alt="Logo" className="w-[32px] h-auto" />
-            <div>Khởi hành sớm nhất</div>
-          </div>
-          <div
-            className={"flex flex-col items-center justify-center"}
-            onClick={() => setSortType("departureDateDesc")}
-          >
-            <img src={history} alt="Logo" className="w-[32px] h-auto" />
-            <div>Khởi hành muộn nhất</div>
-          </div>
-          <div
-            className={"flex flex-col items-center justify-center"}
-            onClick={() => showModal()}
-          >
-            <img src={filter} alt="Logo" className="w-[32px] h-auto" />
-            <div>Lọc</div>
-          </div>
-        </div>
-        {/* Tittle */}
         <div className="">
           <ModalSetCriteria
             visible={isModalVisible}
             onClose={handleClose}
           /></div>
-        <div className="flex flex-col justify-center items-center space-y-5 mt-5">
-          <p className="tour-text text-4xl hidden-animation text-textColorCustom font-dancing-script">
-            Tour hấp dẫn
-          </p>
-          <p className="holiday-text text-6xl hidden-animation text-black font-bold font-sriracha">
-            Trọn vẹn kì nghỉ
-          </p>
-        </div>
-
-        {/* Tour ĐẶC BIỆT */}
-        <div className="flex flex-col justify-center items-center space-y-5 mt-5">
-          {/* Danh sách tour */}
-          <div className="flex flex-wrap justify-center space-x-4 p-4">
-            {tourList.map((tour, index) => (
-              <button
-                key={tour.tourId ? tour.tourId : `${index}`}
-                onClick={() => handleNavigateDetailTour(tour)}
-                className="mb-8"
-              >
-                <TourCard tour={tour} />
-              </button>
-            ))}
-          </div>
-
-          {/* Nút phân trang */}
-          <div className="flex justify-center space-x-4 mt-4">
-            {/* Nút trang đầu */}
-            <button
-              onClick={handleFirstPage}
-              disabled={currentPage === 1}
-              className="px-4 py-2 bg-gray-300 rounded disabled:opacity-50"
+        <div className="flex flex-row justify-around">
+          <div className="w-[20%] h-[400px] flex flex-col bg-slate-100 rounded-2xl p-4">
+            <div
+              className={"flex flex-row items-center "}
+              onClick={() => setSortType("startDateNew")}
             >
-              Trang đầu
-            </button>
-
-            {/* Hiển thị các số trang */}
-            {pageNumbers().map((page) => (
+              <img src={news} alt="Logo" className="w-[32px]  h-auto m-2 mr-4" />
+              <div>Mới nhất</div>
+            </div>
+            <div
+              className={"flex flex-row items-center "}
+              onClick={() => setSortType("priceDesc")}
+            >
+              <img src={arrows_bot} alt="Logo" className="w-[32px]  h-auto m-2 mr-4" />
+              <div>Giá cao nhất</div>
+            </div>
+            <div
+              className={"flex flex-row items-center "}
+              onClick={() => setSortType("priceAsc")}
+            >
+              <img src={arrows_top} alt="Logo" className="w-[32px]  h-auto m-2 mr-4" />
+              <div>Giá thấp nhất</div>
+            </div>
+            <div
+              className={"flex flex-row items-center "}
+              onClick={() => setSortType("departureDateAsc")}
+            >
+              <img src={early} alt="Logo" className="w-[32px]  h-auto m-2 mr-4" />
+              <div>Khởi hành sớm nhất</div>
+            </div>
+            <div
+              className={"flex flex-row items-center "}
+              onClick={() => setSortType("departureDateDesc")}
+            >
+              <img src={history} alt="Logo" className="w-[32px]  h-auto m-2 mr-4" />
+              <div>Khởi hành muộn nhất</div>
+            </div>
+            <div
+              className={"flex flex-row items-center "}
+              onClick={() => showModal()}
+            >
+              <img src={filter} alt="Logo" className="w-[32px]  h-auto m-2 mr-4" />
+              <div>Lọc</div>
+            </div>
+            <div className="flex flex-row justify-center pt-6">
               <button
-                key={page}
-                onClick={() => handlePageChange(page)}
-                className={`px-4 py-2 rounded ${page === currentPage
+                className={`w-14 h-14 rounded-lg flex items-center justify-center mr-3 ${showList ? "bg-customColor" : "bg-slate-200"}`}
+                onClick={() => setShowList(true)}><FaRegListAlt size={30} /></button>
+              <button
+                className={`w-14 h-14 rounded-lg flex items-center justify-center mr-3 ${showList ? "bg-slate-200" : "bg-customColor"}`}
+                onClick={() => setShowList(false)}><BsGrid3X3Gap size={30} /></button>
+            </div>
+            {/* </div> */}
+          </div>
+          <div className="w-[75%] bg-slate-100 rounded-2xl p-4">
+            <div className="flex flex-col justify-center items-center space-y-5 mt-5">
+              <p className="tour-text text-4xl hidden-animation text-textColorCustom font-dancing-script">
+                Tour bạn đã lưu
+              </p>
+              <p className="pb-4 holiday-text text-4xl hidden-animation text-black font-bold font-sriracha">
+                Trải nghiệm kì nghỉ tuyệt vời
+              </p>
+            </div>
+            {/* Danh sách tour */}
+            {showList ? (
+              <div className="flex flex-col">
+                {tourList.map((tour, index) => (
+                  <button
+                    key={tour.tourId ? tour.tourId : `${index}`}
+                    onClick={() => handleNavigateDetailTour(tour)}
+                    className="mb-8"
+                  >
+                    <TourCardList tour={tour} />
+                  </button>
+                ))}
+              </div>
+            ) : (
+              <div className="flex flex-wrap justify-center space-x-4 p-4">
+                {tourList.map((tour, index) => (
+                  <button
+                    key={tour.tourId ? tour.tourId : `${index}`}
+                    onClick={() => handleNavigateDetailTour(tour)}
+                    className="mb-8"
+                  >
+                    <TourCardGrid tour={tour} />
+                  </button>
+                ))}
+              </div>
+            )}
+
+
+            {/* Nút phân trang */}
+            <div className="flex justify-center space-x-4 mt-4">
+              {/* Nút trang đầu */}
+              <button
+                onClick={handleFirstPage}
+                disabled={currentPage === 1}
+                className="px-4 py-2 bg-gray-300 rounded disabled:opacity-50"
+              >
+                Trang đầu
+              </button>
+
+              {/* Hiển thị các số trang */}
+              {pageNumbers().map((page) => (
+                <button
+                  key={page}
+                  onClick={() => handlePageChange(page)}
+                  className={`px-4 py-2 rounded ${page === currentPage
                     ? "bg-blue-500 text-white"
                     : "bg-gray-300"
-                  }`}
-              >
-                {page}
-              </button>
-            ))}
+                    }`}
+                >
+                  {page}
+                </button>
+              ))}
 
-            {/* Nút trang cuối */}
-            <button
-              onClick={handleLastPage}
-              disabled={currentPage === totalPages}
-              className="px-4 py-2 bg-gray-300 rounded disabled:opacity-50"
-            >
-              Trang cuối
-            </button>
+              {/* Nút trang cuối */}
+              <button
+                onClick={handleLastPage}
+                disabled={currentPage === totalPages}
+                className="px-4 py-2 bg-gray-300 rounded disabled:opacity-50"
+              >
+                Trang cuối
+              </button>
+            </div>
           </div>
         </div>
+
+
 
         {/* Footer */}
         <Footer />

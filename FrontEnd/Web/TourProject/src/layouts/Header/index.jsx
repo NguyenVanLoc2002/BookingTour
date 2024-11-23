@@ -31,7 +31,8 @@ function Header() {
   const [month, setMonth] = useState(1);
   const [year, setYear] = useState(new Date().getFullYear()); // Mặc định là năm hiện tại
   const [gender, setGender] = useState(0); // 0: Nữ, 1: Nam, 2: Khác
-
+  const [customer, setCustomer] = useState(null);
+  const token = localStorage.getItem("token");
   // Danh sách năm từ 1900 đến năm hiện tại
   const years = [];
   for (let i = 1900; i <= new Date().getFullYear(); i++) {
@@ -54,19 +55,18 @@ function Header() {
     setDay(1); // Reset ngày về 1 khi năm thay đổi
   };
 
-  const handleRefreshDataRegister= ()=>{
+  const handleRefreshDataRegister = () => {
     setEmail("");
     setName("");
     setDay(1);
     setMonth(1);
     setYear(new Date().getFullYear());
   }
-  
+
   const handleSubmitRegister = async (e) => {
     e.preventDefault(); // Ngăn chặn hành vi mặc định của form
-    const dateOfBirth = `${year}-${month < 10 ? "0" + month : month}-${
-      day < 10 ? "0" + day : day
-    }`;
+    const dateOfBirth = `${year}-${month < 10 ? "0" + month : month}-${day < 10 ? "0" + day : day
+      }`;
     // Tính tuổi từ ngày sinh
     const birthDate = new Date(dateOfBirth);
     const today = new Date();
@@ -124,16 +124,15 @@ function Header() {
     }
   };
 
-  const handleSubmitLogin = async(e)=>{
-    e.preventDefault(); 
+  const handleSubmitLogin = async (e) => {
+    e.preventDefault();
     const data = {
       email,
       password,
     }
-
     console.log(data);
     try {
-      const  response = await axios.post('http://localhost:8000/api/v1/auth/login',data);
+      const response = await axios.post('http://localhost:8000/api/v1/auth/login', data);
       console.log(response.data);
       // Lưu token vào localStorage
       localStorage.setItem('token', response.data.token);
@@ -157,6 +156,30 @@ function Header() {
   const handleNavigateAccount = () => {
     navigate("/Account");
   };
+
+  useEffect(() => {
+    const fetchCustomer = async () => {
+      if (!token) {
+        setCustomer(null);
+      }
+      try {
+        const response = await axios.get(
+          "http://localhost:8000/api/v1/customers/by-email",
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        setCustomer(response.data);
+        console.log("customer: ", response.data);
+      } catch (error) {
+        setCustomer(null);
+        console.error("Error fetching customer data:", error);
+      }
+    };
+    fetchCustomer();
+  }, [token]);
 
   return (
     <div className="hidden md:flex w-full bg-black text-white text-sm">
@@ -190,15 +213,32 @@ function Header() {
           tabIndex="0"
           className="dropdown-content menu bg-slate-200 rounded-box z-[1]  shadow text-gray-600 ml-[-65px]"
         >
-          <li>
-            <button onClick={openModalRegister}>Đăng ký</button>
-          </li>
-          <li>
-            <button onClick={openModalLogin}>Đăng nhập</button>
-          </li>
-          <li>
-            <button onClick={handleNavigateAccount}>Thông tin cá nhân</button>
-          </li>
+          {
+            customer ? (
+              <div>
+                <li>
+                  <button onClick={handleNavigateAccount}>Thông tin cá nhân</button>
+                </li>
+                <li>
+                  <button onClick={handleNavigateAccount}>Đăng xuất</button>
+                </li>
+              </div>
+            ) : (
+              <div>
+                <li>
+                  <button onClick={openModalRegister}>Đăng ký</button>
+                </li>
+                <li>
+                  <button onClick={openModalLogin}>Đăng nhập</button>
+                </li>
+                <li>
+                  <button onClick={handleNavigateAccount}>Thông tin cá nhân</button>
+                </li>
+              </div>
+            )
+          }
+
+
         </ul>
       </li>
       <Modal
@@ -403,7 +443,7 @@ function Header() {
                   type={showPassword ? "text" : "password"}
                   id="password"
                   value={password}
-                  onChange={(e) =>  setPassword(e.target.value)}
+                  onChange={(e) => setPassword(e.target.value)}
                   className="mt-1 block w-full px-3 py-2 border border-textColorCustom rounded-md shadow-sm focus:outline-none focus:ring focus:border-blue-300"
                   placeholder="Mật khẩu"
                 />
