@@ -171,13 +171,17 @@ public class TourController {
 
 
     @GetMapping("/by-name")
-    public Mono<ResponseEntity<Flux<TourDTO>>> getToursByNameContainingIgnoreCase(@RequestParam String name, @RequestParam int page, @RequestParam int size) {
-        return Mono.just(ResponseEntity.ok(tourService.getToursByNameContainingIgnoreCase(name, page, size)))
+    public Mono<ResponseEntity<Map<String, Object>>> getToursByNameContainingIgnoreCase(@RequestParam String name,
+                                                                                        @RequestParam int page,
+                                                                                        @RequestParam int size) {
+        return tourService.getToursByNameContainingIgnoreCase(name, page, size)
+                .map(response -> ResponseEntity.ok(response))
                 .onErrorResume(e -> {
                     log.error("Error fetching tours by name: {}", e.getMessage());
                     return Mono.just(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build());
                 });
     }
+
 
     @GetMapping("/by-date")
     public Mono<ResponseEntity<Flux<TourDTO>>> getToursByDayBetween(@RequestParam LocalDate startDate, @RequestParam LocalDate endDate, @RequestParam int page, @RequestParam int size) {
@@ -198,8 +202,12 @@ public class TourController {
     }
 
     @GetMapping("/by-type")
-    public Mono<ResponseEntity<Flux<TourDTO>>> getToursByTypeTour(@RequestParam TypeTour typeTour,@RequestParam Region region, @RequestParam int page, @RequestParam int size) {
-        return Mono.just(ResponseEntity.ok(tourService.getToursByTypeTour(typeTour, region, page, size)))
+    public Mono<ResponseEntity<Map<String, Object>>> getToursByTypeTour(@RequestParam TypeTour typeTour,
+                                                                        @RequestParam Region region,
+                                                                        @RequestParam int page,
+                                                                        @RequestParam int size) {
+        return tourService.getToursByTypeTour(typeTour, region, page, size)
+                .map(response -> ResponseEntity.ok(response))
                 .onErrorResume(e -> {
                     log.error("Error fetching tours by type: {}", e.getMessage());
                     return Mono.just(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build());

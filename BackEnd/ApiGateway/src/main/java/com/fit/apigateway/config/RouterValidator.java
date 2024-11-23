@@ -28,14 +28,14 @@ public class RouterValidator {
             Pattern.compile("/api/v1/tours/region-order-by-departure-date"),
             Pattern.compile("/api/v1/itineraries/by-tour"),
             Pattern.compile("/api/v1/itineraries/activities/by-itinerary"),
-            Pattern.compile("/api/v1/tours/tour-tickets/by-tour/.+"),
+            Pattern.compile("/api/v1/tour-tickets/.*"),
             //Recommendation
             Pattern.compile("/api/v1/recommendation/.*"),
             //Payment
             Pattern.compile("/api/v1/booking/bookTour"),
             Pattern.compile("/api/v1/booking/verify-booking-tour"),
             Pattern.compile("/api/v1/booking/redis/.*"),
-            Pattern.compile("/api/v1/payments/success")
+            Pattern.compile("/api/v1/payments/.*")
     );
 
     public static final List<Pattern> internalApiEndpoints = List.of(

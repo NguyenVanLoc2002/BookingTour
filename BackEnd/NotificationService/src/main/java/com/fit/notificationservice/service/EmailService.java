@@ -96,8 +96,7 @@ public class EmailService {
 
     public String createVerificationLinkBookingTour(BookingDTO bookingDTO) {
         String token = jwtUtils.generateBookingToken(bookingDTO);
-//        return "http://localhost:8000/api/v1/notification/verify-booking-tour?bookingId=" + token;
-        return "http://localhost:9005/booking/verify-booking-tour?bookingId=" + token;
+        return "http://localhost:8000/api/v1/notification/verify-booking-tour?bookingId=" + token;
     }
 
     public String createVerificationLinkAccount(CustomerResponse customerResponse) {

@@ -69,7 +69,7 @@ public class EventConsumer {
 
     private Mono<Void> updateStatusBookingTour(ReceiverRecord<String, String> receiverRecord) {
         log.info("Received Booking tour record: {}", receiverRecord);
-        Long bookingId = Long.parseLong(receiverRecord.key());
+        String bookingId = receiverRecord.key();
         return bookingService.findById(bookingId)
                 .flatMap(bookingDTO -> {
                     bookingDTO.setStatusBooking(StatusBooking.CONFIRMED);

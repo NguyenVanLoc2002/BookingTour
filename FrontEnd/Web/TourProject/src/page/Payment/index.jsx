@@ -10,8 +10,6 @@ const PaymentPage = () => {
   const [payment, setPayment] = useState();
 
   useEffect(() => {
-    
-
     const fetchBookingTour = async () => {
       try {
         const res = await axios.get(
@@ -29,19 +27,26 @@ const PaymentPage = () => {
 
   const handlePaymentSuccess = async (details) => {
     console.log("Payment successful:", details);
-    
+
     const paymentID = details.id; // ID giao dịch từ PayPal
     const payerID = details.payer.payer_id; // ID người thanh toán
+    const transactionId = details.purchase_units[0].payments.captures[0].id; // Lấy Transaction ID từ response của PayPal
+
     console.log("paymentID: ", paymentID);
     console.log("payerID: ", payerID);
+    console.log("Transaction ID: ", transactionId); // In ra Transaction ID
     try {
-      const  res = await axios.post("http://localhost:8000/api/v1/payments/success",{
+      const res = await axios.post(
+        "http://localhost:8000/api/v1/payments/success",
+        {
           paymentId: paymentID,
           payerId: payerID,
           bookingId: bookingId,
           discountId: null,
           amount: details.purchase_units[0].amount.value, // Lấy số tiền từ purchase_units
-      })
+          transactionId: transactionId, // Lưu Transaction ID vào request
+        }
+      );
       setPayment(res.data);
       console.log("Payment and booking status updated successfully.");
     } catch (error) {

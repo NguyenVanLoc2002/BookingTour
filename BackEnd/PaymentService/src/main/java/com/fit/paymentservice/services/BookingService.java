@@ -17,6 +17,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
+import java.time.Duration;
 import java.util.NoSuchElementException;
 import java.util.UUID;
 
@@ -104,13 +105,13 @@ public class BookingService {
     public Mono<Boolean> saveBookingTourFromRedis(BookingDTO bookingDTO) {
         String key = bookingDTO.getBookingId().toString();
 
-        return redisService.saveData(key, bookingDTO)
-                .doOnError(throwable -> log.info(throwable.getMessage(),throwable));
+        return redisService.saveDataWithTTL(key, bookingDTO, Duration.ofDays(1))
+                .doOnError(throwable -> log.error("Error saving booking to Redis: {}", throwable.getMessage(), throwable));
     }
 
 
 
-    public Mono<BookingDTO> findById(Long bookingId){
+    public Mono<BookingDTO> findById(String bookingId){
         return bookingRepository.findById(bookingId)
                 .map(BookingDTO::convertToDto);
     }

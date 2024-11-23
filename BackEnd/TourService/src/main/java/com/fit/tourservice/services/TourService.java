@@ -74,12 +74,27 @@ public class TourService {
                 .take(size);
     }
 
-    public Flux<TourDTO> getToursByNameContainingIgnoreCase(String name, int page, int size) {
-        return tourRepository.findToursByNameContainingIgnoreCase(name)
-                .map(TourDTO::convertToDTO)
-                .skip((long) (page - 1) * size)
-                .take(size);
+    public Mono<Map<String, Object>> getToursByNameContainingIgnoreCase(String name, int page, int size) {
+        int offset = (page - 1) * size;
+
+        return tourRepository.countToursByNameContainingIgnoreCase(name) // Đếm tổng số phần tử
+                .flatMap(totalElements -> {
+                    int totalPages = (int) Math.ceil((double) totalElements / size); // Tính tổng số trang
+                    return tourRepository.findToursByNameContainingIgnoreCaseWithPagination(name, size, offset) // Lấy dữ liệu phân trang
+                            .map(TourDTO::convertToDTO) // Chuyển sang DTO
+                            .collectList() // Gộp thành danh sách
+                            .map(content -> {
+                                Map<String, Object> response = new HashMap<>();
+                                response.put("content", content);
+                                response.put("totalElements", totalElements);
+                                response.put("totalPages", totalPages);
+                                response.put("size", size);
+                                response.put("number", page);
+                                return response;
+                            });
+                });
     }
+
 
     public Flux<TourDTO> getToursByDayBetween(LocalDate startDate, LocalDate endDate, int page, int size) {
         return tourRepository.findToursByDayBetween(startDate, endDate)
@@ -96,12 +111,27 @@ public class TourService {
                 .take(size);
     }
 
-    public Flux<TourDTO> getToursByTypeTour(TypeTour type,Region region, int page, int size) {
-        return tourRepository.findToursByTypeTour(type,region)
-                .map(TourDTO::convertToDTO)
-                .skip((long) (page - 1) * size)
-                .take(size);
+    public Mono<Map<String, Object>> getToursByTypeTour(TypeTour typeTour, Region region, int page, int size) {
+        int offset = (page - 1) * size;
+
+        return tourRepository.countToursByTypeTour(typeTour, region) // Đếm tổng số phần tử
+                .flatMap(totalElements -> {
+                    int totalPages = (int) Math.ceil((double) totalElements / size); // Tính tổng số trang
+                    return tourRepository.findToursByTypeTour(typeTour, region, size, offset) // Lấy dữ liệu theo trang
+                            .map(TourDTO::convertToDTO) // Chuyển đổi sang DTO
+                            .collectList() // Gộp thành danh sách
+                            .map(content -> {
+                                Map<String, Object> response = new HashMap<>();
+                                response.put("content", content);
+                                response.put("totalElements", totalElements);
+                                response.put("totalPages", totalPages);
+                                response.put("size", size);
+                                response.put("number", page);
+                                return response;
+                            });
+                });
     }
+
 
     //Lay DS  Tour con han va con cho trong
     public Flux<TourDTO> getAvailableTours(int page, int size) {

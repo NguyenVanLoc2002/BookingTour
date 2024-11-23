@@ -23,8 +23,8 @@ public class TourTicketService {
     }
 
     // Lấy tour ticket theo ID
-    public Mono<TourTicketDTO> getTourTicketById(Long id) {
-        return tourTicketRepository.findById(id)
+    public Mono<TourTicketDTO> getTourTicketById(Long ticketId) {
+        return tourTicketRepository.findByTicketId(ticketId)
                 .map(TourTicketDTO::convertToDTO);
     }
 

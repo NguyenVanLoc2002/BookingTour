@@ -3,7 +3,6 @@ package com.fit.notificationservice.events;
 import com.fit.commonservice.utils.Constant;
 import com.fit.notificationservice.dtos.BookingDTO;
 import com.fit.notificationservice.dtos.reponse.CustomerResponse;
-import com.fit.notificationservice.dtos.request.BookingRequest;
 import com.fit.notificationservice.service.EmailService;
 import com.google.gson.Gson;
 import lombok.extern.slf4j.Slf4j;
