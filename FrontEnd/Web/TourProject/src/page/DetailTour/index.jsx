@@ -56,10 +56,12 @@ function DetailTour() {
                     <IconDisplay iconName="AiTwotoneTag" />
                     <span>
                       Giá Tour/khách:
-                      <span className="line-through text-red-500 pl-2 pr-2">
-                        {formatCurrency(tour.oldPrice || 10000000)}
-                      </span>
-                      {formatCurrency(tour.price)}
+                      {tour.oldPrice > 0 && (
+                        <span className="line-through text-red-500 pl-2 pr-2">
+                          {formatCurrency(tour.oldPrice)}
+                        </span>
+                      )}
+                      <span> {formatCurrency(tour.price)}</span>
                     </span>
                   </div>
                   <div className="flex items-center space-x-2">
@@ -77,9 +79,9 @@ function DetailTour() {
                 </div>
               </div>
             </div>
-            <button className="bg-teal-500 text-black font-bold px-8 py-2 rounded-2xl mb-4">
+            {/* <button className="bg-teal-500 text-black font-bold px-8 py-2 rounded-2xl mb-4">
               ĐẶT TOUR
-            </button>
+            </button> */}
             <div className="flex  mb-8 text-base font-bold">
               <button
                 className={
