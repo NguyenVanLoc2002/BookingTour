@@ -92,7 +92,7 @@ public class RefundService {
                     }
                     log.info("Amount: "+booking.getTotalAmount());
                     log.info("RefundPercentage: "+ refundPercentage);
-                    double refundAmount = booking.getTotalAmount() * 0.5;
+                    double refundAmount = booking.getTotalAmount() * refundPercentage;
                     return Mono.just(refundAmount);
                 });
     }

@@ -36,10 +36,51 @@ public class RedisService {
                 .doOnError(error -> log.error("Failed to save key: {}", key, error));
     }
 
+    public Mono<Boolean> deleteDataFromSet(String key, Object value) {
+        return reactiveRedisTemplate.opsForSet()
+                .remove(key, value)  // This returns a Mono<Long>
+                .map(removed -> removed > 0)  // Convert the result to Mono<Boolean>
+                .doOnSuccess(removed -> {
+                    if (removed) {
+                        log.info("Successfully removed value: {} from set with key: {}", value, key);
+                    } else {
+                        log.warn("Value: {} not found in set with key: {}", value, key);
+                    }
+                })
+                .doOnError(error -> log.error("Failed to remove value: {} from set with key: {}", value, key, error));
+    }
+
+    public Mono<BookingDTO> getBookingByBookingIdFromRedisSet(Long customerId, String bookingId) {
+        String key = "customer:" + customerId + ":bookings";
+
+        // Lấy các phần tử trong Redis Set, mỗi phần tử là LinkedHashMap
+        return reactiveRedisTemplate.opsForSet().members(key)
+                .flatMap(booking -> {
+                    // Kiểm tra nếu booking là LinkedHashMap
+                    if (booking instanceof LinkedHashMap) {
+                        // Chuyển đổi phần tử từ LinkedHashMap sang BookingDTO
+                        BookingDTO bookingDTO = objectMapper.convertValue(booking, BookingDTO.class);
+                        // Kiểm tra nếu bookingId trùng khớp
+                        if (bookingDTO.getBookingId() != null && bookingDTO.getBookingId().equals(bookingId)) {
+                            return Mono.just(bookingDTO); // Trả về bookingDTO nếu tìm thấy
+                        }
+                    }
+                    return Mono.empty(); // Không tìm thấy bookingId trong phần tử này
+                })
+                .next()  // Lấy phần tử đầu tiên tìm thấy, hoặc Mono.empty() nếu không có phần tử nào
+                .doOnSuccess(bookingDTO -> {
+                    if (bookingDTO != null) {
+                        log.info("Found booking for customer {} with bookingId {}: {}", customerId, bookingId, bookingDTO);
+                    }
+                })
+                .doOnError(error -> log.error("Failed to fetch booking for customer {} with bookingId {}: {}", customerId, bookingId, error));
+    }
+
     // Lấy dữ liệu từ Redis
     public Mono<Object> getData(String key) {
         return reactiveRedisTemplate.opsForValue().get(key);
     }
+
 
     // Lấy dữ liệu và chuyển đổi thành BookingDTO
     public Mono<BookingDTO> getDataAsBookingDTO(String key) {
@@ -55,60 +96,97 @@ public class RedisService {
                 });
     }
 
-    // Thêm bookingId vào Redis Set của customer
-    public Mono<Boolean> addBookingToCustomer(String customerId, String bookingId) {
+    public Mono<Boolean> addBookingToCustomer(String customerId, Object value, Duration ttl) {
         String key = "customer:" + customerId + ":bookings";
-        return reactiveRedisTemplate.opsForSet().add(key, bookingId)
-                .map(count -> count > 0)  // Nếu có phần tử được thêm vào, trả về true
-                .doOnSuccess(success -> log.info("Added booking {} to customer {}", bookingId, customerId))
+
+        // Thêm bookingId vào Redis Set
+        return reactiveRedisTemplate.opsForSet().add(key, value)
+                .flatMap(count -> {
+                    if (count > 0) {
+                        // Nếu bookingId được thêm thành công, thiết lập TTL cho key Redis
+                        return reactiveRedisTemplate.expire(key, ttl)
+                                .map(expireSuccess -> expireSuccess);
+                    }
+                    return Mono.just(false);  // Nếu không thêm được phần tử vào set
+                })
+                .map(expireSuccess -> expireSuccess)  // Trả về true nếu TTL được thiết lập thành công
+                .doOnSuccess(success -> log.info("Added booking {} to customer {} with TTL: {}", value, customerId, ttl))
                 .doOnError(error -> log.error("Failed to add booking to customer: {}", error));
     }
 
-    // Lấy danh sách bookings của customer từ Redis
-    public Flux<List<BookingDTO>> getBookingsByCustomerId(String customerId) {
-        String key = "customer:" + customerId + ":bookings";  // Key của Redis Set chứa các bookingId
 
+    public Mono<Boolean> updateBookingForCustomer(String customerId, String bookingId, Object newValue, Duration ttl) {
+        String key = "customer:" + customerId + ":bookings";
+
+        // Lấy các phần tử trong Redis Set, mỗi phần tử là LinkedHashMap
         return reactiveRedisTemplate.opsForSet().members(key)
-                .doOnNext(bookingIds -> {
-                    if (bookingIds != null) {
-                        log.info("Fetched bookingIds from Redis for customer {}: {} (Type: {})",
-                                customerId, bookingIds, bookingIds.getClass().getName());
-                    } else {
-                        log.warn("No bookingIds found for customer {} in Redis.", customerId);
+                .flatMap(booking -> {
+                    // Kiểm tra nếu bookingId trong booking trùng với bookingId cần cập nhật
+                    if (booking instanceof LinkedHashMap) {
+                        BookingDTO bookingDTO = objectMapper.convertValue(booking, BookingDTO.class);
+                        String currentBookingId = bookingDTO.getBookingId();
+                        if (currentBookingId != null && currentBookingId.equals(bookingId)) {
+                            // Xóa phần tử cũ (LinkedHashMap) khỏi Set
+                            return reactiveRedisTemplate.opsForSet().remove(key, booking)
+                                    .flatMap(removedCount -> {
+                                        if (removedCount > 0) {
+                                            // Thêm phần tử mới vào Set
+                                            return reactiveRedisTemplate.opsForSet().add(key, newValue)
+                                                    .flatMap(count -> {
+                                                        if (count > 0) {
+                                                            // Thiết lập TTL cho key Redis
+                                                            return reactiveRedisTemplate.expire(key, ttl)
+                                                                    .thenReturn(true); // Thành công
+                                                        }
+                                                        return Mono.just(false);  // Không thể thêm phần tử mới
+                                                    });
+                                        }
+                                        return Mono.just(false);  // Không thể xóa phần tử cũ
+                                    });
+                        }
                     }
+                    return Mono.just(false); // Không tìm thấy bookingId trong Set
                 })
-                .flatMap(bookingIds -> {
-                    if (bookingIds == null) {
-                        log.info("No bookings found for customer {} in Redis. Returning empty list.", customerId);
-                        return Mono.just(Collections.emptyList());  // Nếu không có bookingId thì trả về danh sách rỗng
-                    }
-
-                    // Nếu bookingIds là một chuỗi đơn lẻ, xử lý nó như một bookingId
-                    if (bookingIds instanceof String) {
-                        String bookingId = (String) bookingIds;
-                        log.info("Processing single bookingId: {}", bookingId);
-                        return getDataAsBookingDTO(bookingId) // Lấy dữ liệu từ Redis theo bookingId
-                                .flatMap(bookingDTO -> Mono.just(Collections.singletonList(bookingDTO))); // Trả về danh sách chứa 1 bookingDTO
-                    } else {
-                        // Nếu bookingIds là một Set (như bạn đã dự đoán), xử lý như trước
-                        Set<String> bookingIdSet = (Set<String>) bookingIds;
-                        List<Mono<BookingDTO>> bookingMonos = bookingIdSet.stream()
-                                .map(bookingId -> getDataAsBookingDTO("booking:" + bookingId)) // Key cho từng bookingId
-                                .collect(Collectors.toList());
-
-                        return Mono.zip(bookingMonos, results -> {
-                            List<BookingDTO> bookings = new ArrayList<>();
-                            for (Object result : results) {
-                                bookings.add((BookingDTO) result);
-                            }
-                            log.info("Returning {} bookings for customer {}", bookings.size(), customerId);
-                            return bookings;
-                        });
-                    }
-                });
+                .collectList()  // Chuyển đổi Flux thành List (chúng ta chỉ cần một kết quả cuối cùng)
+                .map(list -> list.stream().anyMatch(Boolean::booleanValue))  // Kiểm tra xem có bất kỳ phần tử nào thành công không
+                .defaultIfEmpty(false)  // Nếu Flux trống (không có phần tử nào để cập nhật), trả về false
+                .doOnTerminate(() -> log.info("Update process completed for customer {}", customerId)) // Log khi kết thúc
+                .doOnError(error -> log.error("Failed to update booking for customer {}: {}", customerId, error));
     }
 
 
+
+
+
+    // Lấy danh sách bookings của customer từ Redis
+    public Flux<BookingDTO> getBookingsByCustomerId(String customerId) {
+        String key = "customer:" + customerId + ":bookings";  // Key của Redis Set chứa các bookingId
+
+        return reactiveRedisTemplate.opsForSet().members(key)
+                .doOnNext(booking -> {
+                    if (booking != null) {
+                        log.info("Fetched booking from Redis for customer {}: {} (Type: {})",
+                                customerId, booking, booking.getClass().getName());
+                    } else {
+                        log.warn("No booking found for customer {} in Redis.", customerId);
+                    }
+                })
+                .flatMap(booking -> {
+                    if (booking == null) {
+                        log.warn("Booking is null for customer {} in Redis.", customerId);
+                        return Mono.empty();  // Nếu booking là null, trả về Mono.empty
+                    }
+
+                    // Chuyển đổi từ LinkedHashMap sang BookingDTO
+                    if (booking instanceof LinkedHashMap) {
+                        BookingDTO bookingDTO = objectMapper.convertValue(booking, BookingDTO.class);
+                        return Mono.just(bookingDTO);
+                    } else {
+                        return Mono.error(new IllegalArgumentException("Unexpected booking type: " + booking.getClass().getName()));
+                    }
+                })
+                .doOnTerminate(() -> log.info("Returning bookings for customer {}", customerId));
+    }
 
 
     // Lưu thông tin Booking và thêm bookingId vào Redis Set của customer
@@ -120,7 +198,7 @@ public class RedisService {
 
         // Lưu bookingId vào Redis Set của customerId
         String customerId = (bookingDTO.getCustomerId() != null) ? bookingDTO.getCustomerId().toString() : "guest";
-        Mono<Boolean> addBookingToCustomerMono = addBookingToCustomer(customerId, bookingKey);
+        Mono<Boolean> addBookingToCustomerMono = addBookingToCustomer(customerId, bookingDTO, Duration.ofDays(1));
 
         // Kết hợp cả hai Mono để thực hiện đồng thời
         return Mono.zip(saveBookingMono, addBookingToCustomerMono)

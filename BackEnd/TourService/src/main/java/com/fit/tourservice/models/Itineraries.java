@@ -22,4 +22,5 @@ public class Itineraries {
     private String description;
     private float temperature;
     private WeatherCondition weatherCondition;
+    private String activity;
 }

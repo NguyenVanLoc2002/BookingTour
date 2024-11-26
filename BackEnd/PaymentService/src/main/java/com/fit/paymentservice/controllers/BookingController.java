@@ -16,6 +16,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.net.URI;
+import java.time.Duration;
 import java.util.List;
 
 @RestController
@@ -78,36 +79,53 @@ public class BookingController {
     // Endpoint lấy danh sách bookings của customer
     @GetMapping("/redis/customer/{customerId}")
     @ResponseStatus(HttpStatus.OK)
-    public Flux<List<BookingDTO>> getBookingsByCustomerId(@PathVariable String customerId) {
+    public Flux<BookingDTO> getBookingsByCustomerId(@PathVariable String customerId) {
         return redisService.getBookingsByCustomerId(customerId);
     }
 
     @GetMapping("/verify-booking-tour")
     public Mono<ResponseEntity<Object>> verifyBookingTour(@RequestParam("bookingId") String bookingId, @RequestParam("redirectUrl") String redirectUrl) {
-        Claims claims = jwtUtils.extractAllClaims(bookingId);
+        log.info("Received request to verify booking tour. bookingId: {}, redirectUrl: {}", bookingId, redirectUrl);
+
+        Claims claims;
+        try {
+            claims = jwtUtils.extractAllClaims(bookingId);
+            log.info("Extracted claims from JWT: {}", claims);
+        } catch (Exception e) {
+            log.error("Error extracting claims from JWT. bookingId: {}, error: {}", bookingId, e.getMessage());
+            return Mono.just(ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid JWT token"));
+        }
+
         String key = claims.get("bookingId", String.class);
+        log.info("Extracted booking key from claims: {}", key);
 
         return redisService.getDataAsBookingDTO(key) // Phải trả về Mono<BookingDTO>
                 .flatMap(bookingDTO -> {
+                    log.info("BookingDTO retrieved from Redis: {}", bookingDTO);
+
                     bookingDTO.setStatusBooking(StatusBooking.CONFIRMED);
-                    return redisService.saveBookingTourFromRedis(bookingDTO)
+                    log.info("Updated BookingDTO status to CONFIRMED: {}", bookingDTO);
+
+                    return redisService.updateBookingForCustomer(bookingDTO.getCustomerId().toString(), bookingDTO.getBookingId(),bookingDTO, Duration.ofDays(1))
                             .flatMap(success -> {
                                 if (success) {
-                                    // Thêm bookingId vào redirectUrl
                                     String redirectUrlWithBookingId = redirectUrl + "?bookingId=" + key;
                                     URI uri = URI.create(redirectUrlWithBookingId);
-                                    return Mono.just(ResponseEntity.status(HttpStatus.FOUND) // Chuyển hướng
-                                            .location(uri)
-                                            .build());
+                                    log.info("Successfully saved booking. Redirecting to: {}", uri);
+                                    return Mono.just(ResponseEntity.status(HttpStatus.FOUND).location(uri).build());
                                 } else {
+                                    log.error("Failed to save booking to Redis: {}", bookingDTO);
                                     return Mono.just(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build());
                                 }
                             });
                 })
-                .switchIfEmpty(Mono.just(ResponseEntity.status(HttpStatus.NOT_FOUND).build())) // Nếu không tìm thấy
+                .switchIfEmpty(Mono.defer(() -> {
+                    log.warn("Booking data not found in Redis for key: {}", key);
+                    return Mono.just(ResponseEntity.status(HttpStatus.NOT_FOUND).build());
+                }))
                 .onErrorResume(throwable -> {
-                    log.error("Error occurred: {}", throwable.getMessage());
-                    return Mono.just(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build()); // Nếu có lỗi
+                    log.error("Unexpected error occurred during booking verification. bookingId: {}, error: {}", bookingId, throwable.getMessage(), throwable);
+                    return Mono.just(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Unexpected error occurred"));
                 });
     }
 

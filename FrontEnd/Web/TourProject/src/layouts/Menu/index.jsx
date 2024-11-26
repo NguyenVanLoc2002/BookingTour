@@ -1,16 +1,15 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import logoText from "../../assets/logo_Text.jpg";
 import { TiArrowSortedDown } from "react-icons/ti";
 import { HiOutlineSearchCircle } from "react-icons/hi";
 import { FaBars, FaTimes } from "react-icons/fa";
 import { useNavigate } from 'react-router-dom';
-import axios from "axios";
 
 function Menu(name) {
   const [isOpen, setIsOpen] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false); // Track dropdown state
-  const [customer, setCustomer] = useState(null);
-  const token = localStorage.getItem("token");
+  const [searchValue, setSearchValue] = useState(""); 
+
   const toggleMenu = () => {
     setIsOpen(!isOpen);
   };
@@ -21,57 +20,50 @@ function Menu(name) {
 
   const navigate = useNavigate();
 
-  const handleNavigateMienBac = (region) => {
+  const handleNavigateListTour = (region) => {
     navigate(`/listTour?region=${region}`); // Điều hướng đến trang khác
     closeDropdown(); // Close dropdown
     setIsOpen(false); // Close the main menu if it's open
   };
-  const handleNavigateSavedTour = () => {
-    navigate('/savedTour'); // Điều hướng đến trang khác
+
+  const handleNavigateListTourByName = (name) => {
+    if (name.trim() === "") return; // Không làm gì nếu input trống
+    navigate(`/listTour?name=${name}`); // Điều hướng đến trang listTour với name
     closeDropdown(); // Close dropdown
     setIsOpen(false); // Close the main menu if it's open
   };
 
-  const handleNavigateGioiThieu = () => {
-    navigate('/Introduce'); // Điều hướng đến trang khác
-    console.log(name.name)
-    setIsOpen(false);
+  const handleSearch = () => {
+    handleNavigateListTourByName(searchValue);
+    setSearchValue('');
   };
 
-  const handleNavigateTrangChu = () => {
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter") {
+      handleSearch(); // Gọi hàm tìm kiếm khi nhấn Enter
+      setSearchValue('');
+    }
+  };
+
+
+  const handleNavigateIntroduction = () => {
+    navigate('/Introduce'); // Điều hướng đến trang khác
+    console.log(name.name)
+    setIsOpen(false); 
+  };
+
+  const handleNavigateHome = () => {
     navigate('/'); // Điều hướng đến trang khác
-    setIsOpen(false);
+    setIsOpen(false); 
   };
 
   const handleNavigateBookings = () => {
     navigate('/bookings'); // Điều hướng đến trang khác
   };
-  const handleNavigateRefund = () => {
+  const handleNavigateRefund= () => {
     navigate('/refund'); // Điều hướng đến trang khác
   };
-  useEffect(() => {
-    const fetchCustomer = async () => {
-      if (!token) {
-        setCustomer(null);
-      }
-      try {
-        const response = await axios.get(
-          "http://localhost:8000/api/v1/customers/by-email",
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-        setCustomer(response.data);
-        console.log("customer: ", response.data);
-      } catch (error) {
-        setCustomer(null);
-        console.error("Error fetching customer data:", error);
-      }
-    };
-    fetchCustomer();
-  }, [token]);
+
   return (
     <div className="w-screen max-w-full h-auto flex flex-col md:flex-row text-black bg-orange text-sm justify-between items-center">
       <div className="w-full md:w-[15%] pl-14 flex justify-between items-center">
@@ -86,7 +78,7 @@ function Menu(name) {
       >
         <ul className="w-full flex flex-col md:flex-row space-y-4 md:space-x-20 md:space-y-0 text-lg font-bold justify-center items-center">
           <li className={name.name === "Home" ? "text-textColorCustom" : "underline-hover hover:text-textColorCustom "}>
-            <button onClick={handleNavigateTrangChu}>TRANG CHỦ</button>
+            <button onClick={handleNavigateHome}>TRANG CHỦ</button>
           </li>
           <li className="relative dropdown dropdown-hover">
             <a
@@ -99,44 +91,39 @@ function Menu(name) {
             {isDropdownOpen && (
               <ul tabIndex="0" className="dropdown-content menu bg-base-100 rounded-box z-[1] w-52 shadow">
                 <li>
-                  <button onClick={() => handleNavigateMienBac('NORTH')}>MIỀN BẮC</button>
+                  <button onClick={() => handleNavigateListTour('NORTH')}>MIỀN BẮC</button>
                 </li>
                 <li>
-                  <button onClick={() => handleNavigateMienBac('CENTRAL')}>MIỀN TRUNG</button>
+                  <button onClick={() => handleNavigateListTour('CENTRAL')}>MIỀN TRUNG</button>
                 </li>
                 <li>
-                  <button onClick={() => handleNavigateMienBac('SOUTH')}>MIỀN NAM</button>
-                </li>
-                <li>
-                  <button onClick={() => handleNavigateSavedTour()}>TOUR ĐÃ LƯU</button>
+                  <button onClick={() => handleNavigateListTour('SOUTH')}>MIỀN NAM</button>
                 </li>
               </ul>
             )}
           </li>
-          {customer && (
-            <li className="relative dropdown dropdown-hover">
-              <a
-                tabIndex="0"
-                className={name.name == "Booking" ? "flex items-center text-textColorCustom" : "flex items-center hover:text-textColorCustom underline-hover"}
-              >
-                BOOKINGS <TiArrowSortedDown className="ml-2" size={20} />
-              </a>
-              <ul
-                tabIndex="0"
-                className="dropdown-content menu bg-base-100 rounded-box z-[1] w-52 shadow"
-              >
-                <li>
-                  <button onClick={handleNavigateBookings}>ĐẶT CHỔ CỦA TÔI</button>
-                </li>
-                <li>
-                  <button onClick={handleNavigateRefund}>HOÀN TIỀN</button>
-                </li>
+          <li className="relative dropdown dropdown-hover">
+            <a
+              tabIndex="0"
+              className={name.name == "Booking" ? "flex items-center text-textColorCustom" : "flex items-center hover:text-textColorCustom underline-hover"}
+            >
+              BOOKINGS <TiArrowSortedDown className="ml-2" size={20} />
+            </a>
+            <ul
+              tabIndex="0"
+              className="dropdown-content menu bg-base-100 rounded-box z-[1] w-52 shadow"
+            >
+              <li>
+                <button onClick={handleNavigateBookings}>ĐẶT CHỔ CỦA TÔI</button>
+              </li>
+              <li>
+              <button onClick={handleNavigateRefund}>HOÀN TIỀN</button>
+              </li>
 
-              </ul>
-            </li>
-          )}
+            </ul>
+          </li>
           <li className={name.name === "Introduce" ? "text-textColorCustom" : "underline-hover hover:text-textColorCustom "}>
-            <button onClick={handleNavigateGioiThieu}> GIỚI THIỆU</button>
+            <button onClick={handleNavigateIntroduction}> GIỚI THIỆU</button>
           </li>
           <li className="underline-hover hover:text-textColorCustom">
             TIN TỨC
@@ -153,9 +140,12 @@ function Menu(name) {
             type="text"
             placeholder="Tìm kiếm tour..."
             className="focus:outline-none bg-gray-100 border-none placeholder-gray-300 font-semibold"
+            value={searchValue}
+            onChange={(e)=> setSearchValue(e.target.value)}
+            onKeyDown={handleKeyDown}
           />
         </div>
-        <HiOutlineSearchCircle size={30} className="hover:text-textColorCustom" />
+        <HiOutlineSearchCircle size={30} className="hover:text-textColorCustom" onClick={handleSearch}/>
       </div>
     </div>
   );

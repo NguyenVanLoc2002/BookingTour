@@ -11,6 +11,7 @@ import { RxAvatar } from "react-icons/rx";
 import { Modal, Button } from "antd";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { useUser } from "../../contexts/UserContext";
 
 function Header() {
   const navigate = useNavigate();
@@ -31,9 +32,7 @@ function Header() {
   const [month, setMonth] = useState(1);
   const [year, setYear] = useState(new Date().getFullYear()); // Mặc định là năm hiện tại
   const [gender, setGender] = useState(0); // 0: Nữ, 1: Nam, 2: Khác
-  const [customer, setCustomer] = useState(null);
-  const token = localStorage.getItem("token");
-  // Danh sách năm từ 1900 đến năm hiện tại
+  const { login, user, logout } = useUser();
   const years = [];
   for (let i = 1900; i <= new Date().getFullYear(); i++) {
     years.push(i);
@@ -61,12 +60,13 @@ function Header() {
     setDay(1);
     setMonth(1);
     setYear(new Date().getFullYear());
-  }
+  };
 
   const handleSubmitRegister = async (e) => {
     e.preventDefault(); // Ngăn chặn hành vi mặc định của form
-    const dateOfBirth = `${year}-${month < 10 ? "0" + month : month}-${day < 10 ? "0" + day : day
-      }`;
+    const dateOfBirth = `${year}-${month < 10 ? "0" + month : month}-${
+      day < 10 ? "0" + day : day
+    }`;
     // Tính tuổi từ ngày sinh
     const birthDate = new Date(dateOfBirth);
     const today = new Date();
@@ -126,23 +126,29 @@ function Header() {
 
   const handleSubmitLogin = async (e) => {
     e.preventDefault();
-    const data = {
-      email,
-      password,
-    }
-    console.log(data);
     try {
-      const response = await axios.post('http://localhost:8000/api/v1/auth/login', data);
-      console.log(response.data);
-      // Lưu token vào localStorage
-      localStorage.setItem('token', response.data.token);
-      closeModalLogin();
+      // Gọi hàm login từ context
+      await login(email, password); // Hàm login sẽ xử lý đăng nhập, lưu token và lấy thông tin người dùng
 
+      // Sau khi đăng nhập thành công, có thể thực hiện các bước tiếp theo (nếu cần)
+      closeModalLogin(); // Đóng modal đăng nhập
+      handleRefreshDataLogin();
     } catch (error) {
       console.error("Đăng nhập không thành công:", error);
       alert("Tài khoản hoặc mật khẩu không đúng!");
+      handleRefreshDataLogin();
     }
-  }
+  };
+
+  const handleRefreshDataLogin = () => {
+    setEmail("");
+    setPassword("");
+  };
+
+  const handleLogout = () => {
+    logout(); // Gọi hàm logout từ context
+    navigate("/");
+  };
 
   // Hàm để toggle giữa hiển thị và ẩn mật khẩu
   const togglePasswordVisibility = () => {
@@ -156,30 +162,6 @@ function Header() {
   const handleNavigateAccount = () => {
     navigate("/Account");
   };
-
-  useEffect(() => {
-    const fetchCustomer = async () => {
-      if (!token) {
-        setCustomer(null);
-      }
-      try {
-        const response = await axios.get(
-          "http://localhost:8000/api/v1/customers/by-email",
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-        setCustomer(response.data);
-        console.log("customer: ", response.data);
-      } catch (error) {
-        setCustomer(null);
-        console.error("Error fetching customer data:", error);
-      }
-    };
-    fetchCustomer();
-  }, [token]);
 
   return (
     <div className="hidden md:flex w-full bg-black text-white text-sm">
@@ -211,36 +193,37 @@ function Header() {
         </button>
         <ul
           tabIndex="0"
-          className="dropdown-content menu bg-slate-200 rounded-box z-[1]  shadow text-gray-600 ml-[-65px]"
+          className="dropdown-content menu bg-slate-200 rounded-box z-[1] shadow text-gray-600 right-0 min-w-[150px] w-max"
         >
-          {
-            customer ? (
-              <div>
-                <li>
-                  <button onClick={handleNavigateAccount}>Thông tin cá nhân</button>
-                </li>
-                <li>
-                  <button onClick={handleNavigateAccount}>Đăng xuất</button>
-                </li>
-              </div>
-            ) : (
-              <div>
-                <li>
-                  <button onClick={openModalRegister}>Đăng ký</button>
-                </li>
-                <li>
-                  <button onClick={openModalLogin}>Đăng nhập</button>
-                </li>
-                <li>
-                  <button onClick={handleNavigateAccount}>Thông tin cá nhân</button>
-                </li>
-              </div>
-            )
-          }
-
-
+          {user ? (
+            <div className="flex flex-col space-y-4">
+              <li>
+                <button
+                  className="whitespace-nowrap"
+                  onClick={handleNavigateAccount}
+                >
+                  Thông tin cá nhân
+                </button>
+              </li>
+              <li>
+                <button className="whitespace-nowrap" onClick={handleLogout}>
+                  Đăng xuất
+                </button>
+              </li>
+            </div>
+          ) : (
+            <div className="flex flex-col space-y-4">
+              <li>
+                <button onClick={openModalRegister}>Đăng ký</button>
+              </li>
+              <li>
+                <button onClick={openModalLogin}>Đăng nhập</button>
+              </li>
+            </div>
+          )}
         </ul>
       </li>
+
       <Modal
         open={isOpenRegister}
         onOk={closeModalRegister}

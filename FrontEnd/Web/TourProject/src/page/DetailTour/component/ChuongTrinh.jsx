@@ -83,7 +83,7 @@ function ChuongTrinh({ tour }) {
       if (tour) {
         try {
           const response = await axios.get(
-            `http://localhost:8000/api/v1/tours/tour-tickets/by-tour/${tour.tourId}`
+            `http://localhost:8000/api/v1/tour-tickets/by-tour/${tour.tourId}`
           );
           setTickets(response.data);
         } catch (error) {

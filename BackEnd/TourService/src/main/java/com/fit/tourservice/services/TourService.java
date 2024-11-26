@@ -153,7 +153,8 @@ public class TourService {
 
     public Flux<TourDTO> findToursByIds(List<Long> tourIds) {
         return tourRepository.findByTourIdIn(tourIds)
-                .map(TourDTO::convertToDTO);
+                .flatMap(this::buildTourDTO);
+
     }
 
     public Mono<Double> calcTotalAmountTicket(Long tourId, int numberOfGuests) {
