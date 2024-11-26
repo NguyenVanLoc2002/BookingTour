@@ -17,6 +17,7 @@ public class ItinerariesDTO {
     private String description;
     private float temperature;
     private WeatherCondition weatherCondition;
+    private String activity;
 
     public static ItinerariesDTO convertToDTO(Itineraries itineraries) {
         if (itineraries == null) {
@@ -29,7 +30,8 @@ public class ItinerariesDTO {
                 itineraries.getTitle(),
                 itineraries.getDescription(),
                 itineraries.getTemperature(),
-                itineraries.getWeatherCondition()
+                itineraries.getWeatherCondition(),
+                itineraries.getActivity()
         );
     }
 
@@ -45,6 +47,7 @@ public class ItinerariesDTO {
         itineraries.setDescription(itinerariesDTO.getDescription());
         itineraries.setTemperature(itinerariesDTO.getTemperature());
         itineraries.setWeatherCondition(itinerariesDTO.getWeatherCondition());
+        itineraries.setActivity(itinerariesDTO.getActivity());
         return itineraries;
     }
 

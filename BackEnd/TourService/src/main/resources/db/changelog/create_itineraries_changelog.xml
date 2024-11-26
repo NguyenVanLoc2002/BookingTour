@@ -22,6 +22,7 @@
             <column name="description" type="TEXT"/>
             <column name="temperature" type="FLOAT"/>
             <column name="weather_condition" type="VARCHAR(25)"/>
+            <column name="activity" type="TEXT"/>
         </createTable>
     </changeSet>
 
