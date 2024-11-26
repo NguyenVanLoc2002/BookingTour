@@ -44,38 +44,6 @@ function ChuongTrinh({ tour }) {
 
   console.log("itineraries: ", itineraries);
 
-  //Call API  Get Activities By ItineraryId
-  const [activities, setActivities] = useState([]);
-
-  useEffect(() => {
-    const fetchActivitiesByItinerary = async (itinerId) => {
-      try {
-        const res = await axios.get(
-          `http://localhost:8000/api/v1/itineraries/activities/by-itinerary`,
-          {
-            params: { itinerId },
-          }
-        );
-        // Lưu activity theo itinerId
-        setActivities((prev) => ({
-          ...prev,
-          [itinerId]: res.data,
-        }));
-      } catch (error) {
-        console.error("Error fetching itinerary data:", error);
-      }
-    };
-
-    // Kiểm tra xem itineraries có tồn tại và không rỗng
-    if (itineraries.length > 0) {
-      itineraries.forEach((it) => {
-        fetchActivitiesByItinerary(it.itinerId); // Truyền itinerId vào hàm
-      });
-    }
-  }, [itineraries]);
-
-  console.log("activities: ", activities);
-
   //Call API Ticket Tour
   const [tickets, setTickets] = useState([]);
   useEffect(() => {
@@ -131,7 +99,11 @@ function ChuongTrinh({ tour }) {
             <img
               alt="Beautiful beach"
               className="rounded h-96 w-1/3 object-cover"
-              src={tour?.urlImage[index]||["C:\BaoTruc\KLTN\KLTN2\BookingTour\FrontEnd\Web\TourProject\src\assets\banner\h1-slider-img-1-.jpg"]}
+              src={
+                tour?.urlImage[index] || [
+                  "C:BaoTrucKLTNKLTN2BookingTourFrontEndWebTourProjectsrcassets\bannerh1-slider-img-1-.jpg",
+                ]
+              }
             />
             <div className="bg-white p-4 rounded-lg shadow-md text-base border border-textColorCustom w-7/12 flex flex-col ">
               <div className="flex items-center mb-10">
@@ -143,17 +115,11 @@ function ChuongTrinh({ tour }) {
                 </h1>
               </div>
 
-              {/* Task detail */}
-              <ul>
-                {activities[it.itinerId]?.map((activity) => (
-                  <li key={activity.activityId}>
-                    <p className="text-gray-700 mb-2">
-                      <strong>{activity.time}: </strong>
-                      {activity.activityDescription}
-                    </p>
-                  </li>
-                ))}
-              </ul>
+              {/* Render activity dưới dạng HTML */}
+              <div
+                className="text-gray-800"
+                dangerouslySetInnerHTML={{ __html: it.activity }}
+              ></div>
             </div>
           </div>
         ))}
