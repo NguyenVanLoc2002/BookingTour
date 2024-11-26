@@ -39,7 +39,7 @@ const ModalSetCriteria = ({ visible, onClose }) => {
         startDate: dayjs(),
         endDate: dayjs(),
         maxPrice: '',
-        numberOfPeople: ''
+        numberOfPeople: '',
     });
     const types = [
         { value: 'mh', label: 'Mạo hiểm' },
@@ -52,7 +52,6 @@ const ModalSetCriteria = ({ visible, onClose }) => {
     const regions = [
         { value: 'mb', label: 'Miền Bắc' },
         { value: 'mtr', label: 'Miền Trung' },
-        { value: 'mt', label: 'Miền Tây' },
         { value: 'mn', label: 'Miền Nam' },
     ]
     const times = [
@@ -166,7 +165,6 @@ const ModalSetCriteria = ({ visible, onClose }) => {
     const today = dayjs().format('DD/MM/YYYY');
     dayjs.extend(customParseFormat);
     const submit = () => {
-
         console.log(formValues)
     };
     return (
@@ -193,7 +191,7 @@ const ModalSetCriteria = ({ visible, onClose }) => {
                             >
                                 <Row className='pr-6 justify-between'>
                                     <Col span={11} >
-                                        <Form.Item label="Chọn điểm khởi hành" name="city" className='custom-border'
+                                        {/* <Form.Item label="Chọn điểm khởi hành" name="city" className='custom-border'
                                             rules={[{ required: true, }]} >
                                             <Select
                                                 value={formValues.city}
@@ -201,6 +199,15 @@ const ModalSetCriteria = ({ visible, onClose }) => {
                                                 onChange={(value) => handleChange('city', value)}
                                                 options={citys}
                                                 style={{ height: 40 }}
+                                            />
+                                        </Form.Item> */}
+                                        <Form.Item label="Vùng miền" name="city" className='custom-border'
+                                            rules={[{ required: true, },]} >
+                                            <Select
+                                                value={formValues.city}
+                                                defaultValue={formValues.city}
+                                                onChange={(value) => handleChange('city', value)}
+                                                options={citys} style={{ height: 40 }}
                                             />
                                         </Form.Item>
                                     </Col>
@@ -293,7 +300,7 @@ const ModalSetCriteria = ({ visible, onClose }) => {
                                 <Row className='pr-6 justify-between' >
                                     <Col span={11} >
                                         
-                                        <Form.Item label="Chọn khoảng thời gian" name="city" className='custom-border'
+                                        <Form.Item label="Chọn khoảng thời gian" className='custom-border'
                                             rules={[{ required: true, }]} >
                                             <RangePicker
                                                 defaultValue={[dayjs(today, dateFormat), dayjs(today, dateFormat)]}
@@ -303,7 +310,7 @@ const ModalSetCriteria = ({ visible, onClose }) => {
                                         </Form.Item>
                                     </Col>
                                     <Col span={11} >
-                                    <Form.Item label=" " name="city" className='custom-border'>
+                                    <Form.Item label=" "  className='custom-border'>
                                             <Button className=' bg-[#3fd0d4] pr-5 pl-5 w-full h-[40px]'  type="primary" onClick={submit} ><span className='font-bold text-white text-lg'>XÁC NHẬN</span></Button>
                                         </Form.Item>
                                         
