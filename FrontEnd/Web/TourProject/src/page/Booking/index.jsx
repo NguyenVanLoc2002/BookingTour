@@ -5,23 +5,21 @@ import Header from "../../layouts/Header";
 import Menu from "../../layouts/Menu";
 import Footer from "../../layouts/Footer";
 import { useLocation } from "react-router-dom";
+import { useUser } from "../../contexts/UserContext";
 
 function Booking() {
   const location = useLocation();
   const { ticket } = location.state || {};
   const { tour } = location.state || {};
-  const token = localStorage.getItem("token");
+  const { user } = useUser();
 
   console.log("ticket: ", ticket);
   console.log("tour: ", tour);
-  console.log("token: ", token);
-
-  const [customer, setCustomer] = useState();
 
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
-  
+
   const [diaChi, setDiaChi] = useState("");
   const listTinh = [
     { label: "Hồ Chí Minh", value: "Hồ Chí Minh" },
@@ -76,14 +74,14 @@ function Booking() {
     children: treEm,
     toddlers: treNho,
     infants: emBe,
-    customerId: customer?.userId || null, 
-    email: email,
-    userName: name,
-    phoneNumber: phone,
+    customerId: user?.userId || null,
+    email: user?.email || email,
+    userName:user?.name || name,
+    phoneNumber: user?.phoneNumber || phone,
     city: selectedTinh,
     district: selectedQuan,
     ward: selectedPhuong,
-    address: diaChi,
+    address: user?.address ||diaChi,
   };
 
   console.log("booking Tour: ", bookingData);
@@ -96,29 +94,9 @@ function Booking() {
     }
   };
 
-  //Call API get infor Customer
-  useEffect(() => {
-    const fetchCustomerInfo = async () => {
-      try {
-        const res = await axios.get(
-          "http://localhost:8000/api/v1/customers/by-email",
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-        setCustomer(res.data);
-        setName(res.data.name);
-        setEmail(res.data.email);
-      } catch (error) {
-        console.error("Error fetching customer data:", error);
-      }
-    };
-    fetchCustomerInfo();
-  },[token]);
+  //Call API get infor user
 
-  console.log("Cus Info: ", customer);
+  console.log("Cus Info: ", user);
 
   const bookTour = async (bookingData) => {
     try {
@@ -150,13 +128,7 @@ function Booking() {
         <Header />
         <Menu />
         <div className="flex mt-4 container mx-auto ">
-          <div
-            style={{
-              padding: "20px",
-              backgroundColor: "#f9f9f9",
-              borderRadius: "8px",
-            }}
-          >
+          <div className="p-5 bg-gray-100 rounded-lg w-full">
             <div
               className="tour"
               style={{ display: "flex", alignItems: "flex-start" }}
@@ -411,7 +383,7 @@ function Booking() {
                 </label>
                 <input
                   type="text"
-                  value={name}
+                  value={user?.name}
                   onChange={(e) => setName(e.target.value)}
                   style={{
                     padding: "10px",
@@ -427,7 +399,7 @@ function Booking() {
                 </label>
                 <input
                   type="text"
-                  value={phone}
+                  value={user?.phone}
                   onChange={(e) => setPhone(e.target.value)}
                   style={{
                     padding: "10px",
@@ -443,7 +415,7 @@ function Booking() {
                 </label>
                 <input
                   type="email"
-                  value={email}
+                  value={user?.email}
                   onChange={(e) => setEmail(e.target.value)}
                   style={{
                     padding: "10px",
@@ -533,7 +505,7 @@ function Booking() {
                 </label>
                 <input
                   type="text"
-                  value={diaChi}
+                  value={user?.address}
                   onChange={(e) => setDiaChi(e.target.value)}
                   style={{
                     padding: "10px",

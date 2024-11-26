@@ -8,9 +8,11 @@ import Booking from "./page/Booking";
 import PaymentPage from "./page/Payment";
 import Bookings from "./page/Bookings";
 import Refund from "./page/Refund";
+import SavedTour from "./page/SavedTour";
+import { UserProvider } from "./contexts/UserContext";
 function App() {
   return (
-    <>
+    <UserProvider>
       <Routes>
         <Route path="/" element={<MainLayout />} />
         <Route path="/detail" element={<DetailTour />} />
@@ -21,8 +23,9 @@ function App() {
         <Route path="/bookings" element={<Bookings />} />
         <Route path="/payment" element={<PaymentPage />} />
         <Route path="/refund" element={<Refund />} />
+        <Route path="/savedTour" element={<SavedTour />} />
       </Routes>
-    </>
+    </UserProvider>
   );
 }
 

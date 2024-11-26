@@ -31,7 +31,7 @@ public class PaymentController {
     private RefundService refundService;
 
     @PostMapping("/process-refund")
-    public Mono<ResponseEntity<RefundResponseDTO>> processRefund( @RequestParam String bookingId) {
+    public Mono<ResponseEntity<RefundResponseDTO>> processRefund(@RequestParam String bookingId) {
         return refundService.processRefund(bookingId)
                 .map(transactionId -> {
                     RefundResponseDTO response = new RefundResponseDTO();
@@ -45,19 +45,36 @@ public class PaymentController {
     @PostMapping("/success")
     public Mono<ResponseEntity<PaymentDTO>> successPayment(@RequestBody PaymentRequest paymentRequest) {
         log.info("Received payment request: {}", paymentRequest.toString());
-        return redisService.getDataAsBookingDTO(paymentRequest.getBookingId())
-                .flatMap(bookingDTO -> {
-                    log.info("Received a booking: {}", bookingDTO.toString());
-                    bookingDTO.setStatusBooking(StatusBooking.PAID);
-                    return bookingService.saveBookingTour(bookingDTO)
-                            .then(paymentService.addPayment(paymentRequest))
-                            .map(ResponseEntity::ok);
-                })
+
+        return redisService.getDataAsBookingDTO(paymentRequest.getBookingId()) // Trả về Mono<BookingDTO>
+                .flatMap(booking ->
+                        redisService.getBookingByBookingIdFromRedisSet(booking.getCustomerId(), booking.getBookingId())
+                                .flatMap(bookingDTO -> {
+                                    log.info("Received a booking: {}", bookingDTO.toString());
+
+                                    // Xóa booking trong Redis trước khi cập nhật trạng thái
+                                    return redisService.deleteDataFromSet("customer:" + bookingDTO.getCustomerId() + ":bookings", bookingDTO)
+                                            .then(Mono.defer(() -> {
+                                                // Sau khi xóa, cập nhật trạng thái booking
+                                                bookingDTO.setStatusBooking(StatusBooking.PAID);
+                                                log.info("Updated booking status to PAID: {}", bookingDTO);
+
+                                                // Lưu booking tour và thêm payment
+                                                return bookingService.saveBookingTour(bookingDTO)
+                                                        .then(paymentService.addPayment(paymentRequest))
+                                                        .flatMap(paymentDTO -> {
+                                                            // Trả về kết quả PaymentDTO
+                                                            return Mono.just(ResponseEntity.ok(paymentDTO));
+                                                        });
+                                            }));
+                                })
+                )
                 .onErrorResume(e -> {
-                    // Log the error for debugging
+                    // Log lỗi nếu có
                     log.error("Error processing payment: {}", e.getMessage(), e);
                     return Mono.just(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null));
                 });
     }
-    
+
+
 }

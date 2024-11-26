@@ -4,30 +4,11 @@ import Header from "../../layouts/Header";
 import Menu from "../../layouts/Menu";
 import Footer from "../../layouts/Footer";
 import ModalSetCriteria from "../../components/ModalSetCriteria";
-function Account() {
-  // gioi tinh 1: nu, 2 nam
-  // const customer = {
-  //   name: "Bao Truc",
-  //   url: "https://res.cloudinary.com/doqbelkif/image/upload/v1727453521/e015a22e-fa11-4f2c-86bf-322445d957ea.png",
-  //   gioiTinh: 1,
-  //   ngaySinh: "06/05/2002",
-  //   email: "baotruc123@gmail.com",
-  //   phone: "0338030541",
-  //   city: "Hồ Chí Minh",
-  // };
-  // const user = {
-  //   name: "Bao Truc",
-  //   url: "https://res.cloudinary.com/doqbelkif/image/upload/v1727453521/e015a22e-fa11-4f2c-86bf-322445d957ea.png",
-  //   gioiTinh: 1,
-  //   ngaySinh: "06/05/2002",
-  //   email: "baotruc123@gmail.com",
-  //   phone: "0338030541",
-  //   city: "Hồ Chí Minh",
-  // };
+import { useUser } from "../../contexts/UserContext";
 
-  const [customer, setCustomer] = useState();
-  const [loading, setLoading] = useState(true);
-  // const [customer, setCustomer] = useState(null);
+function Account() {
+  const { user} = useUser();
+  // const [user, setuser] = useState(null);
   const [isDisabled, setIsDisabled] = useState(true);
   const [gioiTinh, setGioiTinh] = useState(false);
   const [day, setDay] = useState("");
@@ -40,7 +21,6 @@ function Account() {
     console.log("hihi show modal")
   }
   const handleClose = () => setIsModalVisible(false);
-  const token = localStorage.getItem("token"); // Lấy token từ localStorage
 
   const handleChinhSua = () => {
     setIsDisabled(false);
@@ -65,47 +45,10 @@ function Account() {
     : 31;
   const days = Array.from({ length: daysInMonth }, (_, i) => i + 1);
 
-  useEffect(() => {
-    const fetchCustomer = async () => {
-      if (!token) {
-        console.error("No token found");
-        setLoading(false);
-        return;
-      }
-
-      try {
-        const response = await axios.get(
-          "http://localhost:8000/api/v1/customers/by-email",
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-
-        setCustomer(response.data);
-        console.log("customer: ", response.data);
-        setGioiTinh(response.data.gender);
-
-        const dateParts = response.data.dateOfBirth.split("-");
-        if (dateParts.length === 3) {
-          setYear(dateParts[0]); // Lấy năm
-          setMonth(dateParts[1]); // Lấy tháng
-          setDay(dateParts[2]); // Lấy ngày
-        }
-      } catch (error) {
-        console.error("Error fetching customer data:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchCustomer();
-  }, [token]);
 
   const handleSave = async () => {
-    const updatedCustomer = {
-      name: customer.name,
+    const updateduser = {
+      name: user.name,
       gender: gioiTinh,
       dateOfBirth: `${day}/${month}/${year}`,
       // Add other fields as needed
@@ -113,8 +56,8 @@ function Account() {
 
     try {
       await axios.put(
-        "http://localhost:8000/api/v1/customers/update",
-        updatedCustomer,
+        "http://localhost:8000/api/v1/users/update",
+        updateduser,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -124,18 +67,10 @@ function Account() {
       alert("Information updated successfully!");
       setIsDisabled(true);
     } catch (error) {
-      console.error("Error updating customer data:", error);
+      console.error("Error updating user data:", error);
       alert("Failed to update information. Please try again.");
     }
   };
-
-  if (loading) {
-    return <p>Loading...</p>; // Hiển thị thông báo khi đang tải
-  }
-
-
-
-
 
   return (
     <>
@@ -149,10 +84,10 @@ function Account() {
             <div className="flex items-center space-x-4">
               <img
                 className="h-24 w-24 bg-gray-300 rounded-full flex items-center justify-center text-xl font-bold border border-blue-300"
-                src={customer?.url || "https://res.cloudinary.com/doqbelkif/image/upload/v1727453521/e015a22e-fa11-4f2c-86bf-322445d957ea.png"} alt="User Avatar" 
+                src={user?.url || "https://res.cloudinary.com/doqbelkif/image/upload/v1727453521/e015a22e-fa11-4f2c-86bf-322445d957ea.png"} alt="User Avatar" 
               />
               <div>
-                <div className="font-bold text-lg">{customer.name}</div>
+                <div className="font-bold text-lg">{user.name}</div>
                 <div className="text-gray-500">Google</div>
               </div>
             </div>
@@ -210,7 +145,7 @@ function Account() {
                           : "block appearance-none w-full bg-white border border-textColorCustom text-gray-700 py-2 px-3 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
                       }
                       type="text"
-                      value={customer.name}
+                      value={user.name}
                       disabled={isDisabled}
                     />
                   </div>
@@ -323,7 +258,7 @@ function Account() {
                           : "block appearance-none w-full bg-white border border-textColorCustom text-gray-700 py-2 px-3 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
                       }
                       type="text"
-                      value={customer?.address ? customer.address : ""}
+                      value={user?.address ? user.address : ""}
                     />
                   </div>
                   <div className="flex justify-end space-x-4">
@@ -349,7 +284,7 @@ function Account() {
                   </div>
                   <div className="flex justify-between items-center border-t border-gray-200 pt-4">
                     <div>
-                      <p className="text-gray-800 font-medium">{customer?.email}</p>
+                      <p className="text-gray-800 font-medium">{user?.email}</p>
                       <p className="text-green-600 text-sm">
                         Nơi nhận thông báo
                       </p>
@@ -370,7 +305,7 @@ function Account() {
                   </div>
                   <div className="flex justify-between items-center border-t border-gray-200 pt-4">
                     <div>
-                      <p className="text-gray-800 font-medium">{customer?.phoneNumber}</p>
+                      <p className="text-gray-800 font-medium">{user?.phoneNumber}</p>
                       <p className="text-green-600 text-sm">
                         Nơi nhận thông báo
                       </p>

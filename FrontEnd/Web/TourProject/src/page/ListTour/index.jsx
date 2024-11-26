@@ -23,6 +23,7 @@ import arrows_bot from "../../assets/iconTour/arrows_bot.png";
 import buddhist from "../../assets/iconTour/buddhist.png";
 import early from "../../assets/iconTour/early.png";
 import history from "../../assets/iconTour/history.png";
+import filter from "../../assets/iconTour/filter.png";
 import news from "../../assets/iconTour/new.png";
 import resort from "../../assets/iconTour/resort.png";
 import river from "../../assets/iconTour/river.png";
@@ -44,49 +45,57 @@ function ListTour() {
   const [tourList, setTourList] = useState([]); // Danh sách tour
   const [totalPages, setTotalPages] = useState(1); // Tổng số trang
   const [sortType, setSortType] = useState("");
+  const [typeTour, settypeTour] = useState("");
 
   const [isModalVisible, setIsModalVisible] = useState(false);
   const showModal = () => {
     setIsModalVisible(true);
-    console.log("hihi show modal")
-  }
+  };
   const handleClose = () => setIsModalVisible(false);
 
   const fetchTours = async () => {
     try {
       let url = `http://localhost:8000/api/v1/tours/region`;
       const params = {
-        region,
         page: currentPage,
         size: toursPerPage,
-        isAscending: true,
       };
+      if (name) {
+        url = `http://localhost:8000/api/v1/tours/by-name`;
+        params.name = name;
+      } else {
+        params.region = region;
 
-      switch (sortType) {
-        case "startDateNew": // Mới nhất
-          params.isAscending = false; // Ngày giảm dần
-          break;
+        switch (sortType) {
+          case "startDateNew": // Mới nhất
+            params.isAscending = false; // Ngày giảm dần
+            break;
 
-        case "priceDesc": // Giá cao nhất
-          url = `http://localhost:8000/api/v1/tours/region-order-by-price`;
-          params.isAscending = false;
-          break;
+          case "priceDesc": // Giá cao nhất
+            url = `http://localhost:8000/api/v1/tours/region-order-by-price`;
+            params.isAscending = false;
+            break;
 
-        case "priceAsc": // Giá thấp nhất
-          url = `http://localhost:8000/api/v1/tours/region-order-by-price`;
-          params.isAscending = true;
-          break;
-        case "departureDateAsc": // Khởi hành sớm nhất
-          url = `http://localhost:8000/api/v1/tours/region-order-by-departure-date`;
-          params.isAscending = true;
-          break;
-        case "departureDateDesc": // Khởi hành muộn nhất
-          url = `http://localhost:8000/api/v1/tours/region-order-by-departure-date`;
-          params.isAscending = false;
-          break;
-        default:
-          // Nếu không có sortType, giữ nguyên URL và params mặc định
-          break;
+          case "priceAsc": // Giá thấp nhất
+            url = `http://localhost:8000/api/v1/tours/region-order-by-price`;
+            params.isAscending = true;
+            break;
+          case "departureDateAsc": // Khởi hành sớm nhất
+            url = `http://localhost:8000/api/v1/tours/region-order-by-departure-date`;
+            params.isAscending = true;
+            break;
+          case "departureDateDesc": // Khởi hành muộn nhất
+            url = `http://localhost:8000/api/v1/tours/region-order-by-departure-date`;
+            params.isAscending = false;
+            break;
+          case "typeTour": // Khởi hành muộn nhất
+            url = `http://localhost:8000/api/v1/tours/by-type`;
+            params.typeTour = typeTour;
+            break;
+          default:
+            params.isAscending = true;
+            break;
+        }
       }
 
       const response = await axios.get(url, { params });
@@ -97,9 +106,11 @@ function ListTour() {
     }
   };
 
+  console.log("Type tour: ", typeTour);
+
   useEffect(() => {
     fetchTours();
-  }, [region, currentPage, toursPerPage, sortType]);
+  }, [name, region, currentPage, toursPerPage, sortType, typeTour]);
   console.log("List Tour:", tourList);
 
   //Animation text
@@ -307,83 +318,150 @@ function ListTour() {
 
         <div className="bg-white container mx-auto px-8  w-3/4 py-6 flex justify-around text-center text-sm text-gray-700">
           <div className={"flex flex-col items-center justify-around"}>
-            <img src={mountain} alt="Logo" className="w-[32px] h-auto" />
-            <div>Tour mạo hiểm</div>
+            <button
+              onClick={() => {
+                settypeTour("SPORT");
+                setSortType("typeTour");
+              }}
+              className="flex flex-col items-center cursor-pointer bg-transparent border-none"
+            >
+              <img src={mountain} alt="Logo" className="w-[32px] h-auto" />
+              <div>Tour mạo hiểm</div>
+            </button>
           </div>
-          <div className={"flex flex-col items-center justify-center"}>
-            <img src={river} alt="Logo" className="w-[32px] h-auto" />
 
-            <div>Tour tham quan</div>
-          </div>
           <div className={"flex flex-col items-center justify-center"}>
-            <img src={buddhist} alt="Logo" className="w-[32px] h-auto" />
-            <div>Tour văn hóa</div>
+            <button
+              onClick={() => {
+                settypeTour("DISCOVER");
+                setSortType("typeTour");
+              }}
+              className="flex flex-col items-center cursor-pointer bg-transparent border-none"
+            >
+              <img src={river} alt="Logo" className="w-[32px] h-auto" />
+              <div>Tour khám phá</div>
+            </button>
           </div>
+
           <div className={"flex flex-col items-center justify-center"}>
-            <img src={jungle} alt="Logo" className="w-[32px] h-auto" />
-            <div>Tour sinh thái</div>
+            <button
+              onClick={() => {
+                settypeTour("CULTURE");
+                setSortType("typeTour");
+              }}
+              className="flex flex-col items-center cursor-pointer bg-transparent border-none"
+            >
+              <img src={buddhist} alt="Logo" className="w-[32px] h-auto" />
+              <div>Tour văn hóa</div>
+            </button>
           </div>
+
           <div className={"flex flex-col items-center justify-center"}>
-            <img src={resort} alt="Logo" className="w-[32px] h-auto" />
-            <div>Tour nghỉ dưỡng</div>
+            <button
+              onClick={() => {
+                settypeTour("ECOLOGY");
+                setSortType("typeTour");
+              }}
+              className="flex flex-col items-center cursor-pointer bg-transparent border-none"
+            >
+              <img src={jungle} alt="Logo" className="w-[32px] h-auto" />
+              <div>Tour sinh thái</div>
+            </button>
           </div>
+
           <div className={"flex flex-col items-center justify-center"}>
-            <img src={target} alt="Logo" className="w-[32px] h-auto" />
-            <div>Tour team building</div>
+            <button
+              onClick={() => {
+                settypeTour("RESORT");
+                setSortType("typeTour");
+              }}
+              className="flex flex-col items-center cursor-pointer bg-transparent border-none"
+            >
+              <img src={resort} alt="Logo" className="w-[32px] h-auto" />
+              <div>Tour nghỉ dưỡng</div>
+            </button>
+          </div>
+
+          <div className={"flex flex-col items-center justify-center"}>
+            <button
+              onClick={() => {
+                settypeTour("ENTERTAINMENT");
+                setSortType("typeTour");
+              }}
+              className="flex flex-col items-center cursor-pointer bg-transparent border-none"
+            >
+              <img src={target} alt="Logo" className="w-[32px] h-auto" />
+              <div>Tour giải trí</div>
+            </button>
           </div>
         </div>
         <hr className="border-3 border-gray-500 w-full mb-4" />
 
-        <div className="bg-white container mx-auto px-8  w-3/4 py-6 flex justify-around text-center text-sm text-gray-700">
-          <div
-            className={"flex flex-col items-center justify-center"}
+        <div className="bg-white container mx-auto px-8 w-3/4 py-6 flex justify-around text-center text-sm text-gray-700">
+          <button
+            className={
+              "flex flex-col items-center justify-center cursor-pointer bg-transparent border-none"
+            }
             onClick={() => setSortType("startDateNew")}
           >
             <img src={news} alt="Logo" className="w-[32px] h-auto" />
             <div>Mới nhất</div>
-          </div>
-          <div
-            className={"flex flex-col items-center justify-center"}
+          </button>
+
+          <button
+            className={
+              "flex flex-col items-center justify-center cursor-pointer bg-transparent border-none"
+            }
             onClick={() => setSortType("priceDesc")}
           >
             <img src={arrows_bot} alt="Logo" className="w-[32px] h-auto" />
             <div>Giá cao nhất</div>
-          </div>
-          <div
-            className={"flex flex-col items-center justify-center"}
+          </button>
+
+          <button
+            className={
+              "flex flex-col items-center justify-center cursor-pointer bg-transparent border-none"
+            }
             onClick={() => setSortType("priceAsc")}
           >
             <img src={arrows_top} alt="Logo" className="w-[32px] h-auto" />
             <div>Giá thấp nhất</div>
-          </div>
-          <div
-            className={"flex flex-col items-center justify-center"}
+          </button>
+
+          <button
+            className={
+              "flex flex-col items-center justify-center cursor-pointer bg-transparent border-none"
+            }
             onClick={() => setSortType("departureDateAsc")}
           >
             <img src={early} alt="Logo" className="w-[32px] h-auto" />
             <div>Khởi hành sớm nhất</div>
-          </div>
-          <div
-            className={"flex flex-col items-center justify-center"}
+          </button>
+
+          <button
+            className={
+              "flex flex-col items-center justify-center cursor-pointer bg-transparent border-none"
+            }
             onClick={() => setSortType("departureDateDesc")}
           >
             <img src={history} alt="Logo" className="w-[32px] h-auto" />
             <div>Khởi hành muộn nhất</div>
-          </div>
-          <div
-            className={"flex flex-col items-center justify-center"}
+          </button>
+
+          <button
+            className={
+              "flex flex-col items-center justify-center cursor-pointer bg-transparent border-none"
+            }
             onClick={() => showModal()}
           >
-            <img src={history} alt="Logo" className="w-[32px] h-auto" />
+            <img src={filter} alt="Logo" className="w-[32px] h-auto" />
             <div>Lọc</div>
-          </div>
+          </button>
         </div>
         {/* Tittle */}
         <div className="">
-          <ModalSetCriteria
-            visible={isModalVisible}
-            onClose={handleClose}
-          /></div>
+          <ModalSetCriteria visible={isModalVisible} onClose={handleClose} />
+        </div>
         <div className="flex flex-col justify-center items-center space-y-5 mt-5">
           <p className="tour-text text-4xl hidden-animation text-textColorCustom font-dancing-script">
             Tour hấp dẫn
@@ -424,10 +502,11 @@ function ListTour() {
               <button
                 key={page}
                 onClick={() => handlePageChange(page)}
-                className={`px-4 py-2 rounded ${page === currentPage
+                className={`px-4 py-2 rounded ${
+                  page === currentPage
                     ? "bg-blue-500 text-white"
                     : "bg-gray-300"
-                  }`}
+                }`}
               >
                 {page}
               </button>

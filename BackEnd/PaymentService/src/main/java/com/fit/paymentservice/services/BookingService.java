@@ -101,14 +101,6 @@ public class BookingService {
                 .doOnError(throwable -> log.error("Error saving booking: {}", throwable.getMessage(), throwable));
     }
 
-    //Luu booking tour vao Redis
-    public Mono<Boolean> saveBookingTourFromRedis(BookingDTO bookingDTO) {
-        String key = bookingDTO.getBookingId().toString();
-
-        return redisService.saveDataWithTTL(key, bookingDTO, Duration.ofDays(1))
-                .doOnError(throwable -> log.error("Error saving booking to Redis: {}", throwable.getMessage(), throwable));
-    }
-
 
 
     public Mono<BookingDTO> findById(String bookingId){
@@ -126,18 +118,14 @@ public class BookingService {
         bookingDTO.setBookingDate(bookingResponse.getBookingDate());
         bookingDTO.setTotalAmount(bookingResponse.getTotalAmount());
         bookingDTO.setQuantity(bookingResponse.getQuantity());
-
-        if (bookingRequest.getCustomerId() != null) {
-            bookingDTO.setCustomerId(bookingRequest.getCustomerId());
-        } else {
-            bookingDTO.setUserName(bookingRequest.getUserName());
-            bookingDTO.setEmail(bookingRequest.getEmail());
-            bookingDTO.setPhoneNumber(bookingRequest.getPhoneNumber());
-            bookingDTO.setAddress(bookingRequest.getAddress());
-            bookingDTO.setCity(bookingRequest.getCity());
-            bookingDTO.setDistrict(bookingRequest.getDistrict());
-            bookingDTO.setWard(bookingRequest.getWard());
-        }
+        bookingDTO.setCustomerId(bookingRequest.getCustomerId());
+        bookingDTO.setUserName(bookingRequest.getUserName());
+        bookingDTO.setEmail(bookingRequest.getEmail());
+        bookingDTO.setPhoneNumber(bookingRequest.getPhoneNumber());
+        bookingDTO.setAddress(bookingRequest.getAddress());
+        bookingDTO.setCity(bookingRequest.getCity());
+        bookingDTO.setDistrict(bookingRequest.getDistrict());
+        bookingDTO.setWard(bookingRequest.getWard());
         return bookingDTO;
     }
 

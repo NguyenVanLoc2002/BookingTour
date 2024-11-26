@@ -14,7 +14,7 @@ function DieuKien() {
   return (
     <>
 
-      <div className=" border  mb-4 rounded-lg border-textColorCustom w-2/3 text-base">
+      <div className=" border  mb-4 rounded-lg border-textColorCustom w-2/3 text-base ">
         <h2 className="font-bold p-4">
           Điều kiện tour
         </h2>

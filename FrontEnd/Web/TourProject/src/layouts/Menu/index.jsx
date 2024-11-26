@@ -35,11 +35,13 @@ function Menu(name) {
 
   const handleSearch = () => {
     handleNavigateListTourByName(searchValue);
+    setSearchValue('');
   };
 
   const handleKeyDown = (e) => {
     if (e.key === "Enter") {
       handleSearch(); // Gọi hàm tìm kiếm khi nhấn Enter
+      setSearchValue('');
     }
   };
 

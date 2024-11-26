@@ -11,6 +11,7 @@ import { RxAvatar } from "react-icons/rx";
 import { Modal, Button } from "antd";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { useUser } from "../../contexts/UserContext";
 
 function Header() {
   const navigate = useNavigate();
@@ -31,8 +32,7 @@ function Header() {
   const [month, setMonth] = useState(1);
   const [year, setYear] = useState(new Date().getFullYear()); // Mặc định là năm hiện tại
   const [gender, setGender] = useState(0); // 0: Nữ, 1: Nam, 2: Khác
-
-  // Danh sách năm từ 1900 đến năm hiện tại
+  const { login, user, logout } = useUser();
   const years = [];
   for (let i = 1900; i <= new Date().getFullYear(); i++) {
     years.push(i);
@@ -54,14 +54,14 @@ function Header() {
     setDay(1); // Reset ngày về 1 khi năm thay đổi
   };
 
-  const handleRefreshDataRegister= ()=>{
+  const handleRefreshDataRegister = () => {
     setEmail("");
     setName("");
     setDay(1);
     setMonth(1);
     setYear(new Date().getFullYear());
-  }
-  
+  };
+
   const handleSubmitRegister = async (e) => {
     e.preventDefault(); // Ngăn chặn hành vi mặc định của form
     const dateOfBirth = `${year}-${month < 10 ? "0" + month : month}-${
@@ -124,26 +124,31 @@ function Header() {
     }
   };
 
-  const handleSubmitLogin = async(e)=>{
-    e.preventDefault(); 
-    const data = {
-      email,
-      password,
-    }
-
-    console.log(data);
+  const handleSubmitLogin = async (e) => {
+    e.preventDefault();
     try {
-      const  response = await axios.post('http://localhost:8000/api/v1/auth/login',data);
-      console.log(response.data);
-      // Lưu token vào localStorage
-      localStorage.setItem('token', response.data.token);
-      closeModalLogin();
+      // Gọi hàm login từ context
+      await login(email, password); // Hàm login sẽ xử lý đăng nhập, lưu token và lấy thông tin người dùng
 
+      // Sau khi đăng nhập thành công, có thể thực hiện các bước tiếp theo (nếu cần)
+      closeModalLogin(); // Đóng modal đăng nhập
+      handleRefreshDataLogin();
     } catch (error) {
       console.error("Đăng nhập không thành công:", error);
       alert("Tài khoản hoặc mật khẩu không đúng!");
+      handleRefreshDataLogin();
     }
-  }
+  };
+
+  const handleRefreshDataLogin = () => {
+    setEmail("");
+    setPassword("");
+  };
+
+  const handleLogout = () => {
+    logout(); // Gọi hàm logout từ context
+    navigate("/");
+  };
 
   // Hàm để toggle giữa hiển thị và ẩn mật khẩu
   const togglePasswordVisibility = () => {
@@ -188,19 +193,37 @@ function Header() {
         </button>
         <ul
           tabIndex="0"
-          className="dropdown-content menu bg-slate-200 rounded-box z-[1]  shadow text-gray-600 ml-[-65px]"
+          className="dropdown-content menu bg-slate-200 rounded-box z-[1] shadow text-gray-600 right-0 min-w-[150px] w-max"
         >
-          <li>
-            <button onClick={openModalRegister}>Đăng ký</button>
-          </li>
-          <li>
-            <button onClick={openModalLogin}>Đăng nhập</button>
-          </li>
-          <li>
-            <button onClick={handleNavigateAccount}>Thông tin cá nhân</button>
-          </li>
+          {user ? (
+            <div className="flex flex-col space-y-4">
+              <li>
+                <button
+                  className="whitespace-nowrap"
+                  onClick={handleNavigateAccount}
+                >
+                  Thông tin cá nhân
+                </button>
+              </li>
+              <li>
+                <button className="whitespace-nowrap" onClick={handleLogout}>
+                  Đăng xuất
+                </button>
+              </li>
+            </div>
+          ) : (
+            <div className="flex flex-col space-y-4">
+              <li>
+                <button onClick={openModalRegister}>Đăng ký</button>
+              </li>
+              <li>
+                <button onClick={openModalLogin}>Đăng nhập</button>
+              </li>
+            </div>
+          )}
         </ul>
       </li>
+
       <Modal
         open={isOpenRegister}
         onOk={closeModalRegister}
@@ -403,7 +426,7 @@ function Header() {
                   type={showPassword ? "text" : "password"}
                   id="password"
                   value={password}
-                  onChange={(e) =>  setPassword(e.target.value)}
+                  onChange={(e) => setPassword(e.target.value)}
                   className="mt-1 block w-full px-3 py-2 border border-textColorCustom rounded-md shadow-sm focus:outline-none focus:ring focus:border-blue-300"
                   placeholder="Mật khẩu"
                 />
