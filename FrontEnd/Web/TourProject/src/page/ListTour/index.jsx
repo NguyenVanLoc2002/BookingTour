@@ -18,7 +18,8 @@ import { BsCalendar4Week, BsCalendarHeart } from "react-icons/bs";
 import { TiWeatherPartlySunny } from "react-icons/ti";
 import Footer from "../../layouts/Footer";
 import mountain from "../../assets/iconTour/mountain.png";
-import arrows from "../../assets/iconTour/arrows.png";
+import arrows_top from "../../assets/iconTour/arrows_top.png";
+import arrows_bot from "../../assets/iconTour/arrows_bot.png";
 import buddhist from "../../assets/iconTour/buddhist.png";
 import early from "../../assets/iconTour/early.png";
 import history from "../../assets/iconTour/history.png";
@@ -36,6 +37,7 @@ function ListTour() {
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
   const region = queryParams.get("region");
+  const name = queryParams.get("name");
 
   const [currentPage, setCurrentPage] = useState(1);
   const [toursPerPage, setToursPerPage] = useState(12);
@@ -194,7 +196,7 @@ function ListTour() {
       <div className="flex flex-col justify-between font-sriracha w-80 h-80 shadow-2xl shadow-gray-500/50 rounded-lg group overflow-hidden">
         <img
           src={tour.urlImage?.[0] || "default-image-url.jpg"}
-          alt={tour.name}
+          alt={tour.nacme}
           className="h-44 rounded-t-lg object-cover transform transition-transform duration-1000 ease-in-out group-hover:scale-105"
         />
         <p className="text-black font-bold m-1 mt-2 text-xl">{tour.name}</p>
@@ -344,14 +346,14 @@ function ListTour() {
             className={"flex flex-col items-center justify-center"}
             onClick={() => setSortType("priceDesc")}
           >
-            <img src={arrows} alt="Logo" className="w-[32px] h-auto" />
+            <img src={arrows_bot} alt="Logo" className="w-[32px] h-auto" />
             <div>Giá cao nhất</div>
           </div>
           <div
             className={"flex flex-col items-center justify-center"}
             onClick={() => setSortType("priceAsc")}
           >
-            <img src={arrows} alt="Logo" className="w-[32px] h-auto" />
+            <img src={arrows_top} alt="Logo" className="w-[32px] h-auto" />
             <div>Giá thấp nhất</div>
           </div>
           <div

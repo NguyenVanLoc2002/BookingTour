@@ -3,11 +3,12 @@ import Header from "../../layouts/Header";
 import Menu from "../../layouts/Menu";
 import Footer from "../../layouts/Footer";
 import DetailBooking from "./component/DetailBooking";
+import ModalCancelTour from "./component/ModalCancelTour";
 import { Button, Input, Space, Table, Tag } from "antd";
 import {CheckCircleOutlined, ClockCircleOutlined, CloseCircleOutlined,DeleteOutlined, SyncOutlined, EyeOutlined } from '@ant-design/icons';
 function Bookings() {
-  const [tabNameSelect, setTabNameSelect] = useState("DaDat");
-  const [textMaDatTour, setTextMaDatTour] = useState("");
+  const [tabNameSelect, setTabNameSelect] = useState("ordered");
+  const [textBookingId, setTextBookingId] = useState("");
   const [textMail, setTextMail] = useState("");
   const [tourData, setTourData] = useState({});
   const columns = [
@@ -52,13 +53,13 @@ function Bookings() {
       render: (text) => (
         <>
           {
-            text === "DaDat" ? (<Tag icon={<ClockCircleOutlined eOutlined />} color="success">
+            text === "ordered" ? (<Tag icon={<ClockCircleOutlined eOutlined />} color="success">
               Đã đặt
             </Tag>) : (
-              text === "DangXuLy" ? (<Tag icon={<SyncOutlined spin />} color="processing">
+              text === "processing" ? (<Tag icon={<SyncOutlined spin />} color="processing">
                 Đang xử lý
               </Tag>) : (
-                text === "DaHuy" ? (<Tag icon={<CloseCircleOutlined />} color="error">
+                text === "canceled" ? (<Tag icon={<CloseCircleOutlined />} color="error">
                   Đã hủy
                 </Tag>) : (
                   <Tag icon={<CheckCircleOutlined />} color="cyan">
@@ -78,13 +79,13 @@ function Bookings() {
       render: (text,record) => (
         <>
           {
-            (text === "DaDat" || text === "DangXuLy") ? (
+            (text === "ordered" || text === "processing") ? (
               <div>
 
                 <Button type="primary" icon={<EyeOutlined />} className="mr-2"  onClick={()=>{showModal(record)}}>
                   Xem chi tiết
                 </Button>
-                <Button type="primary" icon={<DeleteOutlined />} danger>
+                <Button type="primary" icon={<DeleteOutlined />} danger  onClick={()=>{showModalCancel(record)}}>
                   Hủy Tour
                 </Button>
               </div>
@@ -113,7 +114,7 @@ function Bookings() {
     date: "18-12-2024",
     time: "06:20",
     price: 5465000,
-    status: "DaDat",
+    status: "ordered",
     bookingCode: "B457FA",
     customerName: "TRAN BAO TRUC",
     flightCode:"VN 2002",
@@ -134,7 +135,7 @@ function Bookings() {
     date: "18-12-2024",
     time: "06:20",
     price: 5465000,
-    status: "DaHoanThanh",
+    status: "completed",
     bookingCode: "B457FA",
     customerName: "TRAN PHI PHAT",
     flightCode:"VN 2002",
@@ -155,7 +156,7 @@ function Bookings() {
     date: "18-12-2024",
     time: "06:20",
     price: 5465000,
-    status: "DaHuy",
+    status: "canceled",
     bookingCode: "B457FA",
     customerName: "NGUYEN VAN LOC",
     flightCode:"VN 2002",
@@ -176,7 +177,7 @@ function Bookings() {
     date: "18-12-2024",
     time: "06:20",
     price: 5465000,
-    status: "DangXuLy",
+    status: "processing",
     bookingCode: "B457FA",
     customerName: "TRAN THI YEN NHI",
     flightCode:"VN 2002",
@@ -197,7 +198,7 @@ function Bookings() {
     date: "18-12-2024",
     time: "06:20",
     price: 5465000,
-    status: "DangXuLy",
+    status: "processing",
     bookingCode: "B457FA",
     customerName: "BUI TRI THUC",
     flightCode:"VN 2002",
@@ -218,7 +219,7 @@ function Bookings() {
     date: "18-12-2024",
     time: "06:20",
     price: 5465000,
-    status: "DangXuLy",
+    status: "processing",
     bookingCode: "B457FA",
     customerName: "TRAN BAO TRAN",
     flightCode:"VN 2002",
@@ -239,7 +240,7 @@ function Bookings() {
     date: "18-12-2024",
     time: "06:20",
     price: 5465000,
-    status: "DaDat",
+    status: "ordered",
     bookingCode: "B457FA",
     customerName: "PHAM TRAN GIA BAO",
     flightCode:"VN 2002",
@@ -260,7 +261,7 @@ function Bookings() {
     date: "18-12-2024",
     time: "06:20",
     price: 5465000,
-    status: "DaHoanThanh",
+    status: "completed",
     bookingCode: "B457FA",
     customerName: "NGUYEN TRAN GIA LAM",
     flightCode:"VN 2002",
@@ -281,7 +282,7 @@ function Bookings() {
     date: "18-12-2024",
     time: "06:20",
     price: 5465000,
-    status: "DaHuy",
+    status: "canceled",
     bookingCode: "B457FA",
     customerName: "NGUYEN TRAN TRAM ANH",
     flightCode:"VN 2002",
@@ -302,7 +303,7 @@ function Bookings() {
     date: "18-12-2024",
     time: "06:20",
     price: 5465000,
-    status: "DaDat",
+    status: "ordered",
     bookingCode: "B457FA",
     customerName: "NGUYEN TRAN NHA HAN",
     flightCode:"VN 2002",
@@ -323,7 +324,7 @@ function Bookings() {
     date: "18-12-2024",
     time: "06:20",
     price: 5465000,
-    status: "DaHoanThanh",
+    status: "completed",
     bookingCode: "B457FA",
     customerName: "NGUYEN TRAN GIA HUY",
     flightCode:"VN 2002",
@@ -344,7 +345,7 @@ function Bookings() {
     date: "18-12-2024",
     time: "06:20",
     price: 5465000,
-    status: "DaHuy",
+    status: "canceled",
     bookingCode: "B457FA",
     customerName: "NGO NGOC DIEM PHUC",
     flightCode:"VN 2002",
@@ -360,20 +361,26 @@ function Bookings() {
     statusFlight:"Đã xác nhận"
   },
   ]
-  const dataDaDat = dataBookings.filter(item => item.status === "DaDat");
-  const dataDaHuy = dataBookings.filter(item => item.status === "DaHuy");
-  const dataDaHoanThanh = dataBookings.filter(item => item.status === "DaHoanThanh");
-  const dataDangXuLy = dataBookings.filter(item => item.status === "DangXuLy");
+  const dataOrdered = dataBookings.filter(item => item.status === "ordered");
+  const dataCanceled = dataBookings.filter(item => item.status === "canceled");
+  const dataCompleted = dataBookings.filter(item => item.status === "completed");
+  const dataProcessing = dataBookings.filter(item => item.status === "processing");
   const [isModalVisible, setIsModalVisible] = useState(false);
-
-  
-
   const showModal = (record) => {
+    
     setTourData(record);
     setIsModalVisible(true);
     
   }
   const handleClose = () => setIsModalVisible(false);
+  const [isModalCancelVisible, setIsModalCancelVisible] = useState(false);
+  const showModalCancel = (record) => {
+    
+    setTourData(record);
+    setIsModalCancelVisible(true);
+    
+  }
+  const handleCloseCancel = () => setIsModalCancelVisible(false);
 
   return (
     <>
@@ -386,78 +393,83 @@ function Bookings() {
             onClose={handleClose}
             tourData={tourData}
           />
+          <ModalCancelTour
+            visible={isModalCancelVisible}
+            onClose={handleCloseCancel}
+            tourData={tourData}
+          />
           <div className="w-full mx-auto p-4 bg-white shadow-md">
             <div className="flex  mb-8 text-base font-bold">
               <button
                 className={
-                  tabNameSelect == "TimKiem"
+                  tabNameSelect == "Search"
                     ? " text-textColorCustom px-4 py-2 border-l border-r border-t border-textColorCustom "
                     : " text-black px-4 py-2 border-b border-b-textColorCustom "
                 }
                 onClick={() => {
-                  setTabNameSelect("TimKiem");
+                  setTabNameSelect("Search");
                 }}
               >
                 Tất cả
               </button>
               <button
                 className={
-                  tabNameSelect == "DaDat"
+                  tabNameSelect == "ordered"
                     ? " text-textColorCustom px-4 py-2 border-l border-r border-t border-textColorCustom "
                     : " text-black px-4 py-2 border-b border-b-textColorCustom "
                 }
                 onClick={() => {
-                  setTabNameSelect("DaDat");
+                  setTabNameSelect("ordered");
                 }}
               >
                 Tour đã đặt
               </button>
               <button
                 className={
-                  tabNameSelect == "DangXuLy"
+                  tabNameSelect == "processing"
                     ? " text-textColorCustom px-4 py-2 border-l border-r border-t border-textColorCustom "
                     : " text-black px-4 py-2 border-b border-b-textColorCustom "
                 }
                 onClick={() => {
-                  setTabNameSelect("DangXuLy");
+                  setTabNameSelect("processing");
                 }}
               >
                 Tour đang xử lý
               </button>
               <button
                 className={
-                  tabNameSelect == "DaHoanThanh"
+                  tabNameSelect == "completed"
                     ? " text-textColorCustom px-4 py-2 border-l border-r border-t border-textColorCustom "
                     : " text-black px-4 py-2 border-b border-b-textColorCustom "
                 }
                 onClick={() => {
-                  setTabNameSelect("DaHoanThanh");
+                  setTabNameSelect("completed");
                 }}
               >
                 Tour đã hoàn thành
               </button>
               <button
                 className={
-                  tabNameSelect == "DaHuy"
+                  tabNameSelect == "canceled"
                     ? " text-textColorCustom px-4 py-2 border-l border-r border-t border-textColorCustom "
                     : " text-black px-4 py-2 border-b border-b-textColorCustom "
                 }
                 onClick={() => {
-                  setTabNameSelect("DaHuy");
+                  setTabNameSelect("canceled");
                 }}
               >
                 Tour đã hủy
               </button>
 
             </div>
-            {tabNameSelect == "TimKiem" ? (
+            {tabNameSelect == "Search" ? (
               <div>
                 <div className="flex">
 
                   <Input
                     placeholder="Mã đặt tour"
-                    value={textMaDatTour}
-                    onChange={(e) => setTextMaDatTour(e.target.value)}
+                    value={textBookingId}
+                    onChange={(e) => setTextBookingId(e.target.value)}
                     className="rounded-xl h-10 mr-2  text-base" style={{ width: 300 }}
                   />
                   <Input
@@ -467,7 +479,7 @@ function Bookings() {
                     onChange={(e) => setTextMail(e.target.value)}
                     className="rounded-xl h-10 mr-2  text-base required:" style={{ width: 500 }}
                   />
-                  <Button className="rounded-xl h-10 pl-8 pr-8 font-bold mr-2 bg-customColor text-lg ">Tìm kiếm</Button>
+                  <Button type="primary" className="rounded-xl h-10 pl-8 pr-8 font-bold mr-2 bg-customColor text-lg ">Tìm kiếm</Button>
 
 
                 </div>
@@ -475,18 +487,18 @@ function Bookings() {
               </div>
             ) : (
               <div>
-                {tabNameSelect == "DaDat" ? (
-                  <Table columns={columns} dataSource={dataDaDat} pagination={{ pageSize: 5 }} />
+                {tabNameSelect == "ordered" ? (
+                  <Table columns={columns} dataSource={dataOrdered} pagination={{ pageSize: 5 }} />
                 ) : (
                   <div>
-                    {tabNameSelect == "DangXuLy" ? (
-                      <Table columns={columns} dataSource={dataDangXuLy} pagination={{ pageSize: 5 }} />
+                    {tabNameSelect == "processing" ? (
+                      <Table columns={columns} dataSource={dataProcessing} pagination={{ pageSize: 5 }} />
                     ) : (
                       <div>
-                        {tabNameSelect == "DaHuy" ? (
-                          <Table columns={columns} dataSource={dataDaHuy} pagination={{ pageSize: 5 }} />
+                        {tabNameSelect == "canceled" ? (
+                          <Table columns={columns} dataSource={dataCanceled} pagination={{ pageSize: 5 }} />
                         ) : (
-                          <Table columns={columns} dataSource={dataDaHoanThanh} pagination={{ pageSize: 5 }} />
+                          <Table columns={columns} dataSource={dataCompleted} pagination={{ pageSize: 5 }} />
                         )}
                       </div>
                     )}

@@ -719,7 +719,7 @@ function MainLayout() {
             </div>
           </div>
           {/*  list gợi ý */}
-          <div className="bg-[#a0e8c5] rounded-2xl  ">
+          {/* <div className="bg-[#a0e8c5] rounded-2xl  ">
             <div className="flex justify-between items-center space-x-6  ">
               <h2 className=" text-2xl font-sriracha font-bold pl-4 text-[#00a86b]">Tour dành cho bạn</h2>
               <button
@@ -738,7 +738,7 @@ function MainLayout() {
                 </button>
               ))}
             </div>
-          </div>
+          </div> */}
           {/* MB */}
           <div className="flex items-center space-x-6 mt-3 mb-3">
             <div
