@@ -6,6 +6,8 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import TourComponent from "./TourComponent";
 const SetCriteria = ({ navigation }) => {
+    const [maxPrice, setMaxPrice] = useState(10000);
+    const [numberPeople, setNumberPeople] = useState(1);
 
     const [listMienBac, setListMienBac] = useState([
         {
@@ -335,13 +337,105 @@ const SetCriteria = ({ navigation }) => {
         ,
 
     ]);
-    const listKhoiHanh = [
-        { label: 'Hồ Chí Minh', value: 'hcm' },
-        { label: 'Long An', value: 'la' },
-        { label: 'Tây Ninh', value: 'tani' },
-    ]
 
-    const [selectedNoiKhoiHanh, setSelectedNoiKhoiHanh] = useState(listKhoiHanh[0].value);
+    const types = [
+        { value: 'mh', label: 'Mạo hiểm' },
+        { value: 'tq', label: 'Tham quan' },
+        { value: 'vh', label: 'Văn hóa' },
+        { value: 'st', label: 'Sinh thái' },
+        { value: 'nd', label: 'Nghỉ dưỡng' },
+        { value: 'tb', label: 'Team building' },
+    ]
+    const regions = [
+        { value: 'mb', label: 'Miền Bắc' },
+        { value: 'mt', label: 'Miền Trung' },
+        { value: 'mn', label: 'Miền Nam' },
+    ]
+    const times = [
+        { value: '1n', label: 'Trong ngày' },
+        { value: '2n1d', label: '2 ngày 1 đêm' },
+        { value: '3n2d', label: '3 ngày 2 đêm' },
+        { value: '4n3d', label: '4 ngày 3 đêm' },
+    ]
+    const transportations = [
+        { value: 'mb', label: 'Máy bay' },
+        { value: 'bus', label: 'Xe buýt' },
+        { value: 'oto', label: 'Ô tô' },
+        { value: 'train', label: 'Tàu hỏa' },
+    ]
+    const qualityOfAccommodations = [
+        { value: 'ks5', label: 'Khách sạn 5 sao' },
+        { value: 'ks4', label: 'Khách sạn 4 sao' },
+        { value: 'ks3', label: 'Khách sạn 3 sao' },
+        { value: 'resort', label: 'Resort' },
+        { value: 'homestay', label: 'Homestay' },
+    ]
+    const citys = [
+        { value: 'an_giang', label: 'An Giang' },
+        { value: 'ba_ria_vung_tau', label: 'Bà Rịa - Vũng Tàu' },
+        { value: 'bac_lieu', label: 'Bạc Liêu' },
+        { value: 'bac_kan', label: 'Bắc Kạn' },
+        { value: 'bac_giang', label: 'Bắc Giang' },
+        { value: 'bac_ninh', label: 'Bắc Ninh' },
+        { value: 'ben_tre', label: 'Bến Tre' },
+        { value: 'binh_duong', label: 'Bình Dương' },
+        { value: 'binh_dinh', label: 'Bình Định' },
+        { value: 'binh_phuoc', label: 'Bình Phước' },
+        { value: 'binh_thuan', label: 'Bình Thuận' },
+        { value: 'ca_mau', label: 'Cà Mau' },
+        { value: 'cao_bang', label: 'Cao Bằng' },
+        { value: 'can_tho', label: 'Cần Thơ' },
+        { value: 'da_nang', label: 'Đà Nẵng' },
+        { value: 'dak_lak', label: 'Đắk Lắk' },
+        { value: 'dak_nong', label: 'Đắk Nông' },
+        { value: 'dien_bien', label: 'Điện Biên' },
+        { value: 'dong_nai', label: 'Đồng Nai' },
+        { value: 'dong_thap', label: 'Đồng Tháp' },
+        { value: 'gia_lai', label: 'Gia Lai' },
+        { value: 'ha_giang', label: 'Hà Giang' },
+        { value: 'ha_nam', label: 'Hà Nam' },
+        { value: 'ha_noi', label: 'Hà Nội' },
+        { value: 'ha_tinh', label: 'Hà Tĩnh' },
+        { value: 'hai_duong', label: 'Hải Dương' },
+        { value: 'hai_phong', label: 'Hải Phòng' },
+        { value: 'hau_giang', label: 'Hậu Giang' },
+        { value: 'hoa_binh', label: 'Hòa Bình' },
+        { value: 'hung_yen', label: 'Hưng Yên' },
+        { value: 'khanh_hoa', label: 'Khánh Hòa' },
+        { value: 'kien_giang', label: 'Kiên Giang' },
+        { value: 'kon_tum', label: 'Kon Tum' },
+        { value: 'lai_chau', label: 'Lai Châu' },
+        { value: 'lam_dong', label: 'Lâm Đồng' },
+        { value: 'lang_son', label: 'Lạng Sơn' },
+        { value: 'lao_cai', label: 'Lào Cai' },
+        { value: 'long_an', label: 'Long An' },
+        { value: 'nam_dinh', label: 'Nam Định' },
+        { value: 'nghe_an', label: 'Nghệ An' },
+        { value: 'ninh_binh', label: 'Ninh Bình' },
+        { value: 'ninh_thuan', label: 'Ninh Thuận' },
+        { value: 'phu_tho', label: 'Phú Thọ' },
+        { value: 'phu_yen', label: 'Phú Yên' },
+        { value: 'quang_binh', label: 'Quảng Bình' },
+        { value: 'quang_nam', label: 'Quảng Nam' },
+        { value: 'quang_ngai', label: 'Quảng Ngãi' },
+        { value: 'quang_ninh', label: 'Quảng Ninh' },
+        { value: 'quang_tri', label: 'Quảng Trị' },
+        { value: 'soc_trang', label: 'Sóc Trăng' },
+        { value: 'son_la', label: 'Sơn La' },
+        { value: 'tay_ninh', label: 'Tây Ninh' },
+        { value: 'thai_binh', label: 'Thái Bình' },
+        { value: 'thai_nguyen', label: 'Thái Nguyên' },
+        { value: 'thanh_hoa', label: 'Thanh Hóa' },
+        { value: 'thua_thien_hue', label: 'Thừa Thiên Huế' },
+        { value: 'tien_giang', label: 'Tiền Giang' },
+        { value: 'tp_ho_chi_minh', label: 'TP Hồ Chí Minh' },
+        { value: 'tra_vinh', label: 'Trà Vinh' },
+        { value: 'tuyen_quang', label: 'Tuyên Quang' },
+        { value: 'vinh_long', label: 'Vĩnh Long' },
+        { value: 'vinh_phuc', label: 'Vĩnh Phúc' },
+        { value: 'yen_bai', label: 'Yên Bái' }
+    ];
+    const [selectedNoiKhoiHanh, setSelectedNoiKhoiHanh] = useState(citys[0].value);
 
     const [choosedMien, setChoosedMien] = useState(0);
     const [choosedOption, setChoosedOption] = useState(0);
@@ -403,7 +497,7 @@ const SetCriteria = ({ navigation }) => {
                                     selectedValue={selectedNoiKhoiHanh}
                                     onValueChange={(itemValue) => setSelectedNoiKhoiHanh(itemValue)}
                                 >
-                                    {listKhoiHanh.map((item, index) => (
+                                    {citys.map((item, index) => (
                                         <Picker.Item key={index} label={item.label} value={item.value} style={styles.textPicker} />
                                     ))}
                                 </Picker>
@@ -412,14 +506,14 @@ const SetCriteria = ({ navigation }) => {
                         <TouchableOpacity style={styles.optionButtonTieuChi}>
                             <Text style={styles.textTieuChi}>Mức giá tối đa</Text>
                             <View style={styles.formPicker}>
-                                <Picker
-                                    selectedValue={selectedNoiKhoiHanh}
-                                    onValueChange={(itemValue) => setSelectedNoiKhoiHanh(itemValue)}
-                                >
-                                    {listKhoiHanh.map((item, index) => (
-                                        <Picker.Item key={index} label={item.label} value={item.value} style={styles.textPicker} />
-                                    ))}
-                                </Picker>
+                                <TextInput
+                                    style={{ fontSize: 12, paddingLeft: 15 }}
+                                    // placeholder="Nhập số tiền tối đa"
+                                    value={maxPrice.toString()} 
+                                    onChangeText={setMaxPrice}
+                                    keyboardType="numeric" // Loại bàn phím
+                                />
+
                             </View>
                         </TouchableOpacity>
                     </View>
@@ -431,7 +525,7 @@ const SetCriteria = ({ navigation }) => {
                                     selectedValue={selectedNoiKhoiHanh}
                                     onValueChange={(itemValue) => setSelectedNoiKhoiHanh(itemValue)}
                                 >
-                                    {listKhoiHanh.map((item, index) => (
+                                    {transportations.map((item, index) => (
                                         <Picker.Item key={index} label={item.label} value={item.value} style={styles.textPicker} />
                                     ))}
                                 </Picker>
@@ -444,7 +538,7 @@ const SetCriteria = ({ navigation }) => {
                                     selectedValue={selectedNoiKhoiHanh}
                                     onValueChange={(itemValue) => setSelectedNoiKhoiHanh(itemValue)}
                                 >
-                                    {listKhoiHanh.map((item, index) => (
+                                    {types.map((item, index) => (
                                         <Picker.Item key={index} label={item.label} value={item.value} style={styles.textPicker} />
                                     ))}
                                 </Picker>
@@ -459,7 +553,7 @@ const SetCriteria = ({ navigation }) => {
                                     selectedValue={selectedNoiKhoiHanh}
                                     onValueChange={(itemValue) => setSelectedNoiKhoiHanh(itemValue)}
                                 >
-                                    {listKhoiHanh.map((item, index) => (
+                                    {qualityOfAccommodations.map((item, index) => (
                                         <Picker.Item key={index} label={item.label} value={item.value} style={styles.textPicker} />
                                     ))}
                                 </Picker>
@@ -468,11 +562,37 @@ const SetCriteria = ({ navigation }) => {
                         <TouchableOpacity style={styles.optionButtonTieuChi}>
                             <Text style={styles.textTieuChi}>Số lượng người</Text>
                             <View style={styles.formPicker}>
+                                <TextInput
+                                    style={{ fontSize: 12, paddingLeft: 15 }}
+                                    value={numberPeople.toString()} 
+                                    onChangeText={setNumberPeople}
+                                    keyboardType="numeric" // Loại bàn phím
+                                />
+                            </View>
+                        </TouchableOpacity>
+                    </View>
+                    <View style={styles.optionsRow}>
+                        <TouchableOpacity style={styles.optionButtonTieuChi}>
+                            <Text style={styles.textTieuChi}>Vùng miền</Text>
+                            <View style={styles.formPicker}>
                                 <Picker
                                     selectedValue={selectedNoiKhoiHanh}
                                     onValueChange={(itemValue) => setSelectedNoiKhoiHanh(itemValue)}
                                 >
-                                    {listKhoiHanh.map((item, index) => (
+                                    {regions.map((item, index) => (
+                                        <Picker.Item key={index} label={item.label} value={item.value} style={styles.textPicker} />
+                                    ))}
+                                </Picker>
+                            </View>
+                        </TouchableOpacity>
+                        <TouchableOpacity style={styles.optionButtonTieuChi}>
+                            <Text style={styles.textTieuChi}>Thời gian</Text>
+                            <View style={styles.formPicker}>
+                                <Picker
+                                    selectedValue={selectedNoiKhoiHanh}
+                                    onValueChange={(itemValue) => setSelectedNoiKhoiHanh(itemValue)}
+                                >
+                                    {times.map((item, index) => (
                                         <Picker.Item key={index} label={item.label} value={item.value} style={styles.textPicker} />
                                     ))}
                                 </Picker>
@@ -511,6 +631,7 @@ const SetCriteria = ({ navigation }) => {
                             </Pressable>
                         </TouchableOpacity>
                     </View>
+
                     <View style={styles.viewHoanThanh}>
                         <Pressable style={styles.buttonHoanThanh}>
                             <Text style={styles.textHoanThanh}>HOÀN THÀNH</Text>
@@ -561,13 +682,13 @@ const SetCriteria = ({ navigation }) => {
             </View>
 
 
-             <View style={styles.banner}>
-                <View style={styles.rowBetween}>
+            <View style={styles.banner}>
+                {/* <View style={styles.rowBetween}>
                     <Text style={styles.tieuDe}>Dành cho bạn</Text>
                     <Pressable onPress={() => { navigation.navigate("ListTour", { listTour: listMienBac, title: "TOUR DÀNH CHO BẠN" }); }}><Text style={styles.xemTatCa}>Xem tất cả</Text></Pressable>
-                </View>
+                </View> */}
 
-                <TourComponent listTour={listMienBac} navigation={navigation} />
+                {/* <TourComponent listTour={listMienBac} navigation={navigation} /> */}
             </View>
 
             <View style={styles.banner}>
@@ -581,12 +702,10 @@ const SetCriteria = ({ navigation }) => {
                     <Pressable style={[styles.buttonMucMien, { backgroundColor: choosedMien == 2 ? "#3FD0D4" : "#fff" }]} onPress={() => chooseMien(2)}>
                         <Text style={styles.textMucMien}>Miền Nam</Text>
                     </Pressable>
-                    <Pressable style={[styles.buttonMucMien, { backgroundColor: choosedMien == 3 ? "#3FD0D4" : "#fff" }]} onPress={() => chooseMien(3)}>
-                        <Text style={styles.textMucMien}>Miền Tây</Text>
-                    </Pressable>
+
                 </View>
 
-                <View style={{ display: choosedMien == 0 ? "block" : "none" }}>
+                {/* <View style={{ display: choosedMien == 0 ? "block" : "none" }}>
                     <Pressable onPress={() => { navigation.navigate("ListTour", { listTour: listMienBac, title: "TOUR MIỀN BẮC" }); }}><Text style={styles.xemTatCaOption}>Xem tất cả</Text></Pressable>
                     <TourComponent listTour={listMienBac} navigation={navigation} />
                 </View>
@@ -602,10 +721,10 @@ const SetCriteria = ({ navigation }) => {
                 <View style={{ display: choosedMien == 3 ? "block" : "none" }}>
                     <Pressable onPress={() => { navigation.navigate("ListTour", { listTour: listMienTay, title: "TOUR MIỀN TÂY" }); }}><Text style={styles.xemTatCaOption}>Xem tất cả</Text></Pressable>
                     <TourComponent listTour={listMienTay} navigation={navigation} />
-                </View>
+                </View> */}
             </View>
 
-          
+
 
         </ScrollView >
     );
@@ -650,7 +769,7 @@ const styles = StyleSheet.create({
         shadowRadius: 4,
         elevation: 10, // Android
         width: "90%",
-        marginBottom:25
+        marginBottom: 25
 
     },
     RowChoice: {
@@ -658,7 +777,7 @@ const styles = StyleSheet.create({
         justifyContent: "space-around",
         flexDirection: "row",
         paddingTop: 25,
-        paddingBottom:25
+        paddingBottom: 25
     },
     optionButton: {
         alignItems: 'center',
@@ -682,7 +801,7 @@ const styles = StyleSheet.create({
         fontWeight: "500",
         paddingLeft: 30,
         paddingBottom: 10,
-        fontStyle:"italic"
+        fontStyle: "italic"
     },
 
     textBox: {
@@ -818,27 +937,27 @@ const styles = StyleSheet.create({
         height: 40,
         display: "flex",
         justifyContent: "center",
-        marginLeft:5,
-        marginRight:5
+        marginLeft: 5,
+        marginRight: 5
 
     },
-    viewHoanThanh:{
-        alignItems:"center",
-        marginBottom:-25,
-        marginTop:15
+    viewHoanThanh: {
+        alignItems: "center",
+        marginBottom: -25,
+        marginTop: 15
     },
-    buttonHoanThanh:{
-        backgroundColor:"#3FD0D4",
-        width:200,
-        height:50,
-        justifyContent:'center',      
-        borderRadius:15
+    buttonHoanThanh: {
+        backgroundColor: "#3FD0D4",
+        width: 200,
+        height: 50,
+        justifyContent: 'center',
+        borderRadius: 15
     },
-    textHoanThanh:{
-        fontSize:16,
-        fontWeight:"500",
-        color:"#fff",
-        textAlign:"center"
+    textHoanThanh: {
+        fontSize: 16,
+        fontWeight: "500",
+        color: "#fff",
+        textAlign: "center"
     }
 
 });

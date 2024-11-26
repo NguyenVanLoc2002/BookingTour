@@ -22,7 +22,7 @@ const Stack = createNativeStackNavigator();
 export default function RootComponent() {
 
   return  (
-    <Stack.Navigator initialRouteName="Login">
+    <Stack.Navigator initialRouteName="TourComponent">
       <Stack.Screen
         name="TourComponent"
         component={MainComponent}

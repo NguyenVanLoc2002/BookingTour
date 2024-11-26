@@ -65,12 +65,14 @@ const ModalSetCriteria = ({ visible, onClose }) => {
         { value: 'mb', label: 'Máy bay' },
         { value: 'bus', label: 'Xe buýt' },
         { value: 'oto', label: 'Ô tô' },
+        { value: 'train', label: 'Tàu hỏa' },
     ]
     const qualityOfAccommodations = [
         { value: 'ks5', label: 'Khách sạn 5 sao' },
         { value: 'ks4', label: 'Khách sạn 4 sao' },
         { value: 'ks3', label: 'Khách sạn 3 sao' },
-        { value: 'motel', label: 'Nhà nghỉ' },
+        { value: 'resort', label: 'Resort' },
+        { value: 'homestay', label: 'Homestay' },
     ]
     const citys = [
         { value: 'an_giang', label: 'An Giang' },
