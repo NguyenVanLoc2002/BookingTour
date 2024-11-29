@@ -3,9 +3,11 @@ package com.fit.paymentservice.controllers;
 
 import com.fit.paymentservice.dtos.BookingDTO;
 import com.fit.paymentservice.dtos.request.BookingRequest;
+import com.fit.paymentservice.dtos.response.BookingTourResponse;
 import com.fit.paymentservice.enums.StatusBooking;
 import com.fit.paymentservice.services.BookingService;
 import com.fit.paymentservice.services.RedisService;
+import com.fit.paymentservice.services.TourServiceClient;
 import com.fit.paymentservice.utils.JwtUtils;
 import io.jsonwebtoken.Claims;
 import lombok.extern.slf4j.Slf4j;
@@ -17,7 +19,6 @@ import reactor.core.publisher.Mono;
 
 import java.net.URI;
 import java.time.Duration;
-import java.util.List;
 
 @RestController
 @RequestMapping("/booking")
@@ -27,12 +28,14 @@ public class BookingController {
     private final BookingService bookingService;
     private final RedisService redisService;
     private final JwtUtils jwtUtils;
+    private final TourServiceClient tourServiceClient;
 
 
-    public BookingController(BookingService bookingService, RedisService redisService, JwtUtils jwtUtils) {
+    public BookingController(BookingService bookingService, RedisService redisService, JwtUtils jwtUtils, TourServiceClient tourServiceClient) {
         this.bookingService = bookingService;
         this.redisService = redisService;
         this.jwtUtils = jwtUtils;
+        this.tourServiceClient = tourServiceClient;
     }
 
 
@@ -68,10 +71,14 @@ public class BookingController {
 
     //Lay du lieu tu Redis
     @GetMapping("redis/{bookingId}")
-    public Mono<ResponseEntity<BookingDTO>> getBookingTour(@PathVariable String bookingId) {
+    public Mono<ResponseEntity<BookingTourResponse>> getBookingTour(@PathVariable String bookingId) {
 
         return redisService.getDataAsBookingDTO(bookingId)
-                .map(data -> ResponseEntity.ok(data))
+                .flatMap(bookingDTO ->
+                        tourServiceClient.getTourByTicketId(bookingDTO.getTicketId())
+                                .map(tourDTO -> new BookingTourResponse(bookingDTO, tourDTO))
+                )
+                .map(ResponseEntity::ok)
                 .defaultIfEmpty(ResponseEntity.notFound().build()) // Trả về 404 nếu không tìm thấy
                 .doOnError(throwable -> log.error("Error retrieving booking from Redis: {}", throwable.getMessage()));
     }
@@ -79,8 +86,13 @@ public class BookingController {
     // Endpoint lấy danh sách bookings của customer
     @GetMapping("/redis/customer/{customerId}")
     @ResponseStatus(HttpStatus.OK)
-    public Flux<BookingDTO> getBookingsByCustomerId(@PathVariable String customerId) {
-        return redisService.getBookingsByCustomerId(customerId);
+    public Flux<BookingTourResponse> getBookingsByCustomerId(@PathVariable String customerId) {
+        return redisService.getBookingsByCustomerId(customerId)
+                .flatMap(bookingDTO ->
+                    tourServiceClient.getTourByTicketId(bookingDTO.getTicketId())
+                            .map(tourDTO -> new BookingTourResponse(bookingDTO, tourDTO))
+                )
+                .doOnError(error -> log.error("Error fetching bookings for customer {}: {}", customerId, error.getMessage()));
     }
 
     @GetMapping("/verify-booking-tour")
@@ -105,8 +117,10 @@ public class BookingController {
 
                     bookingDTO.setStatusBooking(StatusBooking.CONFIRMED);
                     log.info("Updated BookingDTO status to CONFIRMED: {}", bookingDTO);
+                    // Kiểm tra nếu customerId là null và gán là "guest"
+                    String customerId = bookingDTO.getCustomerId() != null ? bookingDTO.getCustomerId().toString() : "guest";
 
-                    return redisService.updateBookingForCustomer(bookingDTO.getCustomerId().toString(), bookingDTO.getBookingId(),bookingDTO, Duration.ofDays(1))
+                    return redisService.updateBookingForCustomer(customerId, bookingDTO.getBookingId(),bookingDTO, Duration.ofDays(1))
                             .flatMap(success -> {
                                 if (success) {
                                     String redirectUrlWithBookingId = redirectUrl + "?bookingId=" + key;
@@ -129,5 +143,14 @@ public class BookingController {
                 });
     }
 
+    @GetMapping
+    public Flux<BookingTourResponse> getBookingsByCustomerId(@RequestParam Long customerId) {
+        return bookingService.getBookingsByCustomerId(customerId)
+                .flatMap(bookingDTO ->
+                        tourServiceClient.getTourByTicketId(bookingDTO.getTicketId())
+                                .map(tourDTO -> new BookingTourResponse(bookingDTO, tourDTO))
+                )
+                .doOnError(error -> log.error("Error fetching bookings for customer {}: {}", customerId, error.getMessage()));
+    }
 
 }

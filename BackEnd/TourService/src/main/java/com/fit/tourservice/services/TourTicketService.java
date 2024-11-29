@@ -85,4 +85,19 @@ public class TourTicketService {
                 .map(TourTicketDTO::convertToDTO)
                 .switchIfEmpty(Mono.error(new Exception("Tour not found!")));
     }
+
+
+    public Mono<TourTicketDTO> refundAvailableSlot(Long ticketId, int numberOfGuests) {
+        return tourTicketRepository.findById(ticketId)
+                .flatMap(ticket -> {
+                    int updatedSlot = ticket.getAvailableSlot() + numberOfGuests;
+                    if (updatedSlot < 0) {
+                        return Mono.error(new IllegalArgumentException("Not enough slots available"));
+                    }
+                    ticket.setAvailableSlot(updatedSlot);
+                    return tourTicketRepository.save(ticket);
+                })
+                .map(TourTicketDTO::convertToDTO)
+                .switchIfEmpty(Mono.error(new Exception("Tour not found!")));
+    }
 }

@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, Pressable, Image, ScrollView } from 'react-nati
 import AntDesign from '@expo/vector-icons/AntDesign';
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 import Ionicons from '@expo/vector-icons/Ionicons';
-
+import axiosInstance from "../../../api/axiosInstance";
 const ChuongTrinh = ({ navigation, route }) => {
     const { tour } = route.params;
     const [expanded, setExpanded] = useState({}); // Quản lý trạng thái mở của mỗi ngày
@@ -15,6 +15,77 @@ const ChuongTrinh = ({ navigation, route }) => {
             [index]: !prevExpanded[index], // Đảo ngược trạng thái của ngày hiện tại
         }));
     };
+    const [itineraries, setItineraries] = useState([]);
+    useEffect(() => {
+      const fetchItineraries = async () => {
+        if (tour) {
+          try {
+            const res = await axiosInstance.get(
+              `/v1/itineraries/by-tour`,
+              {
+                params: { tourId: tour.tourId },
+              }
+            );
+            setItineraries(res.data);
+            console.log(res.data);
+          } catch (error) {
+            console.error("Error fetching itinerary data:", error);
+          }
+        }
+      };
+  
+      fetchItineraries();
+    }, [tour]);
+  
+  
+    //Call API  Get Activities By ItineraryId
+    const [activities, setActivities] = useState([]);
+  
+    useEffect(() => {
+      const fetchActivitiesByItinerary = async (itinerId) => {
+        try {
+          const res = await axiosInstance.get(
+            `/v1/itineraries/activities/by-itinerary`,
+            {
+              params: { itinerId },
+            }
+          );
+          // Lưu activity theo itinerId
+          setActivities((prev) => ({
+            ...prev,
+            [itinerId]: res.data,
+          }));
+        } catch (error) {
+          console.error("Error fetching itinerary data:", error);
+        }
+      };
+  
+      // Kiểm tra xem itineraries có tồn tại và không rỗng
+      if (itineraries.length > 0) {
+        itineraries.forEach((it) => {
+          fetchActivitiesByItinerary(it.itinerId); // Truyền itinerId vào hàm
+        });
+      }
+    }, [itineraries]);
+  
+    //Call API Ticket Tour
+    // const [tickets, setTickets] = useState([]);
+    // useEffect(() => {
+    //   const fetchTickets = async () => {
+    //     if (tour) {
+    //       try {
+    //         const response = await axiosInstance.get(
+    //           `/v1/tours/tour-tickets/by-tour/${tour.tourId}`
+    //         );
+    //         setTickets(response.data);
+    //       } catch (error) {
+    //         console.error("Error fetching Ticket Tour data:", error);
+    //       }
+    //     }
+    //   };
+    //   fetchTickets();
+    // }, [tour]);
+  
 
     return (
         <ScrollView style={styles.container}>

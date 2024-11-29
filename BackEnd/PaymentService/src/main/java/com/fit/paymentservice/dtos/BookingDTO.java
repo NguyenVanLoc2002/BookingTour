@@ -5,7 +5,6 @@ import com.fit.paymentservice.models.Booking;
 import lombok.*;
 
 import java.time.LocalDate;
-import java.util.UUID;
 
 
 @Getter
@@ -52,16 +51,15 @@ public class BookingDTO {
         bookingDTO.setToddlers(booking.getToddlers());
         bookingDTO.setInfants(booking.getInfants());
 
-        // Nếu là khách vãng lai
-        if (booking.getCustomerId() == null) {
-            bookingDTO.setEmail(booking.getEmail());
-            bookingDTO.setUserName(booking.getUserName());
-            bookingDTO.setPhoneNumber(booking.getPhoneNumber());
-            bookingDTO.setCity(booking.getCity());
-            bookingDTO.setDistrict(booking.getDistrict());
-            bookingDTO.setWard(booking.getWard());
-            bookingDTO.setAddress(booking.getAddress());
-        }
+
+        bookingDTO.setEmail(booking.getEmail());
+        bookingDTO.setUserName(booking.getUserName());
+        bookingDTO.setPhoneNumber(booking.getPhoneNumber());
+        bookingDTO.setCity(booking.getCity());
+        bookingDTO.setDistrict(booking.getDistrict());
+        bookingDTO.setWard(booking.getWard());
+        bookingDTO.setAddress(booking.getAddress());
+
         return bookingDTO;
     }
 
@@ -82,15 +80,15 @@ public class BookingDTO {
         booking.setInfants(bookingDTO.getInfants());
 
         // Nếu là khách vãng lai
-        if (bookingDTO.getCustomerId() == null) {
-            booking.setEmail(bookingDTO.getEmail());
-            booking.setUserName(bookingDTO.getUserName());
-            booking.setPhoneNumber(bookingDTO.getPhoneNumber());
-            booking.setCity(bookingDTO.getCity());
-            booking.setDistrict(bookingDTO.getDistrict());
-            booking.setWard(bookingDTO.getWard());
-            booking.setAddress(bookingDTO.getAddress());
-        }
+
+        booking.setEmail(bookingDTO.getEmail());
+        booking.setUserName(bookingDTO.getUserName());
+        booking.setPhoneNumber(bookingDTO.getPhoneNumber());
+        booking.setCity(bookingDTO.getCity());
+        booking.setDistrict(bookingDTO.getDistrict());
+        booking.setWard(bookingDTO.getWard());
+        booking.setAddress(bookingDTO.getAddress());
+
         return booking;
     }
 }

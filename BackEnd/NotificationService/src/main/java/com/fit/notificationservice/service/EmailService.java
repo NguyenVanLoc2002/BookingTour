@@ -38,19 +38,32 @@ public class EmailService {
 
     public Mono<Void> sendEmailAuthBookingTour(BookingDTO bookingDTO) {
         return Mono.fromCallable(() -> {
+                    // Tải mẫu HTML và thay thế nội dung động
                     String htmlContent = loadVerifyBookingTourTemplate();
                     htmlContent = htmlContent.replace("${username}", bookingDTO.getUserName());
                     htmlContent = htmlContent.replace("${email}", bookingDTO.getEmail());
+                    htmlContent = htmlContent.replace("${phoneNumber}", bookingDTO.getPhoneNumber());
+                    htmlContent = htmlContent.replace("${address}",
+                            String.format("%s, %s, %s, %s",
+                                    bookingDTO.getAddress(),
+                                    bookingDTO.getWard(),
+                                    bookingDTO.getDistrict(),
+                                    bookingDTO.getCity()));
+                    htmlContent = htmlContent.replace("${tourId}", String.valueOf(bookingDTO.getTourId()));
+                    htmlContent = htmlContent.replace("${bookingDate}", bookingDTO.getBookingDate().toString());
+                    htmlContent = htmlContent.replace("${quantity}", String.valueOf(bookingDTO.getQuantity()));
+                    htmlContent = htmlContent.replace("${totalAmount}", String.format("%,.0f VND", bookingDTO.getTotalAmount()));
                     htmlContent = htmlContent.replace("${verificationLink}", createVerificationLinkBookingTour(bookingDTO));
 
                     // Tạo đối tượng Email và gửi
-                    Email emailDetails = new Email(bookingDTO.getEmail(), htmlContent, "Booking Confirmation", "");
+                    Email emailDetails = new Email(bookingDTO.getEmail(), htmlContent, "Xác nhận đặt tour", "");
                     sendVerifyEmail(emailDetails);
                     return true;
                 })
-                .subscribeOn(Schedulers.boundedElastic()) // để thực hiện các tác vụ blocking trên các thread riêng biệt, tránh chặn các thread chính.
+                .subscribeOn(Schedulers.boundedElastic())
                 .then();
     }
+
 
     public Mono<Void> sendEmailVerifyAccount(CustomerResponse customerReponse) {
         return Mono.fromCallable(() -> {
@@ -104,8 +117,4 @@ public class EmailService {
         log.info("token: {}", token);
         return "http://localhost:8000/api/v1/auth/verify-account?token=" + token;
     }
-
-
-
-
 }

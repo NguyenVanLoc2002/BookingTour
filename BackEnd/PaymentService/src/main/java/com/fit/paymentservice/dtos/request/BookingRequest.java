@@ -19,6 +19,7 @@ public class BookingRequest {
     private int children;          // Số lượng trẻ em (5 - 12 tuổi)
     private int toddlers;          // Số lượng trẻ nhỏ (2 - 5 tuổi)
     private int infants;           // Số lượng em bé (dưới 2 tuổi)
+    private double totalAmount;
 
     // Chỉ dùng cho khách đã đăng ký
     private Long customerId;       // Chứa customerId nếu là khách đã đăng ký, null nếu là khách vãng lai

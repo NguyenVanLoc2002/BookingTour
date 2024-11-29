@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Account Registration Verification</title>
+    <title>Xác nhận đăng ký tài khoản</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -46,12 +46,13 @@
 </head>
 <body>
 <div class="container">
-    <h1>Account Registration Verification</h1>
-    <p>Dear ${username},</p>
-    <p>Thank you for signing up with us! We're excited to have you on board. To complete your registration, please confirm your email address by clicking the button below:</p>
-    <a href="${verificationLink}&redirectUrl=http://localhost:3000/payment" target="_blank">Verify Email</a>
-    <p>If you did not register for an account, please disregard this email.</p>
-    <p>Best Regards,<br>The YourCompany Team</p>
+    <h1>Xác nhận đăng ký tài khoản</h1>
+    <p>Xin chào ${username},</p>
+    <p>Cảm ơn bạn đã đăng ký tài khoản với chúng tôi! Chúng tôi rất vui mừng chào đón bạn. Để hoàn tất việc đăng ký, vui lòng xác nhận địa chỉ email của bạn bằng cách nhấn vào nút dưới đây:</p>
+    <a href="${verificationLink}" target="_self">Xác nhận Email</a>
+    <p>Lưu ý: Mật khẩu mặc định của bạn là <strong>123456</strong>. Để bảo mật tài khoản, vui lòng đăng nhập và cập nhật mật khẩu mới ngay sau khi hoàn tất xác nhận.</p>
+    <p>Nếu bạn không thực hiện đăng ký tài khoản, vui lòng bỏ qua email này.</p>
+    <p>Trân trọng,<br>Đội ngũ Travel VietNam</p>
 </div>
 </body>
 </html>

@@ -88,16 +88,14 @@ services:
   redis:
     image: redis:latest
     container_name: redis-container
-    restart: always
     ports:
       - "6379:6379"
     volumes:
-      - ./redis-data:/data  # Dữ liệu Redis lưu tại thư mục ./redis-data
-    environment:
-      - REDIS_PASSWORD=123456
-      - REDIS_PORT=6379
-      - REDIS_DATABASES=16
+      - ./Environments/redis/redis.conf:/usr/local/etc/redis/redis.conf
+      - ./redis-data:/data
+    command: redis-server /usr/local/etc/redis/redis.conf
     networks:
+      - gateway
       - kafka-network
 
   api_gateway:

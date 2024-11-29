@@ -51,25 +51,5 @@ public class PaymentService {
 
 
 
-//    public Mono<PaymentDTO> executePayment(PaymentRequest paymentRequest) {
-//        // Tạo đối tượng Payment để lưu vào cơ sở dữ liệu
-////        Payment paymentEntity = new Payment();
-////        paymentEntity.setPaymentId(UUID.randomUUID().toString());
-////        paymentEntity.setBookingId(paymentRequest.getBookingId()); // Chuyển đổi bookingId từ String sang UUID
-////
-////        paymentEntity.setAmount(paymentRequest.getAmount());
-////        paymentEntity.setPaymentMethod(PaymentMethod.PAYPAL);
-////        paymentEntity.setPaymentStatus(PaymentStatus.COMPLETED);
-////        paymentEntity.setPaymentDate(LocalDate.now());
-////        paymentEntity.setCurrency(Currency.USD);
-////        paymentEntity.setPaymentReference(paymentRequest.getPaymentId()); // Sử dụng ID của PayPal
-////        paymentEntity.setCreatedDate(LocalDate.now());
-////        paymentEntity.setUpdatedDate(LocalDate.now());
-////        log.info("payment: {}", paymentEntity);
-//        return addPayment(paymentRequest)
-//                .map(PaymentDTO::convertToDTO)
-//                .doOnError(throwable -> log.info("Lỗi khi lưu thông tin thanh toán: " + throwable.getMessage(), throwable));
-//    }
-
 
 }

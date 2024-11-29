@@ -154,13 +154,28 @@ public class TourService {
     public Flux<TourDTO> findToursByIds(List<Long> tourIds) {
         return tourRepository.findByTourIdIn(tourIds)
                 .flatMap(this::buildTourDTO);
-
     }
 
-    public Mono<Double> calcTotalAmountTicket(Long tourId, int numberOfGuests) {
-        return tourRepository.findById(tourId)
-                .map(tour -> tour.getPrice() * numberOfGuests); // Tính tổng tiền trực tiếp trong luồng
+    public Mono<TourDTO> getTourById(Long ticketId) {
+        return tourTicketRepository.findByTicketId(ticketId)
+                .flatMap(ticket -> {
+                    if (ticket == null || ticket.getTourId() == null) {
+                        return Mono.error(new IllegalArgumentException("Invalid ticket or missing tourId"));
+                    }
+                    return tourFeatureRepository.findById(ticket.getTourId())
+                            .flatMap(tourFeature ->
+                                    tourRepository.findById(ticket.getTourId())
+                                            .map(tour -> createTourDTO(tour, tourFeature, TourTicketDTO.convertToDTO(ticket)))
+                            );
+                })
+                .switchIfEmpty(Mono.error(new NoSuchElementException("Ticket not found for ID: " + ticketId)))
+                .onErrorResume(e -> {
+                    log.error("Error fetching tour by ticket ID: {}", e.getMessage(), e);
+                    return Mono.error(e); // Bạn có thể chọn cách xử lý lỗi khác
+                });
     }
+
+
 
 
     private Flux<TourDTO> buildTourDTO(Tour tour) {

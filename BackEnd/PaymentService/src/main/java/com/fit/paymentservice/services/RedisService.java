@@ -50,7 +50,7 @@ public class RedisService {
                 .doOnError(error -> log.error("Failed to remove value: {} from set with key: {}", value, key, error));
     }
 
-    public Mono<BookingDTO> getBookingByBookingIdFromRedisSet(Long customerId, String bookingId) {
+    public Mono<BookingDTO> getBookingByBookingIdFromRedisSet(String customerId, String bookingId) {
         String key = "customer:" + customerId + ":bookings";
 
         // Lấy các phần tử trong Redis Set, mỗi phần tử là LinkedHashMap
@@ -80,7 +80,6 @@ public class RedisService {
     public Mono<Object> getData(String key) {
         return reactiveRedisTemplate.opsForValue().get(key);
     }
-
 
     // Lấy dữ liệu và chuyển đổi thành BookingDTO
     public Mono<BookingDTO> getDataAsBookingDTO(String key) {
@@ -113,7 +112,6 @@ public class RedisService {
                 .doOnSuccess(success -> log.info("Added booking {} to customer {} with TTL: {}", value, customerId, ttl))
                 .doOnError(error -> log.error("Failed to add booking to customer: {}", error));
     }
-
 
     public Mono<Boolean> updateBookingForCustomer(String customerId, String bookingId, Object newValue, Duration ttl) {
         String key = "customer:" + customerId + ":bookings";
@@ -154,10 +152,6 @@ public class RedisService {
                 .doOnError(error -> log.error("Failed to update booking for customer {}: {}", customerId, error));
     }
 
-
-
-
-
     // Lấy danh sách bookings của customer từ Redis
     public Flux<BookingDTO> getBookingsByCustomerId(String customerId) {
         String key = "customer:" + customerId + ":bookings";  // Key của Redis Set chứa các bookingId
@@ -187,7 +181,6 @@ public class RedisService {
                 })
                 .doOnTerminate(() -> log.info("Returning bookings for customer {}", customerId));
     }
-
 
     // Lưu thông tin Booking và thêm bookingId vào Redis Set của customer
     public Mono<Boolean> saveBookingTourFromRedis(BookingDTO bookingDTO) {

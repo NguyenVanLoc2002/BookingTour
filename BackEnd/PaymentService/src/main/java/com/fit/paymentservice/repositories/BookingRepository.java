@@ -4,6 +4,7 @@ import com.fit.paymentservice.models.Booking;
 import org.springframework.data.r2dbc.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.data.repository.reactive.ReactiveCrudRepository;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.time.LocalDate;
@@ -12,7 +13,7 @@ public interface BookingRepository extends ReactiveCrudRepository<Booking, Strin
     @Override
     Mono<Booking> findById(String String);
 
-    Mono<Booking> findBookingByCustomerId(Long customerId);
+    Flux<Booking> findBookingByCustomerId(Long customerId);
 
     // Phương thức thêm booking mới
     @Query("INSERT INTO booking (booking_id, tour_id, ticket_id, booking_date, status_booking, total_amount, quantity, adults, children, toddlers, infants, customer_id, email, user_name, phone_number, city, district, ward, address) " +

@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from "react";
 import PayPalButton from "@/components/PayPalButton.jsx";
 import axios from "axios";
+import Header from "../../layouts/Header";
+import Footer from "../../layouts/Footer";
+import Menu from "../../layouts/Menu";
 
 const PaymentPage = () => {
   const [amount, setAmount] = useState(0); // Giả định số tiền cho tour
@@ -8,6 +11,7 @@ const PaymentPage = () => {
   const queryParams = new URLSearchParams(window.location.search);
   const bookingId = queryParams.get("bookingId");
   const [payment, setPayment] = useState();
+  const [booking, setBooking] = useState({});
 
   useEffect(() => {
     const fetchBookingTour = async () => {
@@ -15,7 +19,8 @@ const PaymentPage = () => {
         const res = await axios.get(
           `http://localhost:8000/api/v1/booking/redis/${bookingId}`
         );
-        setAmount(res.data.totalAmount);
+        setAmount(res.data.bookingDTO.totalAmount);
+        setBooking(res.data.bookingDTO);
       } catch (error) {
         console.error("Error fetching booking data:", error);
       }
@@ -25,6 +30,8 @@ const PaymentPage = () => {
     }
   }, [bookingId]);
 
+  console.log("Book: ", booking);
+  
   const handlePaymentSuccess = async (details) => {
     console.log("Payment successful:", details);
 
@@ -55,8 +62,6 @@ const PaymentPage = () => {
     setIsPaymentSuccess(true);
   };
 
-  console.log("payment: ", payment);
-
   const formatCurrency = (amount) => {
     return amount.toLocaleString("vi-VN", {
       style: "currency",
@@ -66,33 +71,67 @@ const PaymentPage = () => {
     });
   };
 
-  return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100">
-      <div className="w-full max-w-lg p-6 bg-white rounded-lg shadow-md">
-        <h2 className="text-2xl font-bold text-center text-gray-700">
-          Thanh toán tour du lịch
-        </h2>
-        <p className="mt-4 text-center text-gray-600">
-          Số tiền cần thanh toán:{" "}
-          <span className="font-semibold">{formatCurrency(amount)}</span>
-        </p>
+  const vndToUsdRate = 24000; // tỷ giá VND -> USD, ví dụ 1 USD = 24000 VND
 
-        <div className="mt-6">
-          <PayPalButton
-            amount={amount}
-            onSuccess={(details, data) => {
-              handlePaymentSuccess(details);
-            }}
-          />
+  return (
+    <>
+      <div className="w-full h-full flex flex-col">
+        {/* Header Section */}
+        <Header />
+        <Menu/>
+         {/* Booking Details Section */}
+         <div className="w-full bg-gray-50 py-6">
+          <div className="max-w-lg mx-auto text-center">
+            <h3 className="text-xl font-bold text-gray-700 mb-2">
+              Thông tin tour
+            </h3>
+            <p className="text-gray-600">Tour: Miền Tây - Khám phá sông nước.</p>
+            <p className="text-gray-600">Ngày khởi hành: 01/12/2024</p>
+          </div>
+        </div>
+        {/* Main Content Section */}
+        <div className="w-full max-w-lg mx-auto bg-white p-6 rounded-lg shadow-md mt-10">
+          <h2 className="text-2xl font-bold text-center text-gray-700 mb-4">
+            Thanh toán tour du lịch
+          </h2>
+          <p className="mt-4 text-center text-gray-600">
+            Số tiền cần thanh toán:{" "}
+            <span className="font-semibold">{formatCurrency(amount * vndToUsdRate)}</span>
+          </p>
+
+          <div className="mt-6">
+            <PayPalButton
+              amount={amount}
+              onSuccess={(details, data) => {
+                handlePaymentSuccess(details);
+              }}
+            />
+          </div>
+
+          {isPaymentSuccess && (
+            <div className="mt-6 p-4 text-center text-green-600 bg-green-100 rounded-md">
+              Thanh toán thành công! Cảm ơn bạn đã sử dụng dịch vụ của chúng tôi.
+            </div>
+          )}
         </div>
 
-        {isPaymentSuccess && (
-          <div className="mt-6 p-4 text-center text-green-600 bg-green-100 rounded-md">
-            Thanh toán thành công! Cảm ơn bạn đã sử dụng dịch vụ của chúng tôi.
+
+        {/* Payment Confirmation Section */}
+        <div className="w-full bg-white py-6 mt-6">
+          <div className="max-w-lg mx-auto text-center">
+            <h3 className="text-xl font-bold text-gray-700 mb-2">
+              Xác nhận thanh toán
+            </h3>
+            <p className="text-gray-600">
+              Sau khi thanh toán thành công, thông tin vé của bạn sẽ được cập nhật.
+            </p>
           </div>
-        )}
+        </div>
+
+        {/* Footer Section */}
+        <Footer />
       </div>
-    </div>
+    </>
   );
 };
 

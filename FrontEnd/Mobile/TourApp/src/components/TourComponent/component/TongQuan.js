@@ -5,13 +5,34 @@ import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 import Ionicons from '@expo/vector-icons/Ionicons';
 const TongQuan = ({ navigation, route }) => {
     const { tour } = route.params;
+    const formatDate = (dateString) => {
+        const formattedDay = dateString[2].toString().padStart(2, "0");
+        const formattedMonth = dateString[1].toString().padStart(2, "0");
+        return `${formattedDay}/${formattedMonth}/${dateString[0]}`;
+    };
+    const getAccommodationQuality = (accommodation) => {
+        let temp;
+        if (accommodation === "FIVE_STAR_HOTEL") {
+            temp = 'Khách sạn 5 sao'
+        } else if (accommodation === "FOUR_STAR_HOTEL") {
+            temp = 'Khách sạn 4 sao'
+        } else if (accommodation === "THREE_STAR_HOTEL") {
+            temp = 'Khách sạn 3 sao'
+        }
+        else if (accommodation === "HOMESTAY") {
+            temp = 'Homestay'
+        } else if (accommodation === "RESORT") {
+            temp = 'Resort'
+        }
+        return temp;
+    };
     return (
         <ScrollView style={styles.container}>
             <View style={styles.detailBox}>
-                <View style={styles.row}><AntDesign name="calendar" size={20} color="black" /><Text style={{ fontSize: 14, paddingLeft: 10 }}>Khởi hành: {tour?.ngayKhoiHanh}</Text></View>
-                <View style={styles.row}><AntDesign name="clockcircleo" size={20} color="black" /><Text style={{ fontSize: 14, paddingLeft: 10 }}>Thời gian: {tour?.thoiGian}</Text></View>
-                <View style={styles.row}><AntDesign name="team" size={20} color="black" /><Text style={{ fontSize: 14, paddingLeft: 10 }}>Số chổ còn nhận: {Number(tour?.soLuongVe - tour?.soVeDaDat)}/{tour?.soLuongVe}</Text></View>
-                <View style={styles.row}><FontAwesome6 name="location-dot" size={20} color="black" /><Text style={{ fontSize: 14, paddingLeft: 10 }}>Số chổ còn nhận: {Number(tour?.soLuongVe - tour?.soVeDaDat)}/{tour?.soLuongVe}</Text></View>
+                <View style={styles.row}><AntDesign name="calendar" size={20} color="black" /><Text style={{ fontSize: 14, paddingLeft: 10 }}>Khởi hành: {formatDate(tour.departureDate)}</Text></View>
+                <View style={styles.row}><AntDesign name="clockcircleo" size={20} color="black" /><Text style={{ fontSize: 14, paddingLeft: 10 }}>Thời gian: {tour.day} ngày {tour.night} đêm</Text></View>
+                <View style={styles.row}><AntDesign name="team" size={20} color="black" /><Text style={{ fontSize: 14, paddingLeft: 10 }}>Số chổ còn nhận: {tour.availableSlot > 0 ? tour?.availableSlot : "Hết chỗ"}</Text></View>
+                <View style={styles.row}><FontAwesome6 name="location-dot" size={20} color="black" /><Text style={{ fontSize: 14, paddingLeft: 10 }}>Nơi khởi hành: {tour?.departureLocation}</Text></View>
             </View>
 
             <View style={styles.detailBox}>
@@ -22,7 +43,7 @@ const TongQuan = ({ navigation, route }) => {
                             <Text style={{ fontSize: 13, paddingLeft: 10 }}>Điểm tham quan</Text><Text style={{ fontSize: 12, fontStyle: "italic" }}> {tour?.diemThamQuan}</Text></View></View>
                     <View style={styles.row50}>
                         <FontAwesome6 name="hotel" size={16} color="black" />
-                        <Text style={{ fontSize: 13, paddingLeft: 10 }}>{tour?.noiNghiNgoi}</Text>
+                        <Text style={{ fontSize: 13, paddingLeft: 10 }}>{getAccommodationQuality(tour?.tourFeatureDTO?.accommodationQuality)}</Text>
                     </View>
                 </View>
                 <View style={styles.rowBetween}>
@@ -31,7 +52,19 @@ const TongQuan = ({ navigation, route }) => {
                             <Text style={{ fontSize: 13, paddingLeft: 10 }}>Ẩm thực</Text><Text style={{ fontSize: 12, fontStyle: "italic" }}> {tour?.amThuc}</Text>
                         </View>
                     </View>
-                    <View style={styles.row50}><AntDesign name="car" size={16} color="black" />
+                    <View style={styles.row50}>
+                        {tour.tourFeatureDTO.transportationMode.includes("AIRPLANE") && (
+                            <FontAwesome6 name="plane" size={16} color="black" />
+                        )}
+                        {tour.tourFeatureDTO.transportationMode.includes("BUS") && (
+                            <FontAwesome6 name="bus-simple" size={16} color="black" />
+                        )}
+                        {tour.tourFeatureDTO.transportationMode.includes("TRAIN") && (
+                            <FontAwesome6 name="train" size={16} color="black" />
+                        )}
+                        {tour.tourFeatureDTO.transportationMode.includes("PRIVATE_CAR") && (
+                            <FontAwesome6 name="car" size={16} color="black" />
+                        )}
                         <View style={styles.column}>
                             <Text style={{ fontSize: 13, paddingLeft: 10 }}>Phương tiện di chuyển</Text><Text style={{ fontSize: 12, fontStyle: "italic" }}> {tour?.phuongTien}</Text>
                         </View>
@@ -43,7 +76,7 @@ const TongQuan = ({ navigation, route }) => {
                 <Text style={styles.tieuDe}>Những địa điểm tham quan</Text>
                 <ScrollView horizontal style={styles.bannerContainer}
                 >
-                    {tour?.listAnh?.map((image, index) => (
+                    {tour?.urlImage?.map((image, index) => (
                         <Pressable key={index} style={styles.bannerRow}>
 
                             <Image
@@ -58,12 +91,12 @@ const TongQuan = ({ navigation, route }) => {
                 </ScrollView>
             </View>
             <View style={styles.detailBoxBorder}>
-                <Text style={[styles.tieuDe,{borderColor: "#3FD0D4",borderBottomWidth: 1, paddingBottom:10}]}>Bạn sẽ trải nghiệm</Text>
-                <Text style={{ fontSize: 14, paddingLeft: 10 , paddingTop:20}}>{tour?.traiNghiem}</Text>
+                <Text style={[styles.tieuDe, { borderColor: "#3FD0D4", borderBottomWidth: 1, paddingBottom: 10 }]}>Bạn sẽ trải nghiệm</Text>
+                <Text style={{ fontSize: 14, paddingLeft: 10, paddingTop: 20 }}>{tour?.traiNghiem}</Text>
             </View>
             <View style={styles.detailBoxBorder}>
-                <Text style={[styles.tieuDe,{borderColor: "#3FD0D4",borderBottomWidth: 1, paddingBottom:10}]}>Vé trống cho bạn</Text>
-                <Text style={{ fontSize: 14, paddingLeft: 10 , paddingTop:20}}>{tour?.traiNghiem}</Text>
+                <Text style={[styles.tieuDe, { borderColor: "#3FD0D4", borderBottomWidth: 1, paddingBottom: 10 }]}>Vé trống cho bạn</Text>
+                <Text style={{ fontSize: 14, paddingLeft: 10, paddingTop: 20 }}>{tour?.traiNghiem}</Text>
             </View>
         </ScrollView>
     );

@@ -44,8 +44,6 @@ public class EventConsumer {
     private TourService tourService;
     private boolean isSinkForPreferencesTerminated;
     @Autowired
-    private TourRepository tourRepository;
-    @Autowired
     private EventProducer eventProducer;
     @Autowired
     private TourTicketService tourTicketService;
@@ -96,11 +94,11 @@ public class EventConsumer {
 
         String lockKey = "lock:ticket" + bookingRequest.getTicketId();
         log.info("lockKey: {}", lockKey);
+
         return acquireLockWithRetry(lockKey)
                 .flatMap(locked -> {
                     if (!locked) {
                         log.warn("Could not acquire lock for ticketId: {}", bookingRequest.getTicketId());
-//                        return Mono.empty(); // Trả về Mono.empty() nếu không lấy được khóa
                         BookingResponse errorResponse = new BookingResponse();
                         errorResponse.setBookingId(bookingRequest.getBookingId());
                         errorResponse.setAvailable(false);
@@ -111,22 +109,29 @@ public class EventConsumer {
                                 .doOnSuccess(result -> log.info("Sent error response to booking-response topic: {}", result))
                                 .then();
                     }
+
                     return tourTicketService.checkAvailableSlot(bookingRequest.getTicketId(), bookingRequest.getQuantity())
                             .flatMap(isAvailable -> {
                                 BookingResponse bookingResponseDTO = new BookingResponse();
                                 bookingResponseDTO.setBookingId(bookingRequest.getBookingId());
                                 bookingResponseDTO.setQuantity(bookingRequest.getQuantity());
                                 bookingResponseDTO.setAvailable(isAvailable);
+
                                 if (isAvailable) {
                                     bookingResponseDTO.setBookingDate(LocalDate.now());
                                     bookingResponseDTO.setStatusBooking(StatusBooking.PENDING_CONFIRMATION);
                                     log.info("bookingResponseDTO demo: {}", bookingResponseDTO);
+
+                                    // Kiểm tra và cập nhật slot vé có sẵn
                                     return tourTicketService.updateAvailableSlot(bookingRequest.getTicketId(), bookingRequest.getQuantity())
-                                            .then(tourService.calcTotalAmountTicket(bookingRequest.getTourId(), bookingRequest.getQuantity()))
-                                            .flatMap(amount -> {
-                                                bookingResponseDTO.setTotalAmount(amount);
-                                                log.info("Total amount: {}", amount);
+                                            .flatMap(updated -> {
+                                                double totalAmount = bookingRequest.getTotalAmount();
+                                                bookingResponseDTO.setTotalAmount(totalAmount);
+
+                                                log.info("Total amount from bookingRequest: {}", totalAmount);
                                                 log.info("BookingResponseDTO: {}", bookingResponseDTO);
+
+                                                // Gửi phản hồi vào topic
                                                 return eventProducer.send(Constant.RESPONSE_BOOKING_TOPIC,
                                                                 String.valueOf(bookingRequest.getBookingId()),
                                                                 gson.toJson(bookingResponseDTO))
@@ -141,7 +146,7 @@ public class EventConsumer {
                                             .then();
                                 }
                             })
-                            .doFinally(signalType -> redisService.releaseLock(lockKey).subscribe());// Giải phóng khóa
+                            .doFinally(signalType -> redisService.releaseLock(lockKey).subscribe()); // Giải phóng khóa
                 })
                 .doOnTerminate(() -> {
                     // Acknowledge record đã được xử lý

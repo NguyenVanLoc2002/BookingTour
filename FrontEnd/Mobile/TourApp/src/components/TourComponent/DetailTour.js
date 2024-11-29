@@ -8,13 +8,8 @@ const DetailTour = ({ navigation, route }) => {
     return (
         <View style={{ flex: 1, backgroundColor: "#fafafa", }}>
             <ImageBackground source={{
-                uri: tour.url
+                uri: tour?.urlImage[0]
             }} resizeMode="cover" style={styles.imageBia}>
-                <View style={styles.header}>
-                    <FontAwesome5 name={"search"} size={24} color={"black"} />
-                    <TextInput placeholder="Nhập vào đây để tìm kiếm" style={styles.buttonSearch}>
-                    </TextInput>
-                </View>
             </ImageBackground>
 
             <View style={styles.viewBox}>
@@ -23,7 +18,7 @@ const DetailTour = ({ navigation, route }) => {
             <View style={styles.priceBox}>
                 <View style={styles.rowBetween}>
                     <View style={styles.column}>
-                        <Text style={{ fontSize: 14, paddingLeft: 10, color: "#8C8C8C", fontWeight: "500", textDecorationLine: "line-through" }}>Giá: {tour?.originalPrice}đ</Text>
+                        <Text style={{ fontSize: 14, paddingLeft: 10, color: "#8C8C8C", fontWeight: "500", textDecorationLine: "line-through" }}>Giá: {tour?.oldPrice}đ</Text>
                         <Text style={{ fontSize: 15, paddingLeft: 10, color: "red", fontWeight: "500" }}>{tour?.price}đ/khách</Text>
                     </View>
                     <Pressable style={styles.buttonDat} onPress={() => { navigation.navigate("DatTour", { tour:tour }); }}>

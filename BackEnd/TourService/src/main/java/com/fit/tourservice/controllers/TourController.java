@@ -15,10 +15,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.time.LocalDate;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @RestController
@@ -64,6 +61,21 @@ public class TourController {
                     return Mono.just(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build());
                 });
     }
+
+    @GetMapping("/getById")
+    public Mono<ResponseEntity<TourDTO>> getTourByTicketId( @RequestParam Long ticketId) {
+        return tourService.getTourById(ticketId)
+                .map(ResponseEntity::ok) // Nếu thành công, trả về ResponseEntity với HTTP 200
+                .onErrorResume(NoSuchElementException.class, e -> {
+                    log.warn("Tour not found: {}", e.getMessage());
+                    return Mono.just(ResponseEntity.status(HttpStatus.NOT_FOUND).body(null));
+                })
+                .onErrorResume(e -> {
+                    log.error("Unexpected error fetching tour: {}", e.getMessage(), e);
+                    return Mono.just(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build());
+                });
+    }
+
 
     @GetMapping("/getToursByIds")
     public Mono<List<TourDTO>> getToursByIds(@RequestParam String tourIds, // nhận tham số tourIds dưới dạng String
@@ -284,32 +296,5 @@ public class TourController {
                             .body(Flux.just(new TourDTO()))); // Có thể trả về một body mặc định nếu có lỗi
                 });
     }
-
-
-    //    //    Test
-    @GetMapping(value = "/recommendations-preferences/request")
-    public Mono<ResponseEntity<Void>> requestPreferences(@RequestParam("customerId") Long customerId) {
-        return tourService.requestPreferences(customerId)
-                .then(Mono.just(ResponseEntity.ok().<Void>build()))
-                .onErrorResume(error -> {
-                    log.error("Error while requesting preferences for customer {}: {}", customerId, error.getMessage());
-                    return Mono.just(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build());
-                });
-    }
-
-
-//    @GetMapping(value = "/recommendations-preferences/tours")
-//    public Flux<TourDTO> getTourStream(@RequestParam("customerId") Long customerId) {
-//        eventConsumer.ensureSinkForPreferencesInitialized(); // Đảm bảo sink được khởi tạo
-//
-//        return eventConsumer.getPreferenceTourStream()
-//                .doOnNext(tour -> log.info("Tour emitted for customer {}: {}", customerId, tour))
-//                .doOnComplete(() -> {
-//                    log.info("Completed emitting tours for customer: {}", customerId);
-//                    eventConsumer.markSinkForPreferencesAsCompleted(); // Đánh dấu sink đã hoàn tất
-//                })
-//                .doOnError(error -> log.error("Error during Flux processing for customer {}: ", customerId, error));
-//    }
-
 
 }

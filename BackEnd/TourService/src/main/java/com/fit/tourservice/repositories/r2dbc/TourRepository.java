@@ -16,6 +16,8 @@ import java.util.List;
 
 public interface TourRepository extends ReactiveCrudRepository<Tour, Long> {
 
+    Mono<Tour> findById(Long id);
+
     @Query("""
                         SELECT DISTINCT T.* 
                         FROM tours T

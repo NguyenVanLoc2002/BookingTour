@@ -19,6 +19,7 @@ public class RouterValidator {
 //            Pattern.compile("/api/v1/auth/get-claims"),
             Pattern.compile("/eureka"),
             //Tour
+            Pattern.compile("/api/v1/tours/getById"),
             Pattern.compile("/api/v1/tours/getFilteredTours"),
             Pattern.compile("/api/v1/tours/getToursByIds"),
             Pattern.compile("/api/v1/tours/region"),
@@ -33,14 +34,14 @@ public class RouterValidator {
             //Recommendation
             Pattern.compile("/api/v1/recommendation/.*"),
             //Payment
+            Pattern.compile("/api/v1/booking/redis/.+"),
             Pattern.compile("/api/v1/booking/bookTour"),
             Pattern.compile("/api/v1/booking/verify-booking-tour"),
-            Pattern.compile("/api/v1/booking/redis/.*"),
-            Pattern.compile("/api/v1/payments/.*")
+            Pattern.compile("/api/v1/payments/success")
     );
 
     public static final List<Pattern> internalApiEndpoints = List.of(
-//          Pattern.compile("/api/v1/students/.*")
+
     );
 
     public static final List<Pattern> adminApiEndpoints = List.of(
@@ -49,7 +50,7 @@ public class RouterValidator {
     );
 
     public static final List<Pattern> customerApiEndpoints = List.of(
-            Pattern.compile("/api/v1/bookings/*"),
+            Pattern.compile("/api/v1/booking(\\?.*)?"),
             Pattern.compile("/api/v1/customers/by-email"),
 
             //Tour
@@ -62,7 +63,11 @@ public class RouterValidator {
             Pattern.compile("/api/v1/tours/getFilteredTours"),
             Pattern.compile("/api/v1/tours/recommendations-preferences/*"),
             Pattern.compile("/api/v1/tours/recommendations-interactions/*"),
-            Pattern.compile("/api/v1/tours/recommendations-preferences/request")
+            Pattern.compile("/api/v1/tours/recommendations-preferences/request"),
+
+            //Payment
+            Pattern.compile("/api/v1/payments/process-refund"),
+            Pattern.compile("/api/v1/booking/redis/customer/.+")
     );
 
     private Predicate<ServerHttpRequest> createPredicate(List<Pattern> patterns) {

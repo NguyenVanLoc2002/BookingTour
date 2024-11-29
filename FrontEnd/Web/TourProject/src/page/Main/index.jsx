@@ -453,7 +453,7 @@ function MainLayout() {
           </div>
 
           {/* MTay */}
-          <div className="flex items-center space-x-6 mt-3 mb-3">
+          {/* <div className="flex items-center space-x-6 mt-3 mb-3">
             <div className="flex flex-col justify-between font-sriracha w-72 h-80 shadow-2xl shadow-gray-500/50 rounded-lg group overflow-hidden">
               <img
                 src="https://divui.com/blog/wp-content/uploads/2018/10/111111.jpg"
@@ -567,7 +567,7 @@ function MainLayout() {
                 Miền Tây
               </p>
             </div>
-          </div>
+          </div> */}
         </div>
         <ChatBot />
         {/* Footer */}

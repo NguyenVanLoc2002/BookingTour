@@ -9,6 +9,8 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 public interface TourFeatureRepository extends ReactiveCrudRepository<TourFeature, Long> {
+    Mono<TourFeature> findById(Long tourId);
+
     @Query("""
        SELECT DISTINCT tf.*
        FROM tour_feature tf

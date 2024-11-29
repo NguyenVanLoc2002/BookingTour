@@ -15,6 +15,7 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.time.Duration;
@@ -39,7 +40,6 @@ public class BookingService {
     @Autowired
     @Lazy
     private EventConsumer eventConsumer;
-
 
     public Mono<BookingResponse> createBookingTour(BookingRequest bookingRequest) {
 //        Kiem tra thong tin truoc khi gui
@@ -101,10 +101,13 @@ public class BookingService {
                 .doOnError(throwable -> log.error("Error saving booking: {}", throwable.getMessage(), throwable));
     }
 
-
-
     public Mono<BookingDTO> findById(String bookingId){
         return bookingRepository.findById(bookingId)
+                .map(BookingDTO::convertToDto);
+    }
+
+    public Flux<BookingDTO> getBookingsByCustomerId(Long customerId){
+        return bookingRepository.findBookingByCustomerId(customerId)
                 .map(BookingDTO::convertToDto);
     }
 

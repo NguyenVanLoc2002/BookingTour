@@ -72,5 +72,14 @@ public class TourTicketController {
                         .body(tourTickets)
         );
     }
+
+
+    @PostMapping("/refund-slot")
+    public Mono<ResponseEntity<TourTicketDTO>> refundSlotTourTicket(
+            @RequestParam Long ticketId, @RequestParam int numberSlot) {
+        return tourTicketService.refundAvailableSlot(ticketId, numberSlot)
+                .map(updatedTicket -> ResponseEntity.ok().body(updatedTicket))
+                .defaultIfEmpty(ResponseEntity.notFound().build());
+    }
 }
 
