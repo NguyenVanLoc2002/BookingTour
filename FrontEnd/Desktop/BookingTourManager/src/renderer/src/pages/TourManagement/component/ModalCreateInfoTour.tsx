@@ -50,9 +50,9 @@ const ModalCreateInfo: React.FC = () => {
         phuongTien: 'mb',
         chatLuongChoO: 'ks5',
         thanhPho: 'tp_ho_chi_minh',
-        ngayDi: dayjs(),
+        startDate: dayjs(),
         tanSuat: '2t1l',
-        ngayBatDau: dayjs(),
+        endDate: dayjs(),
         traiNghiem: '',
     });
     const [fileList, setFileList] = useState<UploadFile[]>([]);
@@ -207,7 +207,7 @@ const ModalCreateInfo: React.FC = () => {
     return (
         <div>
             {showModalInfo ? (
-                <div className='overflow-y-scroll border border-spacing-1 max-h-[550px]   rounded-xl border-[#3fd0d4] p-4'>
+                <div className='overflow-y-scroll border border-spacing-1 max-h-[600px]   rounded-xl border-[#3fd0d4] p-4'>
                     <h2 className='font-bold text-xl mb-5 '>Tạo Tour</h2>
                     <Form
                         labelCol={{ span: 40 }}
@@ -336,10 +336,10 @@ const ModalCreateInfo: React.FC = () => {
                             <Col span={14} >
 
                                 <Row className='justify-between'>
-                                    <Form.Item label="Ngày đi" name="ngayDi" style={{ width: '40%' }} className='custom-border'
+                                    <Form.Item label="Ngày bắt đầu" name="startDate" style={{ width: '40%' }} className='custom-border'
                                         rules={[{ required: true, },]} >
-                                        <DatePicker value={formValues.ngayDi} defaultValue={formValues.ngayDi}
-                                            onChange={(date) => handleChange('ngayDi', date)} format={dateFormat} />
+                                        <DatePicker value={formValues.startDate} defaultValue={formValues.startDate}
+                                            onChange={(date) => handleChange('startDate', date)} format={dateFormat} />
                                     </Form.Item>
                                     <Form.Item label="Tần suất" name="tanSuat" style={{ width: '40%' }} className='custom-border'
                                         rules={[{ required: true, },]} >
@@ -353,10 +353,10 @@ const ModalCreateInfo: React.FC = () => {
                                 </Row>
                             </Col>
                             <Col span={8} >
-                                <Form.Item label="Ngày bắt đầu" name="ngayBatDau" className='custom-border'
+                                <Form.Item label="Ngày kết thúc" name="endDate" className='custom-border'
                                     rules={[{ required: true, },]} >
-                                    <DatePicker value={formValues.ngayBatDau} defaultValue={formValues.ngayBatDau}
-                                        onChange={(date) => handleChange('ngayBatDau', date)} format={dateFormat} />
+                                    <DatePicker value={formValues.endDate} defaultValue={formValues.endDate}
+                                        onChange={(date) => handleChange('endDate', date)} format={dateFormat} />
                                 </Form.Item>
                             </Col>
                         </Row>

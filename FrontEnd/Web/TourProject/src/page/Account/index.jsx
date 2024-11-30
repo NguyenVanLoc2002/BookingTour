@@ -7,23 +7,46 @@ import ModalSetCriteria from "../../components/ModalSetCriteria";
 import { useUser } from "../../contexts/UserContext";
 
 function Account() {
-  const { user} = useUser();
-  // const [user, setuser] = useState(null);
+  const { user } = useUser();
   const [isDisabled, setIsDisabled] = useState(true);
   const [gioiTinh, setGioiTinh] = useState(false);
+  const [name, setName] = useState(user?.name ? user.name : "");
+  const [address, setAddress] = useState(user?.address ? user.address : "");
   const [day, setDay] = useState("");
   const [month, setMonth] = useState("");
   const [year, setYear] = useState("");
+  const [isInfoAccount, setIsInfoAccount] = useState(true);
+  const [oldPassword, setOldPassword] = useState("");
+  const [password, setPassword] = useState("");
+  const [rePassword, setRePassword] = useState("");
+  const [isChangePassword, setIsChangePassword] = useState(false);
+
   // Modal
   const [isModalVisible, setIsModalVisible] = useState(false);
   const showModal = () => {
     setIsModalVisible(true);
     console.log("hihi show modal")
   }
+
+  const handleChangePassword = () => {
+    setIsChangePassword(true);
+  }
+  const handleCancelChangePW = () => {
+    setIsChangePassword(false);
+    setPassword('');
+    setRePassword('');
+    setOldPassword('');
+  }
   const handleClose = () => setIsModalVisible(false);
 
   const handleChinhSua = () => {
     setIsDisabled(false);
+  };
+  const handleIsInfo = () => {
+    setIsInfoAccount(true);
+  };
+  const handleSecure = () => {
+    setIsInfoAccount(false);
   };
 
   const handleHuy = () => {
@@ -48,9 +71,10 @@ function Account() {
 
   const handleSave = async () => {
     const updateduser = {
-      name: user.name,
+      name: name,
       gender: gioiTinh,
       dateOfBirth: `${day}/${month}/${year}`,
+      address: address
       // Add other fields as needed
     };
 
@@ -84,238 +108,336 @@ function Account() {
             <div className="flex items-center space-x-4">
               <img
                 className="h-24 w-24 bg-gray-300 rounded-full flex items-center justify-center text-xl font-bold border border-blue-300"
-                src={user?.url || "https://res.cloudinary.com/doqbelkif/image/upload/v1727453521/e015a22e-fa11-4f2c-86bf-322445d957ea.png"} alt="User Avatar" 
+                src={user?.url || "https://res.cloudinary.com/doqbelkif/image/upload/v1727453521/e015a22e-fa11-4f2c-86bf-322445d957ea.png"} alt="User Avatar"
               />
               <div>
-                <div className="font-bold text-lg">{user.name}</div>
+                <div className="font-bold text-lg">{user?.name}</div>
                 <div className="text-gray-500">Google</div>
               </div>
             </div>
             <div className="mt-4 bg-yellow-100 p-2 rounded text-yellow-800">
               Chào mừng bạn là thành viên của LuckyPanda Travel
             </div>
-            <div className="mt-4 space-y-2">
-              <a className="flex items-center space-x-2 text-blue-600" href="#">
+            <div className="mt-4 space-y-2 ml-4 text-base">
+              <a className="flex items-center space-x-2 font-bold" href="#">
                 Thẻ của tôi
               </a>
-              <a className="flex items-center space-x-2 text-blue-600" href="#">
+              <a className="flex items-center space-x-2 font-bold" href="#">
                 <span>Thông tin hành khách</span>
               </a>
-              <a className="flex items-center space-x-2 text-blue-600" href="#">
+              <a className="flex items-center space-x-2 font-bold" href="#">
                 <span>Hoàn tiền</span>
               </a>
-              <button onClick={() => { showModal() }} className="flex items-center space-x-2 text-blue-600">
+              <button onClick={() => { showModal() }} className="flex items-center space-x-2 font-bold">
                 <span>Thiết lập tiêu chí</span>
               </button>
             </div>
           </div>
 
           <div className="w-3/4 bg-white p-4 shadow ml-4 rounded-lg">
-          
+
             <h2 className="text-2xl font-bold">Tài khoản và bảo mật</h2>
             <div className="mt-4">
               <div className="flex space-x-4 border-b">
                 <a
-                  className="pb-2 border-b-2 border-blue-600 text-blue-600"
-                  href="#"
+                  className={`pb-2 font-bold ${isInfoAccount ? "border-b-2 border-blue-600" : "text-gray-600"}`}
+                  onClick={handleIsInfo}
                 >
                   Thông tin tài khoản
                 </a>
-                <a className="pb-2 text-gray-600" href="#">
+                <a className={`pb-2 ${!isInfoAccount ? "border-b-2 border-blue-600 font-bold" : "text-gray-600"}`}
+                  onClick={handleSecure}>
                   Mật khẩu &amp; Bảo mật
                 </a>
               </div>
-              <div className="mt-4 pr-8 pl-4">
-                <div className="flex justify-between">
-                  <h3 className="text-xl font-bold">Dữ liệu cá nhân</h3>
-                  <button
-                    className="text-xl font-bold "
-                    onClick={handleChinhSua}
-                  >
-                    THAY ĐỔI
-                  </button>
-                </div>
-                <div className="mt-4 space-y-4">
-                  <div>
-                    <label className="block text-gray-600">Tên đầy đủ</label>
-                    <input
-                      className={
-                        isDisabled
-                          ? "block appearance-none w-full bg-slate-200 border border-textColorCustom text-gray-700 py-2 px-3 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
-                          : "block appearance-none w-full bg-white border border-textColorCustom text-gray-700 py-2 px-3 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+              {
+                isInfoAccount ? (
+                  <div className="mt-4 pr-8 pl-4">
+                    <div className="flex justify-between">
+                      <h3 className="text-xl font-bold">Dữ liệu cá nhân</h3>
+                      <button
+                        className="text-xl font-bold "
+                        onClick={handleChinhSua}
+                      >
+                        THAY ĐỔI
+                      </button>
+                    </div>
+                    <div className="mt-4 space-y-4">
+                      <div>
+                        <label className="block text-gray-600">Tên đầy đủ</label>
+                        <input
+                          className={
+                            isDisabled
+                              ? "block appearance-none w-full bg-slate-200 border border-textColorCustom text-gray-700 py-2 px-3 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+                              : "block appearance-none w-full bg-white border border-textColorCustom text-gray-700 py-2 px-3 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+                          }
+                          type="text"
+                          value={name}
+                          onChange={(e) => setName(e.target.value)}
+                          disabled={isDisabled}
+                        />
+                      </div>
+                      <div className="z-500 ">
+                        <ModalSetCriteria
+                          visible={isModalVisible}
+                          onClose={handleClose}
+                        /></div>
+                      <div className="flex space-x-4 mb-4">
+                        <div className="flex-1">
+                          <label className="block text-gray-700 text-sm font-medium mb-2">
+                            Giới tính
+                          </label>
+                          <div className="z-30">
+                            <select
+                              disabled={isDisabled}
+                              name="gioiTinh"
+                              value={gioiTinh} // Lấy giá trị giới tính từ state
+                              onChange={handleGenderChange}
+                              className={
+                                isDisabled
+                                  ? "block appearance-none w-full bg-slate-300 border border-textColorCustom text-gray-700 py-2 px-3 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+                                  : "block appearance-none w-full bg-white border border-textColorCustom text-gray-700 py-2 px-3 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+                              }
+                            >
+                              <option value={false}>Nữ</option>
+                              <option value={true}>Nam</option>
+                            </select>
+                          </div>
+                        </div>
+                        <div className="flex-1">
+                          <label className="block text-gray-700 text-sm font-medium mb-2">
+                            Ngày sinh
+                          </label>
+                          <div className="relative">
+                            <select
+                              disabled={isDisabled}
+                              value={day}
+                              onChange={(e) => setDay(e.target.value)}
+                              className={
+                                isDisabled
+                                  ? "block appearance-none w-full bg-slate-300 border border-textColorCustom text-gray-700 py-2 px-3 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+                                  : "block appearance-none w-full bg-white border border-textColorCustom text-gray-700 py-2 px-3 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+                              }
+                            >
+                              {days.map((d) => (
+                                <option key={d} value={d}>
+                                  {d}
+                                </option>
+                              ))}
+                            </select>
+                          </div>
+                        </div>
+                        <div className="flex-1">
+                          <label className="block text-gray-700 text-sm font-medium mb-2">
+                            Chọn tháng
+                          </label>
+                          <div className="relative">
+                            <select
+                              disabled={isDisabled}
+                              value={month}
+                              onChange={(e) => setMonth(e.target.value)}
+                              className={
+                                isDisabled
+                                  ? "block appearance-none w-full bg-slate-300 border border-textColorCustom text-gray-700 py-2 px-3 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+                                  : "block appearance-none w-full bg-white border border-textColorCustom text-gray-700 py-2 px-3 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+                              }
+                            >
+                              {months.map((m) => (
+                                <option key={m} value={m}>
+                                  {m}
+                                </option>
+                              ))}
+                            </select>
+                          </div>
+                        </div>
+                        <div className="flex-1">
+                          <label className="block text-gray-700 text-sm font-medium mb-2">
+                            Chọn năm
+                          </label>
+                          <div className="relative">
+                            <select
+                              disabled={isDisabled}
+                              value={year}
+                              onChange={(e) => setYear(e.target.value)}
+                              className={
+                                isDisabled
+                                  ? "block appearance-none w-full bg-slate-300 border border-textColorCustom text-gray-700 py-2 px-3 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+                                  : "block appearance-none w-full bg-white border border-textColorCustom text-gray-700 py-2 px-3 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+                              }
+                            >
+                              {years.map((y) => (
+                                <option key={y} value={y}>
+                                  {y}
+                                </option>
+                              ))}
+                            </select>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="mb-4">
+                        <label className="block text-gray-700 text-sm font-medium mb-2">
+                          Thành phố bạn đang ở
+                        </label>
+                        <input
+                          disabled={isDisabled}
+                          className={
+                            isDisabled
+                              ? "block appearance-none w-full bg-slate-200 border border-textColorCustom text-gray-700 py-2 px-3 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+                              : "block appearance-none w-full bg-white border border-textColorCustom text-gray-700 py-2 px-3 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+                          }
+                          type="text"
+                          value={address}
+                          onChange={(e) => setAddress(e.target.value)}
+                        />
+                      </div>
+                      <div className="flex justify-end space-x-4">
+                        <button
+                          className="bg-gray-200 text-gray-500 py-2 px-4 rounded"
+                          onClick={handleHuy}
+                        >
+                          Hủy
+                        </button>
+                        <button className="bg-gray-200 text-gray-500 py-2 px-4 rounded">
+                          Lưu
+                        </button>
+                      </div>
+                      <div className="bg-white p-6 rounded-lg shadow-md mt-6">
+                        <div className="mb-4">
+                          <h2 className="text-gray-800 text-lg font-semibold">
+                            Email
+                          </h2>
+                          <p className="text-gray-600 text-sm">
+                            Chỉ có thể sử dụng tối đa 3 email
+                          </p>
+                        </div>
+                        <div className="flex justify-between items-center border-t border-gray-200 pt-4">
+                          <div>
+                            <p className="text-gray-800 font-medium">{user?.email}</p>
+                            <p className="text-green-600 text-sm">
+                              Nơi nhận thông báo
+                            </p>
+                          </div>
+                          <button className="bg-white border border-gray-300 text-gray-700 py-2 px-4 rounded flex items-center">
+                            Thêm email
+                          </button>
+                        </div>
+                      </div>
+                      <div className="bg-white p-6 rounded-lg shadow-md mt-6">
+                        <div className="mb-4">
+                          <h2 className="text-gray-800 text-lg font-semibold">
+                            Số điện thoại
+                          </h2>
+                          <p className="text-gray-600 text-sm">
+                            Chỉ có thể sử dụng tối đa 1 số điện thoại
+                          </p>
+                        </div>
+                        <div className="flex justify-between items-center border-t border-gray-200 pt-4">
+                          <div>
+                            <p className="text-gray-800 font-medium">{user?.phoneNumber}</p>
+                            <p className="text-green-600 text-sm">
+                              Nơi nhận thông báo
+                            </p>
+                          </div>
+                          <button className="bg-white border border-gray-300 text-gray-700 py-2 px-4 rounded flex items-center">
+                            Thêm số điện thoại
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+
+                  </div>
+                ) : (
+                  <div className="mt-4 pr-8 pl-4">
+
+                    <div className="bg-white p-6 rounded-lg shadow-md mt-6">
+                      <div className=" flex justify-between">
+                        <div className="mb-4">
+                          <h2 className="text-gray-800 text-lg font-semibold">
+                            Mật khẩu
+                          </h2>
+                          <p className="text-gray-600 text-sm">
+                            Bạn có thể đổi mật khẩu tại đây
+                          </p>
+                        </div>
+                        {!isChangePassword && (
+                          <button className="text-white font-bold bg-customColor p-2 h-[40px] rounded flex items-center" onClick={handleChangePassword}>
+                            Đổi mật khẩu
+                          </button>)
+                        }
+                      </div>
+                      {
+                        isChangePassword && (
+                          <div className="pt-4 space-y-4 border-t border-gray-200">
+                            <div>
+                              <label className="block text-gray-600">Mật khẩu cũ</label>
+                              <input
+                                className={
+                                  "block appearance-none w-full bg-white border border-textColorCustom text-gray-700 py-2 px-3 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+                                }
+                                type="text"
+                                value={oldPassword}
+                                onChange={(e) => setOldPassword(e.target.value)}
+                              />
+                            </div>
+                            <div>
+                              <label className="block text-gray-600">Mật khẩu mới</label>
+                              <input
+                                className={
+                                  "block appearance-none w-full bg-white border border-textColorCustom text-gray-700 py-2 px-3 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+                                }
+                                type="text"
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                              />
+                            </div>
+                            <div>
+                              <label className="block text-gray-600">Xác nhận mật khẩu mới</label>
+                              <input
+                                className={
+                                  "block appearance-none w-full bg-white border border-textColorCustom text-gray-700 py-2 px-3 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+                                }
+                                type="text"
+                                value={rePassword}
+                                onChange={(e) => setRePassword(e.target.value)}
+                              />
+                            </div>
+                            <div className="flex justify-end space-x-4">
+                              <button className="bg-gray-200 text-gray-500 py-2 px-4 rounded" onClick={handleCancelChangePW}>
+                                Hủy
+                              </button>
+                              <button className=" text-white font-bold py-2 px-4 rounded bg-customColor">
+                                Thay đổi
+                              </button>
+                            </div>
+                          </div>
+                        )
                       }
-                      type="text"
-                      value={user.name}
-                      disabled={isDisabled}
-                    />
-                  </div>
-                  <div className="z-500 ">
-              <ModalSetCriteria
-                visible={isModalVisible}
-                onClose={handleClose}
-              /></div>
-                  <div className="flex space-x-4 mb-4">
-                    <div className="flex-1">
-                      <label className="block text-gray-700 text-sm font-medium mb-2">
-                        Giới tính
-                      </label>
-                      <div className="z-30">
-                        <select
-                          disabled={isDisabled}
-                          name="gioiTinh"
-                          value={gioiTinh} // Lấy giá trị giới tính từ state
-                          onChange={handleGenderChange}
-                          className={
-                            isDisabled
-                              ? "block appearance-none w-full bg-slate-300 border border-textColorCustom text-gray-700 py-2 px-3 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
-                              : "block appearance-none w-full bg-white border border-textColorCustom text-gray-700 py-2 px-3 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
-                          }
-                        >
-                          <option value={false}>Nữ</option>
-                          <option value={true}>Nam</option>
-                        </select>
-                      </div>
                     </div>
-                    <div className="flex-1">
-                      <label className="block text-gray-700 text-sm font-medium mb-2">
-                        Ngày sinh
-                      </label>
-                      <div className="relative">
-                        <select
-                          disabled={isDisabled}
-                          value={day}
-                          onChange={(e) => setDay(e.target.value)}
-                          className={
-                            isDisabled
-                              ? "block appearance-none w-full bg-slate-300 border border-textColorCustom text-gray-700 py-2 px-3 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
-                              : "block appearance-none w-full bg-white border border-textColorCustom text-gray-700 py-2 px-3 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
-                          }
-                        >
-                          {days.map((d) => (
-                            <option key={d} value={d}>
-                              {d}
-                            </option>
-                          ))}
-                        </select>
+                    <div className="bg-white p-6 rounded-lg shadow-md mt-6">
+                      <div className="mb-4">
+                        <h2 className="text-gray-800 text-lg font-semibold">
+                          Xóa tài khoản
+                        </h2>
+                        <p className="text-gray-600 text-sm">
+
+                        </p>
                       </div>
-                    </div>
-                    <div className="flex-1">
-                      <label className="block text-gray-700 text-sm font-medium mb-2">
-                        Chọn tháng
-                      </label>
-                      <div className="relative">
-                        <select
-                          disabled={isDisabled}
-                          value={month}
-                          onChange={(e) => setMonth(e.target.value)}
-                          className={
-                            isDisabled
-                              ? "block appearance-none w-full bg-slate-300 border border-textColorCustom text-gray-700 py-2 px-3 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
-                              : "block appearance-none w-full bg-white border border-textColorCustom text-gray-700 py-2 px-3 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
-                          }
-                        >
-                          {months.map((m) => (
-                            <option key={m} value={m}>
-                              {m}
-                            </option>
-                          ))}
-                        </select>
-                      </div>
-                    </div>
-                    <div className="flex-1">
-                      <label className="block text-gray-700 text-sm font-medium mb-2">
-                        Chọn năm
-                      </label>
-                      <div className="relative">
-                        <select
-                          disabled={isDisabled}
-                          value={year}
-                          onChange={(e) => setYear(e.target.value)}
-                          className={
-                            isDisabled
-                              ? "block appearance-none w-full bg-slate-300 border border-textColorCustom text-gray-700 py-2 px-3 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
-                              : "block appearance-none w-full bg-white border border-textColorCustom text-gray-700 py-2 px-3 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
-                          }
-                        >
-                          {years.map((y) => (
-                            <option key={y} value={y}>
-                              {y}
-                            </option>
-                          ))}
-                        </select>
+                      <div className="flex justify-between items-center border-t border-gray-200 pt-4">
+                        <div>
+                          <p className="text-gray-800 font-medium">{user?.phoneNumber}</p>
+                          <p className="text-green-600 text-sm">
+                            Bạn có thể xóa tài khoản ở đây
+                          </p>
+                        </div>
+                        <button className="bg-white border border-gray-300 text-gray-700 py-2 px-4 rounded flex items-center">
+                          Xóa tài khoản
+                        </button>
                       </div>
                     </div>
                   </div>
-                  <div className="mb-4">
-                    <label className="block text-gray-700 text-sm font-medium mb-2">
-                      Thành phố bạn đang ở
-                    </label>
-                    <input
-                      disabled={isDisabled}
-                      className={
-                        isDisabled
-                          ? "block appearance-none w-full bg-slate-200 border border-textColorCustom text-gray-700 py-2 px-3 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
-                          : "block appearance-none w-full bg-white border border-textColorCustom text-gray-700 py-2 px-3 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
-                      }
-                      type="text"
-                      value={user?.address ? user.address : ""}
-                    />
-                  </div>
-                  <div className="flex justify-end space-x-4">
-                    <button
-                      className="bg-gray-200 text-gray-500 py-2 px-4 rounded"
-                      onClick={handleHuy}
-                    >
-                      Hủy
-                    </button>
-                    <button className="bg-gray-200 text-gray-500 py-2 px-4 rounded">
-                      Lưu
-                    </button>
-                  </div>
-                </div>
-                <div className="bg-white p-6 rounded-lg shadow-md mt-6">
-                  <div className="mb-4">
-                    <h2 className="text-gray-800 text-lg font-semibold">
-                      Email
-                    </h2>
-                    <p className="text-gray-600 text-sm">
-                      Chỉ có thể sử dụng tối đa 3 email
-                    </p>
-                  </div>
-                  <div className="flex justify-between items-center border-t border-gray-200 pt-4">
-                    <div>
-                      <p className="text-gray-800 font-medium">{user?.email}</p>
-                      <p className="text-green-600 text-sm">
-                        Nơi nhận thông báo
-                      </p>
-                    </div>
-                    <button className="bg-white border border-gray-300 text-gray-700 py-2 px-4 rounded flex items-center">
-                      Thêm email
-                    </button>
-                  </div>
-                </div>
-                <div className="bg-white p-6 rounded-lg shadow-md mt-6">
-                  <div className="mb-4">
-                    <h2 className="text-gray-800 text-lg font-semibold">
-                      Số điện thoại
-                    </h2>
-                    <p className="text-gray-600 text-sm">
-                      Chỉ có thể sử dụng tối đa 1 số điện thoại
-                    </p>
-                  </div>
-                  <div className="flex justify-between items-center border-t border-gray-200 pt-4">
-                    <div>
-                      <p className="text-gray-800 font-medium">{user?.phoneNumber}</p>
-                      <p className="text-green-600 text-sm">
-                        Nơi nhận thông báo
-                      </p>
-                    </div>
-                    <button className="bg-white border border-gray-300 text-gray-700 py-2 px-4 rounded flex items-center">
-                      Thêm số điện thoại
-                    </button>
-                  </div>
-                </div>
-              </div>
+                )
+              }
+
             </div>
           </div>
         </div>

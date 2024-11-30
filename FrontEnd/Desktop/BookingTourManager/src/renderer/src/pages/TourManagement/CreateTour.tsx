@@ -100,7 +100,7 @@ const CreateTour: React.FC = () => {
     return (
         <div className=" bg-white  text-black text-base">
             <div className="mr-4 fixed top-6 left-6"><MenuManagement initialVariable="taoTour" /></div>
-            <div className=" fixed top-6 right-6 w-[70%] ">
+            <div className=" fixed top-6 right-6 w-[70%] h-[80vh]">
                 {/* <Card className=" fixed top-6 right-6 w-[70%] border border-spacing-1 max-h-[550px]  overflow-y-scroll rounded-xl border-[#3fd0d4]"> */}
                 {/* <Card className="w-full max-h-[500px] overflow-y-scroll mb-2 border-none" > */}
                 <ModalCreateInfo></ModalCreateInfo>
