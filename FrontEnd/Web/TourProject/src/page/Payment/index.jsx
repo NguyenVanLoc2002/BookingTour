@@ -19,6 +19,7 @@ const PaymentPage = () => {
   const [payment, setPayment] = useState();
   const [booking, setBooking] = useState({});
   const [tour, setTour] = useState({});
+  
 
   useEffect(() => {
     const fetchBookingTour = async () => {
@@ -127,7 +128,7 @@ const PaymentPage = () => {
 
           <div className="mt-6">
             <PayPalButton
-              amount={amount}
+              amount={amount.toFixed(2)}
               onSuccess={(details, data) => {
                 handlePaymentSuccess(details);
               }}

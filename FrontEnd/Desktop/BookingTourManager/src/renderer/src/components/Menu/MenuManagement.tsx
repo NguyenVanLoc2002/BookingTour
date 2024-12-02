@@ -5,19 +5,15 @@ import { useNavigate } from 'react-router-dom'; // Import useNavigate
 
 type MenuItem = Required<MenuProps>['items'][number];
 const items: MenuItem[] = [
-  { key: 'users', label: 'Quản lý người dùng' },
+  { key: 'users', label: 'Tài khoản và bảo mật' ,children: [
+    { key: 'info', label: 'Thông tin cá nhân' },
+    { key: 'logout', label: 'Đăng xuất' },
+  ],},
   {
     key: 'tours', label: 'Quản lý tour', children: [
       { key: 'dsTour', label: 'Danh sách tour' },
-      { key: 'dangTour', label: 'Đăng tour' },
+      { key: 'listTourPushed', label: 'Danh sách tour đã đăng' },
       { key: 'taoTour', label: 'Tạo tour' },
-    ],
-  },
-  {
-    key: 'bookings', label: 'Quản lý đặt Tour',
-    children: [
-      { key: 'huyTour', label: 'Danh sách yêu cầu hủy tour' },
-      { key: 'tourRieng', label: 'Danh sách đặt tour riêng' },
     ],
   },
   {
@@ -64,8 +60,8 @@ interface MenuManagementProps {
 
   const handleMenuClick = (key: string) => {
     switch (key) {
-      case 'dangTour':
-        navigate('/pushTour'); // Điều hướng đến trang Đăng tour
+      case 'listTourPushed':
+        navigate('/listTourPushed'); // Điều hướng đến trang Đăng tour
         break;
       case 'taoTour':
         navigate('/createTour'); // Điều hướng đến trang Tạo tour

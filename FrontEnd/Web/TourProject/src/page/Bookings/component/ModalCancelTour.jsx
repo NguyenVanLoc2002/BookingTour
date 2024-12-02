@@ -4,7 +4,7 @@ import panda from "../../../assets/iconTour/panda.png";
 const { Text } = Typography;
 import dayjs from "dayjs";
 import axios from "axios";
-import { v4 as uuidv4 } from 'uuid';
+import { v4 as uuidv4 } from "uuid";
 
 const ModalCancelTour = ({ visible, onClose, data }) => {
   const [loading, setLoading] = useState(false);
@@ -104,11 +104,6 @@ const ModalCancelTour = ({ visible, onClose, data }) => {
     }, 3000);
   };
 
- 
-
-  const generateRequestId = () => {
-    return uuidv4();
-  };
   const token = localStorage.getItem("token");
 
   const refundBooking = async (bookingId) => {
@@ -116,13 +111,12 @@ const ModalCancelTour = ({ visible, onClose, data }) => {
 
     try {
       setLoading(true);
-      const requestId = generateRequestId(); 
       await axios.post(
-        `http://localhost:8000/api/v1/payments/process-refund?bookingId=${bookingId}`,
+        `http://localhost:8000/api/v1/payments/process-refund?bookingId=${bookingId}`, // URL với tham số query
+        {}, // Nếu có dữ liệu cần gửi, bạn có thể truyền vào đây (ở đây không cần dữ liệu trong body)
         {
           headers: {
-            Authorization: `Bearer ${token}`, // Thêm token chính xác
-            // 'PayPal-Request-Id': requestId
+            Authorization: `Bearer ${token}`, // Đảm bảo token được gửi trong headers
           },
         }
       );

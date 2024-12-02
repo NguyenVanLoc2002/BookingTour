@@ -1,3 +1,4 @@
+import { ExceptionMap } from "antd/es/result";
 import axios from "axios";
 import dayjs from "dayjs";
 
@@ -97,3 +98,40 @@ export const deleteInteraction = async (interactionId, token) =>{
     console.error(`Failed to delete interaction ${interactionId}:`, error);
   }
 }
+
+export const changePassword = async (email, oldPassword, newPassword, token) => {
+  try {
+    const response = await axios.put(`${BASE_URL}/auth/change-password`, 
+      {
+        email,
+        oldPassword,
+        newPassword
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      }
+    );
+
+    console.log(`Changed password`);
+    return response.data;
+  } catch (error) {   
+    if (error.response) {
+      // Kiểm tra nếu mã lỗi là 400 và thông báo lỗi là "Mật khẩu cũ không đúng"
+      if (error.response.status === 400 && error.response?.data === "Mật khẩu cũ không đúng") {
+        console.error("Mật khẩu cũ không đúng!");
+        throw new Error("Mật khẩu cũ không đúng!"); // Ném ra lỗi để hiển thị cho người dùng
+      } else {
+        // Nếu không phải lỗi 400 hoặc thông báo khác
+        console.error("Lỗi khác:", error.response.data);
+        throw new Error(error.response?.data|| "Đã xảy ra lỗi trong quá trình thay đổi mật khẩu.");
+      }
+    } else {
+      // Xử lý lỗi khi không nhận được response từ server
+      console.error("Lỗi không xác định:", error);
+      throw new Error("Lỗi không xác định. Vui lòng thử lại sau.");
+    }
+  }
+}
+

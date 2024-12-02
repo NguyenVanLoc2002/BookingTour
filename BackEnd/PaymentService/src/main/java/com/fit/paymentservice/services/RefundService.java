@@ -187,11 +187,17 @@ public class RefundService {
                 // Lấy payment từ PayPal
                 Sale sale = Sale.get(apiContext, transactionId);
 
+                // Tạo PayPal-Request-Id duy nhất cho mỗi yêu cầu hoàn tiền
+                String uniqueRequestId = UUID.randomUUID().toString();
+                log.info("Generated unique PayPal-Request-Id: " + uniqueRequestId);
+
                 // Tạo refund request
                 RefundRequest refundRequest = new RefundRequest();
                 Amount refundAmount = new Amount("USD", String.format("%.2f", amount)); // Giả sử đơn vị là USD
                 refundRequest.setAmount(refundAmount);
 
+                apiContext.addHTTPHeader("PayPal-Request-Id", uniqueRequestId);
+                log.info("Headers in apiContext: " + apiContext.getHTTPHeaders());
                 // Thực hiện hoàn tiền
                 DetailedRefund detailedRefund = sale.refund(apiContext, refundRequest);
                 return detailedRefund.getId(); // Trả về transaction ID

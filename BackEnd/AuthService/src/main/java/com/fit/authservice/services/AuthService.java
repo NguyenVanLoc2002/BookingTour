@@ -100,4 +100,17 @@ public class AuthService {
                     return Mono.empty(); // Hoặc bạn có thể trả về một giá trị mặc định khác
                 });
     }
+
+    public Mono<Boolean> changePassword(String email, String oldPassword, String newPassword) {
+        return authUserRepository.findByEmail(email)
+                .flatMap(user -> {
+                    if (!passwordEncoder.matches(oldPassword, user.getPassword())) {
+                        return Mono.error(new RuntimeException("Mật khẩu cũ không đúng"));
+                    }
+
+                    user.setPassword(passwordEncoder.encode(newPassword));
+                    return authUserRepository.save(user).then(Mono.just(true));
+                })
+                .switchIfEmpty(Mono.error(new RuntimeException("Không tìm thấy người dùng với email này")));
+    }
 }

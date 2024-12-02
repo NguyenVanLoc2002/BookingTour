@@ -2,6 +2,7 @@ package com.fit.userservice.controllers;
 
 import com.fit.commonservice.utils.CommonFunction;
 import com.fit.userservice.dtos.CustomerDTO;
+import com.fit.userservice.dtos.UpdateCustomerDTO;
 import com.fit.userservice.services.CustomerService;
 import com.fit.userservice.utils.Constant;
 import com.fit.userservice.utils.JwtUtils;
@@ -93,6 +94,18 @@ public class CustomerController {
                 .map(savedCustomerDTO -> ResponseEntity.ok(savedCustomerDTO)) // Trả về phản hồi 200 OK cùng với đối tượng CustomerDTO đã được lưu
                 .defaultIfEmpty(ResponseEntity.status(HttpStatus.BAD_REQUEST).build()) // Trả về phản hồi 400 nếu không có dữ liệu
                 .onErrorReturn(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build()); // Trả về phản hồi 500 nếu có lỗi xảy ra
+    }
+
+
+    @PutMapping("/{userId}")
+    public Mono<ResponseEntity<CustomerDTO>> updateCustomer(
+            @PathVariable Long userId,
+            @RequestBody UpdateCustomerDTO updateCustomerDTO) {
+
+        return customerService.updateCustomer(userId, updateCustomerDTO)
+                .switchIfEmpty(Mono.error(new RuntimeException("Customer not found")))  // Nếu không tìm thấy customer thì trả về lỗi
+                .map(ResponseEntity::ok)
+                .onErrorResume(e -> Mono.just(ResponseEntity.status(HttpStatus.NOT_FOUND).body(null)));  // Trả về HTTP 404 nếu gặp lỗi
     }
 
 }

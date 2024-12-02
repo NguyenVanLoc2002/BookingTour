@@ -219,7 +219,7 @@ public class TourController {
                                                                         @RequestParam int page,
                                                                         @RequestParam int size) {
         return tourService.getToursByTypeTour(typeTour, region, page, size)
-                .map(response -> ResponseEntity.ok(response))
+                .map(ResponseEntity::ok)
                 .onErrorResume(e -> {
                     log.error("Error fetching tours by type: {}", e.getMessage());
                     return Mono.just(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build());

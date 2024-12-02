@@ -36,6 +36,7 @@ import { useUser } from "../../contexts/UserContext";
 import { FaHeart } from "react-icons/fa";
 import TourCard from "../../components/TourCard";
 import { addPreference } from "../../services/api";
+import { message } from "antd";
 
 function ListTour() {
   const navigate = useNavigate();
@@ -44,7 +45,7 @@ function ListTour() {
   const region = queryParams.get("region");
   const name = queryParams.get("name");
   const token = localStorage.getItem("token");
-  
+
   const { user } = useUser();
 
   const [criteria, setCriteria] = useState(null);
@@ -54,7 +55,7 @@ function ListTour() {
   const [totalPages, setTotalPages] = useState(1); // Tổng số trang
   const [sortType, setSortType] = useState("");
   const [typeTour, settypeTour] = useState("");
-  const {tours} = location.state || {};
+  const { tours } = location.state || {};
   console.log("Matching: ", tours);
 
   const [isModalVisible, setIsModalVisible] = useState(false);
@@ -144,8 +145,13 @@ function ListTour() {
       }
 
       const response = await axios.get(url, { params });
-      setTourList(response.data.content); // Lưu danh sách tour
-      setTotalPages(response.data?.totalPages || 0); // Tổng số trang
+
+      if (response.data.totalElements !== 0) {
+        setTourList(response.data.content); // Lưu danh sách tour
+        setTotalPages(response.data?.totalPages || 0); // Tổng số trang}
+      } else {
+        message.error("Không tìm thấy tour phù hợp!!");
+      }
     } catch (error) {
       console.log(error);
     }
@@ -153,10 +159,19 @@ function ListTour() {
 
   useEffect(() => {
     fetchTours();
-    if(tours){
+    if (tours) {
       setTourList(tours);
     }
-  }, [name, region, currentPage, toursPerPage, sortType, typeTour, criteria, tours]);
+  }, [
+    name,
+    region,
+    currentPage,
+    toursPerPage,
+    sortType,
+    typeTour,
+    criteria,
+    tours,
+  ]);
   console.log("List Tour:", tourList);
 
   //Animation text

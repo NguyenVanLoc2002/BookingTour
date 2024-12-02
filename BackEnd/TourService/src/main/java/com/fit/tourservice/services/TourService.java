@@ -118,7 +118,7 @@ public class TourService {
                 .flatMap(totalElements -> {
                     int totalPages = (int) Math.ceil((double) totalElements / size); // Tính tổng số trang
                     return tourRepository.findToursByTypeTour(typeTour, region, size, offset) // Lấy dữ liệu theo trang
-                            .map(TourDTO::convertToDTO) // Chuyển đổi sang DTO
+                            .flatMap(this::buildTourDTO) // Chuyển đổi sang DTO
                             .collectList() // Gộp thành danh sách
                             .map(content -> {
                                 Map<String, Object> response = new HashMap<>();
@@ -208,7 +208,7 @@ public class TourService {
     private Flux<TourDTO> fetchToursByFeatures(Flux<TourFeature> tourFeatures) {
         return tourFeatures.flatMap(feature ->
                 tourRepository.findById(feature.getTourId())
-                        .flatMapMany(tour -> buildTourDTO(tour))
+                        .flatMapMany(this::buildTourDTO)
         );
     }
 
@@ -245,7 +245,7 @@ public class TourService {
                         size,
                         offset
                 )
-                .flatMap(tour -> buildTourDTO(tour));
+                .flatMap(this::buildTourDTO);
     }
 
     //Sx theo giá

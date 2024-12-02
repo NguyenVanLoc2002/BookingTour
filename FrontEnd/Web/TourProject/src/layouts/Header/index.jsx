@@ -8,7 +8,7 @@ import {
   FaRegEye,
 } from "react-icons/fa";
 import { RxAvatar } from "react-icons/rx";
-import { Modal, Button } from "antd";
+import { Modal, Button, message } from "antd";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { useUser } from "../../contexts/UserContext";
@@ -64,6 +64,16 @@ function Header() {
 
   const handleSubmitRegister = async (e) => {
     e.preventDefault(); // Ngăn chặn hành vi mặc định của form
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!email || !emailRegex.test(email)) {
+      alert("Vui lòng nhập email hợp lệ.");
+      return;
+    }
+
+    if (!name) {
+      alert("Vui lòng điền đầy đủ họ và tên!");
+      return;
+    }
     const dateOfBirth = `${year}-${month < 10 ? "0" + month : month}-${
       day < 10 ? "0" + day : day
     }`;
@@ -154,8 +164,7 @@ function Header() {
       handleRefreshDataLogin();
     } catch (error) {
       console.error("Đăng nhập không thành công:", error);
-      alert("Tài khoản hoặc mật khẩu không đúng!");
-      handleRefreshDataLogin();
+      message.error("Tài khoản hoặc mật khẩu không đúng!")
     }
   };
 

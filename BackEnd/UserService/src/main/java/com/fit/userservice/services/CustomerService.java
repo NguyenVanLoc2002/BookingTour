@@ -2,6 +2,7 @@ package com.fit.userservice.services;
 
 import com.fit.commonservice.utils.Constant;
 import com.fit.userservice.dtos.CustomerDTO;
+import com.fit.userservice.dtos.UpdateCustomerDTO;
 import com.fit.userservice.event.EventProducer;
 import com.fit.userservice.models.Customer;
 import com.fit.userservice.models.User;
@@ -56,7 +57,7 @@ public class CustomerService {
         return checkduplicateEmail(customerDTO.getEmail())
                 .flatMap(aBoolean -> {
                     if (Boolean.TRUE.equals(aBoolean)) {
-                        log.info("Mail exist: "+ customerDTO.getEmail());
+                        log.info("Mail exist: " + customerDTO.getEmail());
                         return Mono.error(new Exception("Customer with email " + customerDTO.getEmail() + " already exists"));
                     } else {
                         return eventProducer.send(Constant.NOTIFICATION_CREATED_USER_TOPIC, String.valueOf(customerDTO.getEmail()), gson.toJson(customerDTO)) // Gửi message đến Kafka topic
@@ -104,4 +105,27 @@ public class CustomerService {
                 )
                 .switchIfEmpty(Mono.error(new Exception("Customer list empty!")));
     }
+
+    public Mono<CustomerDTO> updateCustomer(Long userId, UpdateCustomerDTO updateCustomerDTO) {
+        // Tìm người dùng theo userId
+        return userRepository.findById(userId)
+                .flatMap(user -> {
+                    // Cập nhật trường name của user
+                    user.setName(updateCustomerDTO.getName());
+                    return userRepository.save(user)  // Lưu user đã cập nhật
+                            .flatMap(savedUser -> {
+                                // Cập nhật thông tin khách hàng
+                                return customerRepository.updateCustomer(
+                                                userId,
+                                                updateCustomerDTO.getAddress(),
+                                                updateCustomerDTO.isGender(),
+                                                updateCustomerDTO.getDateOfBirth(),
+                                                updateCustomerDTO.getPhoneNumber())
+                                        .thenReturn(savedUser);  // Tiếp tục với user đã được lưu
+                            })
+                            .flatMap(savedUser -> customerRepository.findByUserId(userId))  // Tìm lại khách hàng để chuyển đổi
+                            .map(CustomerDTO::convertToDto);  // Chuyển đổi thành CustomerDTO
+                });
+    }
+
 }

@@ -2,6 +2,7 @@ package com.fit.authservice.controllers;
 
 import com.fit.authservice.dtos.AuthUserDTO;
 import com.fit.authservice.dtos.request.AccountRequest;
+import com.fit.authservice.dtos.request.ChangePasswordRequest;
 import com.fit.authservice.dtos.request.CustomerDTO;
 import com.fit.authservice.dtos.response.ApiResponse;
 import com.fit.authservice.dtos.response.ClaimsResponse;
@@ -144,5 +145,12 @@ public class AuthController {
                             .message("Token validation failed.")
                             .build());
                 });
+    }
+
+    @PutMapping("/change-password")
+    public Mono<ResponseEntity<String>> changePassword(@RequestBody ChangePasswordRequest request) {
+        return authService.changePassword(request.getEmail(), request.getOldPassword(), request.getNewPassword())
+                .map(result -> ResponseEntity.ok("Mật khẩu đã được thay đổi thành công"))
+                .onErrorResume(e -> Mono.just(ResponseEntity.badRequest().body(e.getMessage())));
     }
 }
