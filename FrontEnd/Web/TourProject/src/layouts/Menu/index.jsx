@@ -61,9 +61,12 @@ function Menu(name) {
   const handleNavigateBookings = () => {
     navigate("/bookings"); // Điều hướng đến trang khác
   };
+
   const handleNavigateRefund = () => {
     navigate("/refund"); // Điều hướng đến trang khác
   };
+
+
 
   return (
     <div className="w-screen max-w-full h-auto flex flex-col md:flex-row text-black bg-orange text-sm justify-between items-center">
@@ -143,9 +146,11 @@ function Menu(name) {
                     : "flex items-center hover:text-textColorCustom underline-hover"
                 }
               >
-                BOOKINGS <TiArrowSortedDown className="ml-2" size={20} />
+                <button onClick={handleNavigateBookings}>
+                    ĐẶT CHỖ CỦA BẠN
+                  </button>
               </a>
-              <ul
+              {/* <ul
                 tabIndex="0"
                 className="dropdown-content menu bg-base-100 rounded-box z-[1] w-52 shadow"
               >
@@ -157,7 +162,7 @@ function Menu(name) {
                 <li>
                   <button onClick={handleNavigateRefund}>HOÀN TIỀN</button>
                 </li>
-              </ul>
+              </ul> */}
             </li>
           )}
 

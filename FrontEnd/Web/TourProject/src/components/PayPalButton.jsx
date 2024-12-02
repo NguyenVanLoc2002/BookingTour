@@ -1,19 +1,19 @@
 import React from "react";
 import { PayPalButtons, PayPalScriptProvider } from "@paypal/react-paypal-js";
 
-const vndToUsd = (vndAmount) => (vndAmount / 23000).toFixed(2);
 
 const PayPalButton = ({ amount, onSuccess }) => {
     return (
         <PayPalScriptProvider options={{ "client-id": "AZUX4JxpgUbsBMZlbHYkrocFL8WrbXkSpU5Kt0VLGboGAkr7w-JMbo5PqVi-LelRRnWrOshQUoWXTO_W" }}>
             <PayPalButtons
                 style={{ layout: "vertical" }}
+                className="z-10"
                 createOrder={(data, actions) => {
                     return actions.order.create({
                         purchase_units: [
                             {
                                 amount: {
-                                    value: vndToUsd(amount), // Chuyển đổi từ VND sang USD
+                                    value: amount, // Chuyển đổi từ VND sang USD
                                     currency_code: "USD",
                                 },
                             },

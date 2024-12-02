@@ -1,14 +1,14 @@
 package com.fit.authservice.controllers;
 
+import com.fit.authservice.dtos.AuthUserDTO;
+import com.fit.authservice.dtos.request.AccountRequest;
 import com.fit.authservice.dtos.request.CustomerDTO;
 import com.fit.authservice.dtos.response.ApiResponse;
 import com.fit.authservice.dtos.response.ClaimsResponse;
-import com.fit.authservice.utils.JwtUtils;
-import com.fit.authservice.dtos.AuthUserDTO;
-import com.fit.authservice.dtos.request.AccountRequest;
 import com.fit.authservice.dtos.response.LoginResponse;
 import com.fit.authservice.enums.Role;
 import com.fit.authservice.services.AuthService;
+import com.fit.authservice.utils.JwtUtils;
 import io.jsonwebtoken.Claims;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +17,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 
+import java.net.URI;
 import java.time.LocalDate;
 
 @RestController
@@ -29,43 +30,66 @@ public class AuthController {
     private JwtUtils jwtUtils;
 
     @GetMapping("/verify-account")
-    public Mono<ResponseEntity<AuthUserDTO>> verifyAccount(@RequestParam("token") String token) {
-        Claims claims = jwtUtils.extractAllClaims(token);
-        log.info("claims: {}",claims.toString());
-        String email = claims.get("email", String.class);
-        String name = claims.get("name", String.class);
-        boolean gender = claims.get("gender", Boolean.class);
-        LocalDate dateOfBirth = LocalDate.parse(claims.get("dateOfBirth", String.class));
+    public Mono<ResponseEntity<Object>> verifyAccount(
+            @RequestParam("token") String token,
+            @RequestParam("redirectUrl") String redirectUrl) {
 
-        CustomerDTO customerDTO = new CustomerDTO();
-        customerDTO.setEmail(email);
-        customerDTO.setName(name);
-        customerDTO.setGender(gender);
-        customerDTO.setDateOfBirth(dateOfBirth);
-        log.info("customerDTO: {}",customerDTO);
-        if(email==null){
-            return Mono.just(ResponseEntity.badRequest().build());
-        }
+        log.info("Received request to verify account with token: {}, redirectUrl: {}", token, redirectUrl);
 
-        AuthUserDTO authUserDTO = new AuthUserDTO();
-        authUserDTO.setEmail(email);
-        authUserDTO.setPassword("123456");
-        authUserDTO.setRole(Role.USER);
-        log.info(authUserDTO.toString());
-        return authService.createAuthUser(authUserDTO)
-                .flatMap(authSaved ->{
-                    return authService.registerUser(customerDTO)
-                            .map(customerResponse -> {
-                                log.info("Customer registered successfully: {}", customerResponse);
-                                return ResponseEntity.ok().body(authSaved);
-                            })
-                            .defaultIfEmpty(ResponseEntity.badRequest().build());
+        return Mono.fromCallable(() -> jwtUtils.extractAllClaims(token))
+                .flatMap(claims -> {
+                    log.info("Extracted claims: {}", claims);
+                    String email = claims.get("email", String.class);
+                    String name = claims.get("name", String.class);
+                    Boolean gender = claims.get("gender", Boolean.class);
+                    LocalDate dateOfBirth = LocalDate.parse(claims.get("dateOfBirth", String.class));
+
+                    // Validate email
+                    if (email == null) {
+                        log.error("Email not found in claims");
+                        URI errorUri = URI.create(redirectUrl + "?error=invalid_token");
+                        return Mono.just(ResponseEntity.status(HttpStatus.FOUND).location(errorUri).build());
+                    }
+
+                    // Prepare DTOs
+                    CustomerDTO customerDTO = new CustomerDTO();
+                    customerDTO.setEmail(email);
+                    customerDTO.setName(name);
+                    customerDTO.setGender(gender != null ? gender : false); // Default to false if null
+                    customerDTO.setDateOfBirth(dateOfBirth);
+
+                    AuthUserDTO authUserDTO = new AuthUserDTO();
+                    authUserDTO.setEmail(email);
+                    authUserDTO.setPassword("123456"); // Temporary password
+                    authUserDTO.setRole(Role.USER);
+
+                    log.info("Prepared CustomerDTO: {}", customerDTO);
+                    log.info("Prepared AuthUserDTO: {}", authUserDTO);
+
+                    // Save AuthUser and Customer
+                    return authService.createAuthUser(authUserDTO)
+                            .flatMap(authSaved -> authService.registerUser(customerDTO)
+                                    .then(Mono.fromCallable(() -> {
+                                        String redirectWithParams = redirectUrl + "?email=" + email + "&password=123456";
+                                        URI successUri = URI.create(redirectWithParams);
+                                        log.info("Account successfully verified. Redirecting to: {}", successUri);
+                                        return ResponseEntity.status(HttpStatus.FOUND).location(successUri).build();
+                                    })))
+                            .switchIfEmpty(Mono.fromCallable(() -> {
+                                log.error("AuthUser creation failed for email: {}", email);
+                                URI errorUri = URI.create(redirectUrl + "?error=user_creation_failed");
+                                return ResponseEntity.status(HttpStatus.FOUND).location(errorUri).build();
+                            }));
                 })
-                .defaultIfEmpty(ResponseEntity.badRequest().build());
+                .onErrorResume(ex -> {
+                    log.error("Error during account verification. Token: {}, Error: {}", token, ex.getMessage(), ex);
+                    URI errorUri = URI.create(redirectUrl + "?error=unexpected_error");
+                    return Mono.just(ResponseEntity.status(HttpStatus.FOUND).location(errorUri).build());
+                });
     }
 
     @PostMapping("/login")
-    public Mono<ResponseEntity<LoginResponse>> login(@RequestBody AccountRequest accountRequest){
+    public Mono<ResponseEntity<LoginResponse>> login(@RequestBody AccountRequest accountRequest) {
         return authService.login(accountRequest)
                 .map(loginResponse -> ResponseEntity.ok().body(loginResponse))
                 .onErrorResume(e -> {

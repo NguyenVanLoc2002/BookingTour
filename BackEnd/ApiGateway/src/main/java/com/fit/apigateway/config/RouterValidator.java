@@ -31,8 +31,7 @@ public class RouterValidator {
             Pattern.compile("/api/v1/itineraries/activities/by-itinerary"),
             Pattern.compile("/api/v1/tour-tickets/.*"),
             Pattern.compile("/api/v1/tours/tour-tickets/by-tour/.*"),
-            //Recommendation
-            Pattern.compile("/api/v1/recommendation/.*"),
+
             //Payment
             Pattern.compile("/api/v1/booking/redis/.+"),
             Pattern.compile("/api/v1/booking/bookTour"),
@@ -65,6 +64,8 @@ public class RouterValidator {
             Pattern.compile("/api/v1/tours/recommendations-interactions/*"),
             Pattern.compile("/api/v1/tours/recommendations-preferences/request"),
 
+            //Recommendation
+            Pattern.compile("/api/v1/recommendation/.*"),
             //Payment
             Pattern.compile("/api/v1/payments/process-refund"),
             Pattern.compile("/api/v1/booking/redis/customer/.+")

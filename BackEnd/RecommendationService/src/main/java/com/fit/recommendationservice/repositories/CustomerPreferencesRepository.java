@@ -12,6 +12,8 @@ import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.time.LocalDate;
+
 @Repository
 public interface CustomerPreferencesRepository extends ReactiveCrudRepository<CustomerPreferences, Long> {
     Flux<CustomerPreferences> findByCusId(Long cusId);
@@ -36,4 +38,18 @@ public interface CustomerPreferencesRepository extends ReactiveCrudRepository<Cu
 
     @Query("SELECT transportation_mode FROM customer_preferences WHERE cus_id = :customerId GROUP BY transportation_mode ORDER BY COUNT(*) DESC LIMIT 1")
     Mono<String> findPopularTransportationMode(Long customerId);
+
+
+    @Query("INSERT INTO customer_preferences (cus_id, price, max_duration, departure_location, start_date, type_tour, region, accommodation_quality, transportation_mode) " +
+            "VALUES (:cusId, :maxCost, :maxDuration, :departureLocation, :startDate, :typeTour, :region, :accommodationQuality, :transportationMode) ")
+    Mono<CustomerPreferences> insertCustomerPreferences(
+            @Param("cusId") Long cusId,
+            @Param("maxCost") Double maxCost,
+            @Param("maxDuration") int maxDuration,
+            @Param("departureLocation") String departureLocation,
+            @Param("startDate") LocalDate startDate,
+            @Param("typeTour") TypeTour typeTour,
+            @Param("region") Region region,
+            @Param("accommodationQuality") AccommodationQuality accommodationQuality,
+            @Param("transportationMode") TransportationMode transportationMode);
 }

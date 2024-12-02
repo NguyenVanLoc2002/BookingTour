@@ -2,6 +2,7 @@ package com.fit.recommendationservice.services;
 
 import com.fit.recommendationservice.builder.MahoutDataModelBuilder;
 import com.fit.recommendationservice.dtos.response.CustomerInteractionDTO;
+import com.fit.recommendationservice.dtos.response.PagedResponse;
 import com.fit.recommendationservice.dtos.response.TourDTO;
 import com.fit.recommendationservice.repositories.CustomerInteractionRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -30,7 +31,7 @@ public class HybridRecommendationService {
     @Autowired
     private MahoutDataModelBuilder mahoutDataModelBuilder;
 
-    public Mono<List<TourDTO>> recommendTours(Long customerId, int page, int size) {
+    public Mono<PagedResponse<TourDTO>> recommendTours(Long customerId, int page, int size) {
         Mono<List<TourDTO>> collaborativeRecommendations = collaborativeFilteringService
                 .recommendToursForUser(customerId, page, size)
                 .doOnTerminate(() -> log.info("collaborativeRecommendations completed"))
@@ -60,13 +61,23 @@ public class HybridRecommendationService {
                     List<TourDTO> collaborativeTours = tuple.getT1();
                     List<TourDTO> contentBasedTours = tuple.getT2();
 
+                    // Tính tổng số phần tử trước khi giới hạn
+                    int totalElements = collaborativeTours.size() + contentBasedTours.size();
+                    log.info("Total number of recommendations: {}", totalElements);
+
                     // Kết hợp và giới hạn kết quả
-                    return mergeRecommendations(collaborativeTours, contentBasedTours, size);
+                    List<TourDTO> mergedTours = mergeRecommendations(collaborativeTours, contentBasedTours, size);
+
+                    // Tính toán tổng số trang (total pages) nếu cần
+                    int totalPages = (int) Math.ceil((double) totalElements / size);
+                    boolean last = page >= totalPages - 1;
+
+                    // Trả về kết quả dưới dạng PagedResponse, bao gồm thông tin phân trang
+                    return new PagedResponse<>(mergedTours, page, size, totalElements, totalPages, last);
                 })
                 .doOnTerminate(() -> log.info("Recommendation merging completed"))
                 .doOnError(e -> log.error("Error in recommendation merging: ", e));
     }
-
 
     private List<TourDTO> mergeRecommendations(List<TourDTO> collaborativeTours, List<TourDTO> contentBasedTours, int size) {
         return Stream.concat(

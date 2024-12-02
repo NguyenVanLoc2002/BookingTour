@@ -124,14 +124,33 @@ function Header() {
     }
   };
 
+  // Đọc tham số từ URL
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const emailFromUrl = urlParams.get("email");
+    const passwordFromUrl = urlParams.get("password");
+
+    if (emailFromUrl && passwordFromUrl) {
+      setEmail(emailFromUrl);
+      setPassword(passwordFromUrl);
+      openModalLogin();
+    }
+  }, []);
+
   const handleSubmitLogin = async (e) => {
     e.preventDefault();
     try {
       // Gọi hàm login từ context
-      await login(email, password); // Hàm login sẽ xử lý đăng nhập, lưu token và lấy thông tin người dùng
+      await login(email, password);
 
-      // Sau khi đăng nhập thành công, có thể thực hiện các bước tiếp theo (nếu cần)
-      closeModalLogin(); // Đóng modal đăng nhập
+      const newUrl =
+        window.location.protocol +
+        "//" +
+        window.location.host +
+        window.location.pathname;
+      window.history.replaceState({ path: newUrl }, "", newUrl);
+
+      closeModalLogin();
       handleRefreshDataLogin();
     } catch (error) {
       console.error("Đăng nhập không thành công:", error);
@@ -161,6 +180,10 @@ function Header() {
 
   const handleNavigateAccount = () => {
     navigate("/Account");
+  };
+
+  const handleNavigateSavedTour = () => {
+    navigate("/savedTour"); // Điều hướng đến trang khác
   };
 
   return (
@@ -203,6 +226,14 @@ function Header() {
                   onClick={handleNavigateAccount}
                 >
                   Thông tin cá nhân
+                </button>
+              </li>
+              <li>
+                <button
+                  className="whitespace-nowrap"
+                  onClick={handleNavigateSavedTour}
+                >
+                  Danh sách yêu thích
                 </button>
               </li>
               <li>
@@ -373,9 +404,16 @@ function Header() {
         {/* </form> */}
         <p className="text-center mt-4">
           Bạn đã có tài khoản?{" "}
-          <a href="#" className="text-teal-500 font-medium">
-            Đăng nhập ngay
-          </a>
+          <button
+            onClick={() => {
+              setIsOpenLogin(true);
+              setIsOpenRegister(false);
+            }}
+          >
+            <a href="#" className="text-teal-500 font-medium">
+              Đăng nhập ngay
+            </a>
+          </button>
         </p>
         <p className=" mt-8 text-center text-sm font-semibold">
           Bằng cách đăng ký, bạn đồng ý với Điều khoản & Điều kiện của chúng tôi
@@ -461,9 +499,16 @@ function Header() {
 
         <p className="text-center mt-4">
           Bạn chưa có tài khoản?{" "}
-          <a href="#" className="text-teal-500 font-medium">
-            Đăng ký ngay
-          </a>
+          <button
+            onClick={() => {
+              setIsOpenRegister(true);
+              setIsOpenLogin(false);
+            }}
+          >
+            <a href="#" className="text-teal-500 font-medium">
+              Đăng ký ngay
+            </a>
+          </button>
         </p>
       </Modal>
     </div>

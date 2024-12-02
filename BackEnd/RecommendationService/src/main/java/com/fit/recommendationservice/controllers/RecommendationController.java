@@ -6,7 +6,6 @@ import com.fit.recommendationservice.services.CollaborativeFilteringService;
 import com.fit.recommendationservice.services.ContentBasedFilteringService;
 import com.fit.recommendationservice.services.HybridRecommendationService;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.mahout.cf.taste.common.TasteException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -41,7 +40,7 @@ public class RecommendationController {
     public Mono<ResponseEntity<Map<String, Object>>> recommendToursByInteraction(
             @RequestParam Long customerId,
             @RequestParam int page,
-            @RequestParam int size)  {
+            @RequestParam int size) {
 
         return collaborativeFilteringService.recommendToursForUser(customerId, page, size)
                 .map(tours -> {
@@ -65,22 +64,10 @@ public class RecommendationController {
             @RequestParam(defaultValue = "10") int size
     ) {
         return hybridRecommendationService.recommendTours(customerId, page, size)
-                .map(recommendations -> {
-                    int totalElements = recommendations.size();
-                    int totalPages = (int) Math.ceil((double) totalElements / size);
-                    boolean last = page >= totalPages - 1;  // Điều chỉnh điều kiện để kiểm tra trang cuối
-
-                    // Lấy các phần tử thuộc trang hiện tại
-                    List<TourDTO> content = recommendations.stream()
-                            .skip((long) (page - 1) * size)  // Chỉ bỏ qua phần tử thuộc các trang trước đó
-                            .limit(size)  // Lấy đúng số lượng phần tử cho trang hiện tại
-                            .collect(Collectors.toList());
-
-                    PagedResponse<TourDTO> response = new PagedResponse<>(content, page, size, totalElements, totalPages, last);
-                    return ResponseEntity.ok(response);
-                })
-                .defaultIfEmpty(ResponseEntity.noContent().build());
+                .map(ResponseEntity::ok)  // Trả về PagedResponse
+                .defaultIfEmpty(ResponseEntity.noContent().build());  // Nếu không có kết quả, trả về No Content
     }
+
 
 }
 

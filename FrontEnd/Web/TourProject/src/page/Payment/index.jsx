@@ -4,14 +4,21 @@ import axios from "axios";
 import Header from "../../layouts/Header";
 import Footer from "../../layouts/Footer";
 import Menu from "../../layouts/Menu";
+import { useUser } from "../../contexts/UserContext";
+import { handleInteraction } from "../../services/api";
+import { useNavigate } from "react-router-dom";
 
 const PaymentPage = () => {
+  const navigate = useNavigate();
   const [amount, setAmount] = useState(0); // Giả định số tiền cho tour
   const [isPaymentSuccess, setIsPaymentSuccess] = useState(false);
   const queryParams = new URLSearchParams(window.location.search);
   const bookingId = queryParams.get("bookingId");
+  const { user } = useUser();
+  const token = localStorage.getItem("token");
   const [payment, setPayment] = useState();
   const [booking, setBooking] = useState({});
+  const [tour, setTour] = useState({});
 
   useEffect(() => {
     const fetchBookingTour = async () => {
@@ -21,6 +28,7 @@ const PaymentPage = () => {
         );
         setAmount(res.data.bookingDTO.totalAmount);
         setBooking(res.data.bookingDTO);
+        setTour(res.data.tourDTO);
       } catch (error) {
         console.error("Error fetching booking data:", error);
       }
@@ -31,7 +39,7 @@ const PaymentPage = () => {
   }, [bookingId]);
 
   console.log("Book: ", booking);
-  
+
   const handlePaymentSuccess = async (details) => {
     console.log("Payment successful:", details);
 
@@ -41,7 +49,7 @@ const PaymentPage = () => {
 
     console.log("paymentID: ", paymentID);
     console.log("payerID: ", payerID);
-    console.log("Transaction ID: ", transactionId); // In ra Transaction ID
+    console.log("Transaction ID: ", transactionId);
     try {
       const res = await axios.post(
         "http://localhost:8000/api/v1/payments/success",
@@ -51,15 +59,29 @@ const PaymentPage = () => {
           bookingId: bookingId,
           discountId: null,
           amount: details.purchase_units[0].amount.value, // Lấy số tiền từ purchase_units
-          transactionId: transactionId, // Lưu Transaction ID vào request
+          transactionId: transactionId,
         }
       );
       setPayment(res.data);
       console.log("Payment and booking status updated successfully.");
+
+      if (user) {
+        await handleInteraction(tour.tourId, "BOOK", user, token); 
+      }
     } catch (error) {
       console.error("Error updating payment and booking status:", error);
     }
     setIsPaymentSuccess(true);
+  };
+
+  const handleCloseModal = () => {
+    if (user) {
+      navigate("/bookings");
+      setIsPaymentSuccess(false);
+    }else{
+      navigate("/");
+      setIsPaymentSuccess(false);
+    }
   };
 
   const formatCurrency = (amount) => {
@@ -78,14 +100,16 @@ const PaymentPage = () => {
       <div className="w-full h-full flex flex-col">
         {/* Header Section */}
         <Header />
-        <Menu/>
-         {/* Booking Details Section */}
-         <div className="w-full bg-gray-50 py-6">
+        <Menu />
+        {/* Booking Details Section */}
+        <div className="w-full bg-gray-50 py-6">
           <div className="max-w-lg mx-auto text-center">
             <h3 className="text-xl font-bold text-gray-700 mb-2">
               Thông tin tour
             </h3>
-            <p className="text-gray-600">Tour: Miền Tây - Khám phá sông nước.</p>
+            <p className="text-gray-600">
+              Tour: Miền Tây - Khám phá sông nước.
+            </p>
             <p className="text-gray-600">Ngày khởi hành: 01/12/2024</p>
           </div>
         </div>
@@ -96,7 +120,9 @@ const PaymentPage = () => {
           </h2>
           <p className="mt-4 text-center text-gray-600">
             Số tiền cần thanh toán:{" "}
-            <span className="font-semibold">{formatCurrency(amount * vndToUsdRate)}</span>
+            <span className="font-semibold">
+              {formatCurrency(amount * vndToUsdRate)}
+            </span>
           </p>
 
           <div className="mt-6">
@@ -109,12 +135,28 @@ const PaymentPage = () => {
           </div>
 
           {isPaymentSuccess && (
-            <div className="mt-6 p-4 text-center text-green-600 bg-green-100 rounded-md">
-              Thanh toán thành công! Cảm ơn bạn đã sử dụng dịch vụ của chúng tôi.
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+              <div className="bg-white rounded-lg p-6 text-center">
+                <h2 className="text-2xl font-semibold text-green-600">
+                  Thanh toán thành công!
+                </h2>
+                <p className="mt-2 text-gray-600">
+                  Cảm ơn bạn đã sử dụng dịch vụ của chúng tôi.
+                </p>
+                <p className="mt-4 text-sm text-gray-500">
+                  Bạn sẽ được chuyển hướng đến trang đặt chỗ...
+                </p>
+
+                <button
+                  onClick={handleCloseModal}
+                  className="mt-4 px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600 focus:outline-none"
+                >
+                  Đóng
+                </button>
+              </div>
             </div>
           )}
         </div>
-
 
         {/* Payment Confirmation Section */}
         <div className="w-full bg-white py-6 mt-6">
@@ -123,7 +165,8 @@ const PaymentPage = () => {
               Xác nhận thanh toán
             </h3>
             <p className="text-gray-600">
-              Sau khi thanh toán thành công, thông tin vé của bạn sẽ được cập nhật.
+              Sau khi thanh toán thành công, thông tin vé của bạn sẽ được cập
+              nhật.
             </p>
           </div>
         </div>

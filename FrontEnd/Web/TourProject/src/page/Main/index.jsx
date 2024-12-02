@@ -13,14 +13,17 @@ import {
   IoIosArrowDropleftCircle,
   IoIosArrowDroprightCircle,
 } from "react-icons/io";
-import { FaBus, FaCar, FaTrain, FaAngleRight } from "react-icons/fa6";
+import { FaBus, FaCar, FaTrain, FaAngleRight, FaHeart } from "react-icons/fa6";
 import { GiCommercialAirplane, GiShipBow } from "react-icons/gi";
 import { BsCalendar4Week, BsCalendarHeart } from "react-icons/bs";
 import { TiWeatherPartlySunny } from "react-icons/ti";
 import Footer from "../../layouts/Footer";
 import { useNavigate } from "react-router-dom";
 import ChatBot from "../../layouts/ChatBot";
+import TourCard from "../../components/TourCard";
 import { useUser } from "../../contexts/UserContext";
+import dayjs from "dayjs";
+
 function MainLayout() {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isSlide1Active, setIsSlide1Active] = useState(true);
@@ -29,6 +32,8 @@ function MainLayout() {
   const [southernTours, setSouthernTours] = useState([]);
   const [isAscending, setIsAscending] = useState(true);
   const [recommendTour, setRecommendTour] = useState([]);
+  const token = localStorage.getItem("token");
+
   const { user } = useUser();
 
   const images = [bn1, bn2];
@@ -133,40 +138,45 @@ function MainLayout() {
   }, []);
 
   useEffect(() => {
-    // Hàm gọi API
     const fetchRecommendation = async () => {
-      const url = `http://localhost:8000/api/v1/recommendation/${user.userId}?page=1&size=10`; // API khi có user
+      if (!user) {
+        console.warn("User is not logged in");
+        setRecommendTour([]); // Nếu user chưa đăng nhập, không gọi API
+        return;
+      }
+
+      const url = `http://localhost:8000/api/v1/recommendation/${user.userId}?page=1&size=10`;
 
       try {
-        const response = await fetch(url);
-        const data = await response.json();
+        const response = await axios.get(url, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
 
-        if (user && data.content.length === 0) {
-          // Xử lý trường hợp khách hàng đăng nhập nhưng chưa có dữ liệu (khách mới)
-          setRecommendTour([]); // Cập nhật state với dữ liệu trống hoặc có thể hiển thị thông báo "Chưa có gợi ý tour"
+        if (response.data.content.length === 0) {
+          // Xử lý khi không có gợi ý
+          setRecommendTour([]);
+          console.info("No recommendations found for this user");
         } else {
-          setRecommendTour(data.content); // Cập nhật state với dữ liệu nhận được
+          setRecommendTour(response.data.content);
         }
       } catch (error) {
         console.error("Failed to fetch recommendation:", error);
-        setRecommendTour([]); // Cập nhật state nếu có lỗi API
+        setRecommendTour([]);
       }
     };
 
-    fetchRecommendation(); // Gọi API khi component mount hoặc khi user thay đổi
-  }, [user]); // Chạy lại khi user thay đổi
+    fetchRecommendation();
+  }, [user, token]);
 
   console.log("Recommend Tour: ", recommendTour);
 
   //Hiện thị trang Chi tiết tour
   const navigate = useNavigate();
 
-  const handleNavigate = (tour) => {
-    navigate("/detail", { state: { tour } }); // Điều hướng đến trang khác
-  };
-
   const handleNavigateMatching = (tours) => {
-    navigate("/listTour", { state: { tours } }); // Điều hướng đến trang khác
+    navigate("/listTour", { state: { tours } });
   };
 
   //Call API Tour by Region
@@ -197,86 +207,6 @@ function MainLayout() {
     fetchToursByRegion("SOUTH");
   }, []);
 
-  // Hàm định dạng giá tiền
-  const formatCurrency = (amount) => {
-    return amount.toLocaleString("vi-VN", {
-      style: "currency",
-      currency: "VND",
-      minimumFractionDigits: 0, // không hiển thị số thập phân
-      maximumFractionDigits: 0,
-    });
-  };
-
-  const formatDate = (dateString) => {
-    const date = new Date(dateString);
-    const day = String(date.getDate()).padStart(2, "0"); // Lấy ngày và đảm bảo có 2 chữ số
-    const month = String(date.getMonth() + 1).padStart(2, "0"); // Lấy tháng (tháng 0 bắt đầu từ 0)
-    const year = date.getFullYear(); // Lấy năm
-    return `${day}/${month}/${year}`; // Trả về định dạng "dd/mm/yyyy"
-  };
-
-  //Tour Card By Region
-  const TourCard = ({ tour }) => {
-    return (
-      <div className="bg-white flex flex-col justify-between font-sriracha w-80 h-80 shadow-2xl shadow-gray-500/50 rounded-lg group overflow-hidden">
-        <img
-          src={tour.urlImage[0]}
-          alt={tour.name}
-          className="h-44 rounded-t-lg object-cover transform transition-transform duration-1000 ease-in-out group-hover:scale-105"
-        />
-        <p className="text-black font-bold m-1 mt-2 text-xl">{tour.name}</p>
-        <div className="flex ml-1 justify-between">
-          <p className="text-xl text-red-500">{formatCurrency(tour.price)}</p>
-          <div className="flex space-x-2 items-center mr-2">
-            {tour.tourFeatureDTO.transportationMode.includes("AIRPLANE") && (
-              <GiCommercialAirplane />
-            )}
-            {tour.tourFeatureDTO.transportationMode.includes("BUS") && (
-              <FaBus />
-            )}
-            {tour.tourFeatureDTO.transportationMode.includes("TRAIN") && (
-              <FaTrain />
-            )}
-            {tour.tourFeatureDTO.transportationMode.includes("PRIVATE_CAR") && (
-              <FaCar />
-            )}
-          </div>
-        </div>
-        {tour.oldPrice > 0 && (
-          <p className="text-gray-400 text-sm ml-1 line-through self-start">
-            {formatCurrency(tour.oldPrice)}
-          </p>
-        )}
-
-        <div className="flex ml-1 justify-between items-center text-sm">
-          <div className="flex space-x-2 items-center">
-            <BsCalendar4Week />
-            <p>Khởi hành: {formatDate(tour.departureDate)}</p>
-          </div>
-
-          {/* Số chỗ trống di chuyển sát lề phải */}
-          <p className="text-sm text-green-600 mr-2">
-            {tour.availableSlot > 0
-              ? `Còn ${tour.availableSlot} chỗ trống`
-              : "Hết chỗ"}
-          </p>
-        </div>
-        <div className="flex ml-1 items-center justify-between text-sm mb-2">
-          <div className="flex space-x-2 items-center">
-            <BsCalendarHeart />
-            <p>
-              Thời gian: {tour.day} ngày {tour.night} đêm
-            </p>
-          </div>
-          <TiWeatherPartlySunny size={20} className="mr-2" />
-        </div>
-      </div>
-    );
-  };
-
-  console.log("North: ", northernTours);
-  console.log("MT: ", centralTours);
-  console.log("MN: ", southernTours);
 
   return (
     <>
@@ -335,7 +265,7 @@ function MainLayout() {
         {/* Tour 4 miền */}
         <div className="flex flex-col justify-center items-center space-y-5 mt-5">
           {/*  list phù hợp */}
-          {recommendTour.length !== 0  && user !=null? (
+          {recommendTour.length !== 0 && user != null ? (
             <div className="bg-[#a0e9e5] rounded-2xl ">
               <div className="flex justify-between items-center space-x-6  ">
                 <h2 className=" text-2xl font-sriracha font-bold pl-4 text-[#2c7a7b]">
@@ -352,14 +282,11 @@ function MainLayout() {
               </div>
               <div className="flex flex-wrap justify-center space-x-4 p-4 ">
                 {recommendTour.slice(0, 4).map((tour, index) => (
-                <button
-                  key={tour.id || index}
-                  onClick={() => {
-                    handleNavigate(tour);
-                  }}
-                >
-                  <TourCard tour={tour} />
-                </button>
+                  <TourCard
+                    key={tour.tourId || index}
+                    tour={tour}
+                    user={user}
+                  />
                 ))}
               </div>
             </div>
@@ -383,14 +310,7 @@ function MainLayout() {
 
             <div className="flex flex-wrap justify-center space-x-4 p-4">
               {northernTours.map((tour, index) => (
-                <button
-                  key={tour.id || index}
-                  onClick={() => {
-                    handleNavigate(tour);
-                  }}
-                >
-                  <TourCard tour={tour} />
-                </button>
+                <TourCard key={tour.id || index} tour={tour} user={user} />
               ))}
             </div>
           </div>
@@ -399,12 +319,7 @@ function MainLayout() {
           <div className="flex items-center space-x-6 mt-3 mb-3">
             <div className="flex flex-wrap justify-center space-x-4 p-4">
               {centralTours.map((tour, index) => (
-                <button
-                  key={tour.id || index}
-                  onClick={() => handleNavigate(tour)}
-                >
-                  <TourCard tour={tour} />
-                </button>
+                <TourCard key={tour.tourId || index} tour={tour} user={user} />
               ))}
             </div>
             <div
@@ -442,132 +357,10 @@ function MainLayout() {
 
             <div className="flex flex-wrap justify-center space-x-4 p-4">
               {southernTours.map((tour, index) => (
-                <button
-                  key={tour.id || index}
-                  onClick={() => handleNavigate(tour)}
-                >
-                  <TourCard tour={tour} />
-                </button>
+                <TourCard key={tour.tourId || index} tour={tour} user={user} />
               ))}
             </div>
           </div>
-
-          {/* MTay */}
-          {/* <div className="flex items-center space-x-6 mt-3 mb-3">
-            <div className="flex flex-col justify-between font-sriracha w-72 h-80 shadow-2xl shadow-gray-500/50 rounded-lg group overflow-hidden">
-              <img
-                src="https://divui.com/blog/wp-content/uploads/2018/10/111111.jpg"
-                alt="Bà Nà Hill"
-                className="h-44 rounded-t-lg object-cover transform transition-transform duration-1000 ease-in-out group-hover:scale-105"
-              />
-              <p className="text-black font-bold m-1 mt-2 text-xl">
-                Bà Nà Hill - Đà Nẵng
-              </p>
-              <div className="flex ml-1 justify-between">
-                <p className="text-xl text-red-500 ">6,500,000đ</p>
-                <div className="flex space-x-2 items-center mr-2">
-                  <FaBus />
-                  <GiShipBow />
-                  <GiCommercialAirplane />
-                </div>
-              </div>
-              <p className="text-gray-400 text-sm ml-1 line-through">
-                8,437,000đ
-              </p>
-              <div className="flex ml-1 space-x-2 items-center text-sm">
-                <BsCalendar4Week />
-                <p>Khởi hành: Thứ 5</p>
-              </div>
-              <div className="flex ml-1 items-center justify-between text-sm mb-2">
-                <div className="flex space-x-2 items-center">
-                  <BsCalendarHeart />
-                  <p>Thời gian: 3 ngày 2 đêm</p>
-                </div>
-                <TiWeatherPartlySunny size={20} className="mr-2" />
-              </div>
-            </div>
-
-            <div className="flex flex-col justify-between font-sriracha w-72 h-80 shadow-2xl shadow-gray-500/50 rounded-lg group overflow-hidden">
-              <img
-                src="https://divui.com/blog/wp-content/uploads/2018/10/111111.jpg"
-                alt="Bà Nà Hill"
-                className="h-44 rounded-t-lg object-cover transform transition-transform duration-1000 ease-in-out group-hover:scale-105"
-              />
-              <p className="text-black font-bold m-1 mt-2 text-xl">
-                Bà Nà Hill - Đà Nẵng
-              </p>
-              <div className="flex ml-1 justify-between">
-                <p className="text-xl text-red-500 ">6,500,000đ</p>
-                <div className="flex space-x-2 items-center mr-2">
-                  <FaBus />
-                  <GiShipBow />
-                  <GiCommercialAirplane />
-                </div>
-              </div>
-              <p className="text-gray-400 text-sm ml-1 line-through">
-                8,437,000đ
-              </p>
-              <div className="flex ml-1 space-x-2 items-center text-sm">
-                <BsCalendar4Week />
-                <p>Khởi hành: Thứ 5</p>
-              </div>
-              <div className="flex ml-1 items-center justify-between text-sm mb-2">
-                <div className="flex space-x-2 items-center">
-                  <BsCalendarHeart />
-                  <p>Thời gian: 3 ngày 2 đêm</p>
-                </div>
-                <TiWeatherPartlySunny size={20} className="mr-2" />
-              </div>
-            </div>
-
-            <div className="flex flex-col justify-between font-sriracha w-72 h-80 shadow-2xl shadow-gray-500/50 rounded-lg group overflow-hidden">
-              <img
-                src="https://divui.com/blog/wp-content/uploads/2018/10/111111.jpg"
-                alt="Bà Nà Hill"
-                className="h-44 rounded-t-lg object-cover transform transition-transform duration-1000 ease-in-out group-hover:scale-105"
-              />
-              <p className="text-black font-bold m-1 mt-2 text-xl">
-                Bà Nà Hill - Đà Nẵng
-              </p>
-              <div className="flex ml-1 justify-between">
-                <p className="text-xl text-red-500 ">6,500,000đ</p>
-                <div className="flex space-x-2 items-center mr-2">
-                  <FaBus />
-                  <GiShipBow />
-                  <GiCommercialAirplane />
-                </div>
-              </div>
-              <p className="text-gray-400 text-sm ml-1 line-through">
-                8,437,000đ
-              </p>
-              <div className="flex ml-1 space-x-2 items-center text-sm">
-                <BsCalendar4Week />
-                <p>Khởi hành: Thứ 5</p>
-              </div>
-              <div className="flex ml-1 items-center justify-between text-sm mb-2">
-                <div className="flex space-x-2 items-center">
-                  <BsCalendarHeart />
-                  <p>Thời gian: 3 ngày 2 đêm</p>
-                </div>
-                <TiWeatherPartlySunny size={20} className="mr-2" />
-              </div>
-            </div>
-
-            <div
-              ref={(el) => (elementRefs.current[3] = el)}
-              data-direction="right"
-              className="group overflow-hidden relative w-72 h-72 rounded-full "
-            >
-              <img
-                src={PhuQuocImage}
-                alt="Phú Quốc"
-                className="w-full h-full object-cover rounded-full transform transition-transform duration-1000 ease-in-out group-hover:scale-105"
-              />
-              <p className="absolute top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2 z-10 text-4xl font-dancing-script text-white font-bold whitespace-nowrap">
-                Miền Tây
-              </p>
-            </div>
-          </div> */}
         </div>
         <ChatBot />
         {/* Footer */}

@@ -14,28 +14,28 @@
                 <constraints nullable="false"/>
             </column>
             <column name="price" type="DOUBLE PRECISION">
-                <constraints nullable="false"/>
+                <constraints nullable="true"/>
             </column>
             <column name="max_duration" type="INT">
-                <constraints nullable="false"/>
+                <constraints nullable="true"/>
             </column>
             <column name="start_date" type="DATE">
-                <constraints nullable="false"/>
+                <constraints nullable="true"/>
             </column>
             <column name="type_tour" type="VARCHAR(50)">
-                <constraints nullable="false"/>
+                <constraints nullable="true"/>
             </column>
             <column name="region" type="VARCHAR(50)">
-                <constraints nullable="false"/>
+                <constraints nullable="true"/>
             </column>
             <column name="accommodation_quality" type="VARCHAR(50)">
-                <constraints nullable="false"/>
+                <constraints nullable="true"/>
             </column>
             <column name="transportation_mode" type="TEXT">
-                <constraints nullable="false"/>
+                <constraints nullable="true"/>
             </column>
             <column name="departure_location" type="VARCHAR(100)">
-                <constraints nullable="false"/>
+                <constraints nullable="true"/>
             </column>
         </createTable>
     </changeSet>

@@ -11,8 +11,8 @@ import {
   IoIosArrowDropleftCircle,
   IoIosArrowDroprightCircle,
 } from "react-icons/io";
-import { FaRegListAlt } from "react-icons/fa";
-import { FaBus, FaCar, FaTrain } from "react-icons/fa6";
+import { FaRegListAlt, FaTrashAlt } from "react-icons/fa";
+import { FaBus, FaCar, FaHeart, FaTrain } from "react-icons/fa6";
 import { GiCommercialAirplane, GiShipBow } from "react-icons/gi";
 import { BsCalendar4Week, BsCalendarHeart, BsGrid3X3Gap } from "react-icons/bs";
 import { TiWeatherPartlySunny } from "react-icons/ti";
@@ -32,15 +32,18 @@ import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
 import ModalSetCriteria from "../../components/ModalSetCriteria";
 import { Button } from "antd";
+import { useUser } from "../../contexts/UserContext";
+import { deleteInteraction } from "../../services/api";
 
-function ListTour() {
+function SavedTour() {
   const navigate = useNavigate();
-  const location = useLocation();
-  const queryParams = new URLSearchParams(location.search);
-  // const region = queryParams.get("region");
+  const token = localStorage.getItem("token");
+  const { user } = useUser();
+
+  const [savedTour, setSavedTour] = useState([]);
   const [showList, setShowList] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
-  const [toursPerPage, setToursPerPage] = useState(12);
+  const [toursPerPage, setToursPerPage] = useState(9);
   const [tourList, setTourList] = useState([]); // Danh sách tour
   const [totalPages, setTotalPages] = useState(1); // Tổng số trang
   const [sortType, setSortType] = useState("");
@@ -48,67 +51,74 @@ function ListTour() {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const showModal = () => {
     setIsModalVisible(true);
-    console.log("hihi show modal")
-  }
+    console.log("hihi show modal");
+  };
   const handleClose = () => setIsModalVisible(false);
 
   const fetchTours = async () => {
-    try {
-      let url = `http://localhost:8000/api/v1/tours/region`;
-      const params = {
-        region: 'NORTH',
-        page: currentPage,
-        size: toursPerPage,
-        isAscending: true,
-      };
-
-      switch (sortType) {
-        case "startDateNew": // Mới nhất
-          params.isAscending = false; // Ngày giảm dần
-          break;
-
-        case "priceDesc": // Giá cao nhất
-          url = `http://localhost:8000/api/v1/tours/region-order-by-price`;
-          params.isAscending = false;
-          break;
-
-        case "priceAsc": // Giá thấp nhất
-          url = `http://localhost:8000/api/v1/tours/region-order-by-price`;
-          params.isAscending = true;
-          break;
-        case "departureDateAsc": // Khởi hành sớm nhất
-          url = `http://localhost:8000/api/v1/tours/region-order-by-departure-date`;
-          params.isAscending = true;
-          break;
-        case "departureDateDesc": // Khởi hành muộn nhất
-          url = `http://localhost:8000/api/v1/tours/region-order-by-departure-date`;
-          params.isAscending = false;
-          break;
-        default:
-          // Nếu không có sortType, giữ nguyên URL và params mặc định
-          break;
-      }
-
-      const response = await axios.get(url, { params });
-      setTourList(response.data.content); // Lưu danh sách tour
-      setTotalPages(response.data?.totalPages || 0); // Tổng số trang
-    } catch (error) {
-      console.log(error);
+    if (!user) {
+      console.warn("User not logged in!");
+      return;
     }
+
+    try {
+      // Lấy tất cả các tour đã lưu từ API
+      const savedTourResponse = await axios.get(
+        `http://localhost:8000/api/v1/recommendation/customer-interaction/saved/${user.userId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      const savedTourData = savedTourResponse.data; // Dữ liệu trả về từ API
+
+      // Chia nhỏ dữ liệu thành các trang
+      const totalPages = Math.ceil(savedTourData.length / toursPerPage);
+      const paginatedData = paginateData(
+        savedTourData,
+        currentPage,
+        toursPerPage
+      );
+
+      setSavedTour(paginatedData);
+      setTotalPages(totalPages); // Lưu tổng số trang
+
+      // Lấy chi tiết các tour đã lưu
+      const tourPromises = paginatedData.map(async (interaction) => {
+        const response = await axios.get(
+          `http://localhost:8000/api/v1/tours/getById?ticketId=${interaction.tourId}`
+        );
+        return { ...response.data, interactionId: interaction.interactionId };
+      });
+
+      // Đợi tất cả các tour chi tiết
+      const toursData = await Promise.all(tourPromises);
+      setTourList(toursData);
+    } catch (error) {
+      console.error("Error fetching tours or interactions:", error);
+    }
+  };
+
+  // Hàm phân trang dữ liệu
+  const paginateData = (data, page, perPage) => {
+    const start = (page - 1) * perPage;
+    const end = start + perPage;
+    return data.slice(start, end);
   };
 
   useEffect(() => {
     fetchTours();
-  }, [currentPage, toursPerPage, sortType]);
+  }, [user, currentPage]);
+
   console.log("List Tour:", tourList);
+  console.log("Interaction:", savedTour);
 
   //Animation text
   useEffect(() => {
     const tourText = document.querySelector(".tour-text");
     const holidayText = document.querySelector(".holiday-text");
-
-    console.log("tourText:", tourText); // Kiểm tra nếu tourText được chọn đúng
-    console.log("holidayText:", holidayText); // Kiểm tra nếu holidayText được chọn đúng
 
     const observer = new IntersectionObserver(
       function (entries) {
@@ -190,24 +200,52 @@ function ListTour() {
     return `${day}/${month}/${year}`; // Trả về định dạng "dd/mm/yyyy"
   };
 
+  const handleDelete = async (interactionId) => {
+    try {
+      await deleteInteraction(interactionId, token);
+      fetchTours();
+    } catch (error) {
+      console.error("Error deleting interaction:", error);
+    }
+  };
+
   //Tour Card By Region
   const TourCardList = ({ tour }) => {
     return (
-      <div className="flex flex-row justify-between font-sriracha  shadow-2xl shadow-gray-500/50 rounded-lg group overflow-hidden">
+      <div className="relative flex flex-row justify-between font-sriracha shadow-2xl shadow-gray-500/50 rounded-lg group overflow-hidden">
         <img
-          src={tour.urlImage?.[0] || "https://res.cloudinary.com/doqbelkif/image/upload/v1726605769/9ae475e5-ab3e-4762-acd8-82a7a6e05086.png"}
+          src={
+            tour.urlImage?.[0] ||
+            "https://res.cloudinary.com/doqbelkif/image/upload/v1726605769/9ae475e5-ab3e-4762-acd8-82a7a6e05086.png"
+          }
           alt={tour.name}
           className="h-[300px] w-[35%] object-cover transform transition-transform duration-1000 ease-in-out group-hover:scale-105"
         />
+
+        {/* Delete button */}
+        <button
+          onClick={(e) => {
+            e.stopPropagation(); // Prevent triggering parent click events
+            handleDelete(tour.interactionId); // Call delete handler
+          }}
+          className="absolute top-2 right-2 text-red-500 rounded-full p-2 bg-white shadow-md hover:bg-red-100 transition duration-300 ease-in-out"
+        >
+          <FaTrashAlt size={20} />
+        </button>
+
         <div className="flex flex-col justify-between w-[40%] pt-4">
           <p className="text-black font-bold text-xl pb-[100px]">{tour.name}</p>
 
-          <div className="pb-[25px] ">
-            <div className="flex flex-row pb-3">
+          <div className="pb-[25px]">
+            <div className="flex space-x-2 items-center mb-3">
+              <BsCalendar4Week />
+              <p>Khởi hành: {formatDate(tour.departureDate)}</p>
+            </div>
+            {/* <div className="flex flex-row pb-3">
               <div className="pr-4">
-                {tour?.tourFeatureDTO?.transportationMode.includes("AIRPLANE") && (
-                  <GiCommercialAirplane size={20} />
-                )}
+                {tour?.tourFeatureDTO?.transportationMode.includes(
+                  "AIRPLANE"
+                ) && <GiCommercialAirplane size={20} />}
                 {tour?.tourFeatureDTO?.transportationMode.includes("BUS") && (
                   <FaBus size={20} />
                 )}
@@ -217,10 +255,9 @@ function ListTour() {
                 {tour?.tourFeatureDTO?.transportationMode.includes(
                   "PRIVATE_CAR"
                 ) && <FaCar size={20} />}
-
               </div>
               <TiWeatherPartlySunny size={20} className="mr-2" />
-            </div>
+            </div> */}
             <div className="flex space-x-2 pb-3 items-center">
               <BsCalendarHeart />
               <p>
@@ -228,7 +265,7 @@ function ListTour() {
               </p>
             </div>
             <div className="flex ml-1 justify-between items-center text-sm">
-              {/* Số chỗ trống di chuyển sát lề phải */}
+              {/* Available slots */}
               <p className="text-sm text-green-600 mr-2">
                 {tour.availableSlot > 0
                   ? `Còn ${tour.availableSlot} chỗ trống`
@@ -237,62 +274,82 @@ function ListTour() {
             </div>
           </div>
         </div>
-        <div className="flex flex-col  items-end pr-6 w-[20%] pt-4">
-          <div className="flex space-x-2 items-center pb-[100px]">
-            <BsCalendar4Week />
-            <p>Khởi hành: {formatDate(tour.departureDate)}</p>
-          </div>
-          <div className="pb-[50px]">
-            <p className="text-gray-400 text-sm ml-1 line-through self-start text-end">
-              {formatCurrency(tour.oldPrice || 10000000)}
-            </p>
+
+        <div className="flex flex-col bottom-0 right-0 items-end pr-6 w-[20%] pt-4 mt-40">
+          <div className="pb-[20px]">
+            {tour.oldPrice > 0 && (
+              <p className="text-gray-400 text-sm ml-1 line-through self-start">
+                {formatCurrency(tour.oldPrice)}
+              </p>
+            )}
             <p className="text-xl text-red-500">{formatCurrency(tour.price)}</p>
           </div>
-          <Button type="primary" className="rounded-xl  h-10 pl-8 pr-8 font-bold mr-2 bg-customColor text-lg ">Xem tour {'>'}</Button>
-
-
+          <Button
+            type="primary"
+            className="rounded-xl h-10 pl-8 pr-8 font-bold mr-2 bg-customColor text-lg"
+          >
+            Xem tour {">"}
+          </Button>
         </div>
-
-
       </div>
     );
   };
+
   const TourCardGrid = ({ tour }) => {
     return (
-      <div className="flex flex-col justify-between font-sriracha w-[370px] h-[370px] shadow-2xl shadow-gray-500/50 rounded-lg group overflow-hidden">
+      <div
+        className="bg-white flex flex-col justify-between font-sriracha w-80 h-80 shadow-2xl shadow-gray-500/50 rounded-lg group overflow-hidden relative"
+        onClick={() => handleNavigateDetail(tour)}
+      >
+        {/* Ảnh tour */}
         <img
-          src={tour.urlImage?.[0] || "https://res.cloudinary.com/doqbelkif/image/upload/v1726605769/9ae475e5-ab3e-4762-acd8-82a7a6e05086.png"}
+          src={tour.urlImage[0]}
           alt={tour.name}
-          className="h-52 rounded-t-lg object-cover transform transition-transform duration-1000 ease-in-out group-hover:scale-105"
+          className="h-44 rounded-t-lg object-cover transform transition-transform duration-1000 ease-in-out group-hover:scale-105"
         />
+
+        {/* Nút Save ở góc trên bên phải */}
+        <button
+          onClick={(e) => {
+            e.stopPropagation(); // Ngừng sự kiện click để tránh điều hướng
+            handleDelete(tour.interactionId);
+          }}
+          className="absolute top-2 right-2 text-red-500 rounded-full p-2 bg-white shadow-md hover:bg-red-100 transition duration-300 ease-in-out"
+        >
+          <FaTrashAlt size={20} />
+        </button>
+
+        {/* Thông tin tour */}
         <p className="text-black font-bold m-1 mt-2 text-xl">{tour.name}</p>
         <div className="flex ml-1 justify-between">
           <p className="text-xl text-red-500">{formatCurrency(tour.price)}</p>
           <div className="flex space-x-2 items-center mr-2">
-            {tour?.tourFeatureDTO?.transportationMode.includes("AIRPLANE") && (
+            {tour.tourFeatureDTO.transportationMode.includes("AIRPLANE") && (
               <GiCommercialAirplane />
             )}
-            {tour?.tourFeatureDTO?.transportationMode.includes("BUS") && (
+            {tour.tourFeatureDTO.transportationMode.includes("BUS") && (
               <FaBus />
             )}
-            {tour?.tourFeatureDTO?.transportationMode.includes("TRAIN") && (
+            {tour.tourFeatureDTO.transportationMode.includes("TRAIN") && (
               <FaTrain />
             )}
-            {tour?.tourFeatureDTO?.transportationMode.includes(
-              "PRIVATE_CAR"
-            ) && <FaCar />}
+            {tour.tourFeatureDTO.transportationMode.includes("PRIVATE_CAR") && (
+              <FaCar />
+            )}
           </div>
         </div>
-        <p className="text-gray-400 text-sm ml-1 line-through self-start">
-          {formatCurrency(tour.oldPrice || 10000000)}
-        </p>
+        {tour.oldPrice > 0 && (
+          <p className="text-gray-400 text-sm ml-1 line-through self-start">
+            {formatCurrency(tour.oldPrice)}
+          </p>
+        )}
+
         <div className="flex ml-1 justify-between items-center text-sm">
           <div className="flex space-x-2 items-center">
             <BsCalendar4Week />
             <p>Khởi hành: {formatDate(tour.departureDate)}</p>
           </div>
 
-          {/* Số chỗ trống di chuyển sát lề phải */}
           <p className="text-sm text-green-600 mr-2">
             {tour.availableSlot > 0
               ? `Còn ${tour.availableSlot} chỗ trống`
@@ -355,63 +412,95 @@ function ListTour() {
     <>
       <div className="w-full h-full flex flex-col">
         <Header />
-        <Menu name="Tour" />
+        <Menu />
         <div className="">
-          <ModalSetCriteria
-            visible={isModalVisible}
-            onClose={handleClose}
-          /></div>
+          <ModalSetCriteria visible={isModalVisible} onClose={handleClose} />
+        </div>
         <div className="flex flex-row justify-around">
           <div className="w-[20%] h-[400px] flex flex-col bg-slate-100 rounded-2xl p-4">
             <div
               className={"flex flex-row items-center "}
               onClick={() => setSortType("startDateNew")}
             >
-              <img src={news} alt="Logo" className="w-[32px]  h-auto m-2 mr-4" />
+              <img
+                src={news}
+                alt="Logo"
+                className="w-[32px]  h-auto m-2 mr-4"
+              />
               <div>Mới nhất</div>
             </div>
             <div
               className={"flex flex-row items-center "}
               onClick={() => setSortType("priceDesc")}
             >
-              <img src={arrows_bot} alt="Logo" className="w-[32px]  h-auto m-2 mr-4" />
+              <img
+                src={arrows_bot}
+                alt="Logo"
+                className="w-[32px]  h-auto m-2 mr-4"
+              />
               <div>Giá cao nhất</div>
             </div>
             <div
               className={"flex flex-row items-center "}
               onClick={() => setSortType("priceAsc")}
             >
-              <img src={arrows_top} alt="Logo" className="w-[32px]  h-auto m-2 mr-4" />
+              <img
+                src={arrows_top}
+                alt="Logo"
+                className="w-[32px]  h-auto m-2 mr-4"
+              />
               <div>Giá thấp nhất</div>
             </div>
             <div
               className={"flex flex-row items-center "}
               onClick={() => setSortType("departureDateAsc")}
             >
-              <img src={early} alt="Logo" className="w-[32px]  h-auto m-2 mr-4" />
+              <img
+                src={early}
+                alt="Logo"
+                className="w-[32px]  h-auto m-2 mr-4"
+              />
               <div>Khởi hành sớm nhất</div>
             </div>
             <div
               className={"flex flex-row items-center "}
               onClick={() => setSortType("departureDateDesc")}
             >
-              <img src={history} alt="Logo" className="w-[32px]  h-auto m-2 mr-4" />
+              <img
+                src={history}
+                alt="Logo"
+                className="w-[32px]  h-auto m-2 mr-4"
+              />
               <div>Khởi hành muộn nhất</div>
             </div>
             <div
               className={"flex flex-row items-center "}
               onClick={() => showModal()}
             >
-              <img src={filter} alt="Logo" className="w-[32px]  h-auto m-2 mr-4" />
+              <img
+                src={filter}
+                alt="Logo"
+                className="w-[32px]  h-auto m-2 mr-4"
+              />
               <div>Lọc</div>
             </div>
             <div className="flex flex-row justify-center pt-6">
               <button
-                className={`w-14 h-14 rounded-lg flex items-center justify-center mr-3 ${showList ? "bg-customColor" : "bg-slate-200"}`}
-                onClick={() => setShowList(true)}><FaRegListAlt size={30} /></button>
+                className={`w-14 h-14 rounded-lg flex items-center justify-center mr-3 ${
+                  showList ? "bg-customColor" : "bg-slate-200"
+                }`}
+                onClick={() => setShowList(true)}
+              >
+                <FaRegListAlt size={30} />
+              </button>
               <button
-                className={`w-14 h-14 rounded-lg flex items-center justify-center mr-3 ${showList ? "bg-slate-200" : "bg-customColor"}`}
-                onClick={() => setShowList(false)}><BsGrid3X3Gap size={30} /></button>
+                className={`w-14 h-14 rounded-lg flex items-center justify-center mr-3 ${
+                  showList ? "bg-slate-200" : "bg-customColor"
+                }`}
+                onClick={() => setShowList(false)}
+              >
+                <BsGrid3X3Gap size={30} />
+              </button>
             </div>
             {/* </div> */}
           </div>
@@ -451,7 +540,6 @@ function ListTour() {
               </div>
             )}
 
-
             {/* Nút phân trang */}
             <div className="flex justify-center space-x-4 mt-4">
               {/* Nút trang đầu */}
@@ -468,10 +556,11 @@ function ListTour() {
                 <button
                   key={page}
                   onClick={() => handlePageChange(page)}
-                  className={`px-4 py-2 rounded ${page === currentPage
-                    ? "bg-blue-500 text-white"
-                    : "bg-gray-300"
-                    }`}
+                  className={`px-4 py-2 rounded ${
+                    page === currentPage
+                      ? "bg-blue-500 text-white"
+                      : "bg-gray-300"
+                  }`}
                 >
                   {page}
                 </button>
@@ -489,8 +578,6 @@ function ListTour() {
           </div>
         </div>
 
-
-
         {/* Footer */}
         <Footer />
       </div>
@@ -498,4 +585,4 @@ function ListTour() {
   );
 }
 
-export default ListTour;
+export default SavedTour;

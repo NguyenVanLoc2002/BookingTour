@@ -800,7 +800,7 @@ function Booking() {
                 }}
                 onClick={handleBookTour}
               >
-                THANH TOÁN
+                ĐẶT TOUR
               </button>
               {isModalOpen && (
                 <Modal

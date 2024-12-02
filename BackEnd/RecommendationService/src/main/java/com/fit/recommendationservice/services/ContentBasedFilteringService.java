@@ -158,7 +158,8 @@ public class ContentBasedFilteringService {
         tourDTO.setDepartureLocation((String) tourMap.get("departureLocation"));
         tourDTO.setUrlImage((List<String>) tourMap.get("urlImage"));
         tourDTO.setIncludePromotions((Boolean) tourMap.get("includePromotions"));
-
+        tourDTO.setDepartureDate( convertListToLocalDate((List<Integer>) tourMap.get("departureDate")));
+        tourDTO.setAvailableSlot((Integer) tourMap.get("availableSlot"));
         // Cập nhật các thông tin liên quan đến tính năng tour nếu cần
         if (tourMap.get("tourFeatureDTO") instanceof Map<?, ?>) {
             Map<String, Object> featureMap = (Map<String, Object>) tourMap.get("tourFeatureDTO");

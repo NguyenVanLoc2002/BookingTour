@@ -1,12 +1,15 @@
 package com.fit.recommendationservice.services;
 
 import com.fit.commonservice.utils.Constant;
+import com.fit.recommendationservice.dtos.request.CustomerPreferencesRequest;
 import com.fit.recommendationservice.dtos.request.TourFilterCriteriaRequest;
+import com.fit.recommendationservice.dtos.response.CustomerPreferencesDTO;
 import com.fit.recommendationservice.enums.AccommodationQuality;
 import com.fit.recommendationservice.enums.Region;
 import com.fit.recommendationservice.enums.TransportationMode;
 import com.fit.recommendationservice.enums.TypeTour;
 import com.fit.recommendationservice.events.EventProducer;
+import com.fit.recommendationservice.models.CustomerPreferences;
 import com.fit.recommendationservice.repositories.CustomerPreferencesRepository;
 import com.google.gson.Gson;
 import lombok.extern.slf4j.Slf4j;
@@ -24,38 +27,6 @@ import java.util.Map;
 public class CustomerPreferenceService {
     @Autowired
     private CustomerPreferencesRepository preferencesRepository;
-
-
-//    public Mono<Map<String, Object>> getCommonPreferences(Long customerId) {
-//        Mono<Double> priceLatest = preferencesRepository.findLatestPrice(customerId);
-//
-//        Mono<Integer> maxDurationLatest = preferencesRepository.findLatestDuration(customerId);
-//
-//        Mono<TypeTour> popularTypeTour = preferencesRepository.findPopularTypeTour(customerId)
-//                .map(TypeTour::fromValue);// Sử dụng phương thức fromValue để chuyển đổi từ int sang Enum
-//
-//        Mono<Region> popularRegion = preferencesRepository.findPopularRegion(customerId)
-//                .map(Region::fromValue);
-//
-//        Mono<AccommodationQuality> popularAccommodation = preferencesRepository.findPopularAccommodationQuality(customerId)
-//                .map(AccommodationQuality::fromValue);
-//
-//
-//        Mono<TransportationMode> popularTransportation = preferencesRepository.findPopularTransportationMode(customerId)
-//                .map(TransportationMode::fromValue);
-//
-//        return Mono.zip(priceLatest, maxDurationLatest,popularTypeTour, popularRegion, popularAccommodation, popularTransportation)
-//                .map(tuple->{
-//                    Map<String, Object> commonPreferences = new HashMap<>();
-//                    commonPreferences.put("maxPrice", tuple.getT1());
-//                    commonPreferences.put("maxDuration", tuple.getT2());
-//                    commonPreferences.put("type", tuple.getT3());
-//                    commonPreferences.put("region", tuple.getT4());
-//                    commonPreferences.put("accommodation", tuple.getT5());
-//                    commonPreferences.put("transportationMode", tuple.getT6());
-//                    return commonPreferences;
-//                });
-//    }
 
     public Mono<TourFilterCriteriaRequest> getCommonPreferences(Long customerId) {
         Mono<Double> priceLatest = preferencesRepository.findLatestPrice(customerId)
@@ -96,5 +67,18 @@ public class CustomerPreferenceService {
                 });
     }
 
-
+    public Mono<CustomerPreferencesDTO> createCustomerPreference(CustomerPreferencesRequest customerPreferencesRequest) {
+        return preferencesRepository.insertCustomerPreferences(
+                        customerPreferencesRequest.getCusId(),
+                        customerPreferencesRequest.getMaxCost(),
+                        customerPreferencesRequest.getMaxDuration(),
+                        customerPreferencesRequest.getDepartureLocation(),
+                        customerPreferencesRequest.getStartDate(),
+                        customerPreferencesRequest.getTypeTour(),
+                        customerPreferencesRequest.getRegion(),
+                        customerPreferencesRequest.getAccommodationQuality(),
+                        customerPreferencesRequest.getTransportationMode()
+                )
+                .map(CustomerPreferencesDTO::convertToDTO);
+    }
 }

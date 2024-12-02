@@ -18,7 +18,7 @@ public class TourTicket {
     @Id
     private Long ticketId;
     private Long tourId;
-    private LocalDate departureDate;
+        private LocalDate departureDate;
     //    Dia diem khoi hanh
     private String departureLocation;
     private int availableSlot;

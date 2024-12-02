@@ -4,6 +4,7 @@ import panda from "../../../assets/iconTour/panda.png";
 const { Text } = Typography;
 import dayjs from "dayjs";
 import axios from "axios";
+import { v4 as uuidv4 } from 'uuid';
 
 const ModalCancelTour = ({ visible, onClose, data }) => {
   const [loading, setLoading] = useState(false);
@@ -103,20 +104,30 @@ const ModalCancelTour = ({ visible, onClose, data }) => {
     }, 3000);
   };
 
+ 
+
+  const generateRequestId = () => {
+    return uuidv4();
+  };
   const token = localStorage.getItem("token");
+
   const refundBooking = async (bookingId) => {
+    console.log("Token: ", token);
+
     try {
       setLoading(true);
+      const requestId = generateRequestId(); 
       await axios.post(
         `http://localhost:8000/api/v1/payments/process-refund?bookingId=${bookingId}`,
         {
           headers: {
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${token}`, // Thêm token chính xác
+            // 'PayPal-Request-Id': requestId
           },
         }
       );
       message.success("Hoàn tiền thành công!");
-      onClose(); // Đóng modal sau khi hoàn tiền thành công
+      onClose();
     } catch (error) {
       message.error("Có lỗi xảy ra khi hoàn tiền.");
       console.error("Error fetching bookings:", error);

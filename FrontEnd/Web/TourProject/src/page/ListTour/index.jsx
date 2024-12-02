@@ -32,6 +32,10 @@ import jungle from "../../assets/iconTour/jungle.png";
 import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
 import ModalSetCriteria from "../../components/ModalSetCriteria";
+import { useUser } from "../../contexts/UserContext";
+import { FaHeart } from "react-icons/fa";
+import TourCard from "../../components/TourCard";
+import { addPreference } from "../../services/api";
 
 function ListTour() {
   const navigate = useNavigate();
@@ -39,19 +43,50 @@ function ListTour() {
   const queryParams = new URLSearchParams(location.search);
   const region = queryParams.get("region");
   const name = queryParams.get("name");
+  const token = localStorage.getItem("token");
+  
+  const { user } = useUser();
 
+  const [criteria, setCriteria] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [toursPerPage, setToursPerPage] = useState(12);
   const [tourList, setTourList] = useState([]); // Danh sách tour
   const [totalPages, setTotalPages] = useState(1); // Tổng số trang
   const [sortType, setSortType] = useState("");
   const [typeTour, settypeTour] = useState("");
+  const {tours} = location.state || {};
+  console.log("Matching: ", tours);
 
   const [isModalVisible, setIsModalVisible] = useState(false);
   const showModal = () => {
     setIsModalVisible(true);
   };
   const handleClose = () => setIsModalVisible(false);
+
+  console.log("Criteria: ", criteria);
+
+  const fetchFilteredTours = async (criteria, currentPage, toursPerPage) => {
+    const url = `http://localhost:8000/api/v1/tours/getFilteredTours`;
+    try {
+      const response = await axios.post(url, criteria, {
+        params: { page: currentPage, size: toursPerPage },
+      });
+
+      if (response.status === 404 || response.data.content.length === 0) {
+        alert("Không tìm thấy tour phù hợp");
+        return { tours: [], totalPages: 0 };
+      }
+
+      return {
+        tours: response.data.content,
+        totalPages: response.data?.totalPages || 0,
+      };
+    } catch (error) {
+      console.error("Lỗi khi tải dữ liệu tours:", error);
+      alert("Không tìm thấy tour phù hợp");
+      return { tours: [], totalPages: 0 };
+    }
+  };
 
   const fetchTours = async () => {
     try {
@@ -63,6 +98,16 @@ function ListTour() {
       if (name) {
         url = `http://localhost:8000/api/v1/tours/by-name`;
         params.name = name;
+      } else if (criteria) {
+        const result = await fetchFilteredTours(
+          criteria,
+          currentPage,
+          toursPerPage
+        );
+
+        setTourList(result.tours);
+        setTotalPages(result.totalPages);
+        return;
       } else {
         params.region = region;
 
@@ -106,11 +151,12 @@ function ListTour() {
     }
   };
 
-  console.log("Type tour: ", typeTour);
-
   useEffect(() => {
     fetchTours();
-  }, [name, region, currentPage, toursPerPage, sortType, typeTour]);
+    if(tours){
+      setTourList(tours);
+    }
+  }, [name, region, currentPage, toursPerPage, sortType, typeTour, criteria, tours]);
   console.log("List Tour:", tourList);
 
   //Animation text
@@ -183,78 +229,24 @@ function ListTour() {
     };
   }, []);
 
-  // Hàm định dạng giá tiền
-  const formatCurrency = (amount) => {
-    return amount.toLocaleString("vi-VN", {
-      style: "currency",
-      currency: "VND",
-      minimumFractionDigits: 0, // không hiển thị số thập phân
-      maximumFractionDigits: 0,
-    });
-  };
-
-  const formatDate = (dateString) => {
-    const date = new Date(dateString);
-    const day = String(date.getDate()).padStart(2, "0"); // Lấy ngày và đảm bảo có 2 chữ số
-    const month = String(date.getMonth() + 1).padStart(2, "0"); // Lấy tháng (tháng 0 bắt đầu từ 0)
-    const year = date.getFullYear(); // Lấy năm
-    return `${day}/${month}/${year}`; // Trả về định dạng "dd/mm/yyyy"
-  };
-
-  //Tour Card By Region
-  const TourCard = ({ tour }) => {
-    return (
-      <div className="flex flex-col justify-between font-sriracha w-80 h-80 shadow-2xl shadow-gray-500/50 rounded-lg group overflow-hidden">
-        <img
-          src={tour.urlImage?.[0] || "default-image-url.jpg"}
-          alt={tour.nacme}
-          className="h-44 rounded-t-lg object-cover transform transition-transform duration-1000 ease-in-out group-hover:scale-105"
-        />
-        <p className="text-black font-bold m-1 mt-2 text-xl">{tour.name}</p>
-        <div className="flex ml-1 justify-between">
-          <p className="text-xl text-red-500">{formatCurrency(tour.price)}</p>
-          <div className="flex space-x-2 items-center mr-2">
-            {tour?.tourFeatureDTO?.transportationMode.includes("AIRPLANE") && (
-              <GiCommercialAirplane />
-            )}
-            {tour?.tourFeatureDTO?.transportationMode.includes("BUS") && (
-              <FaBus />
-            )}
-            {tour?.tourFeatureDTO?.transportationMode.includes("TRAIN") && (
-              <FaTrain />
-            )}
-            {tour?.tourFeatureDTO?.transportationMode.includes(
-              "PRIVATE_CAR"
-            ) && <FaCar />}
-          </div>
-        </div>
-        <p className="text-gray-400 text-sm ml-1 line-through self-start">
-          {formatCurrency(tour.oldPrice || 10000000)}
-        </p>
-        <div className="flex ml-1 justify-between items-center text-sm">
-          <div className="flex space-x-2 items-center">
-            <BsCalendar4Week />
-            <p>Khởi hành: {formatDate(tour.departureDate)}</p>
-          </div>
-
-          {/* Số chỗ trống di chuyển sát lề phải */}
-          <p className="text-sm text-green-600 mr-2">
-            {tour.availableSlot > 0
-              ? `Còn ${tour.availableSlot} chỗ trống`
-              : "Hết chỗ"}
-          </p>
-        </div>
-        <div className="flex ml-1 items-center justify-between text-sm mb-2">
-          <div className="flex space-x-2 items-center">
-            <BsCalendarHeart />
-            <p>
-              Thời gian: {tour.day} ngày {tour.night} đêm
-            </p>
-          </div>
-          <TiWeatherPartlySunny size={20} className="mr-2" />
-        </div>
-      </div>
-    );
+  const handleSetCriteria = async (values) => {
+    if (!user) {
+      console.log("User is not authenticated.");
+    } else {
+      try {
+        const updatedPreference = {
+          ...values,
+          cusId: user.userId, // Gán cusId là user.userId
+        };
+        // Nếu user hợp lệ, gọi addPreference và đợi kết quả
+        const response = await addPreference(updatedPreference, token);
+        console.log("Preference added successfully:", response);
+      } catch (error) {
+        console.error("Error adding preference:", error.message);
+      }
+    }
+    setCriteria(values); // Lưu giá trị từ Modal
+    console.log("Criteria set in ListTour:", values);
   };
 
   const handleNavigateDetailTour = (tour) => {
@@ -460,7 +452,11 @@ function ListTour() {
         </div>
         {/* Tittle */}
         <div className="">
-          <ModalSetCriteria visible={isModalVisible} onClose={handleClose} />
+          <ModalSetCriteria
+            visible={isModalVisible}
+            onClose={handleClose}
+            onSubmit={handleSetCriteria}
+          />
         </div>
         <div className="flex flex-col justify-center items-center space-y-5 mt-5">
           <p className="tour-text text-4xl hidden-animation text-textColorCustom font-dancing-script">
@@ -481,7 +477,7 @@ function ListTour() {
                 onClick={() => handleNavigateDetailTour(tour)}
                 className="mb-8"
               >
-                <TourCard tour={tour} />
+                <TourCard key={tour.tourId} tour={tour} user={user} />
               </button>
             ))}
           </div>

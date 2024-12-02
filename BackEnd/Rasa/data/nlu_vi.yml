@@ -5,6 +5,24 @@ nlu:
       - Chào bạn
       - Xin chào
       - Hello
+      - Chào
+      - Chào buổi sáng
+      - Chào buổi tối
+      - Chào bạn nhé
+      - Chào anh/chị
+      - Xin chào bạn
+      - Chào mừng bạn
+
+  - intent: goodbye
+    examples: |
+      - tạm biệt
+      - chào tạm biệt
+      - hẹn gặp lại
+      - tạm biệt bạn
+      - see you
+      - bye bye
+      - gặp lại sau
+      - chúc bạn một ngày tốt lành
 
   - intent: ask_tour_northern
     examples: |

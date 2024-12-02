@@ -79,10 +79,10 @@ public class TourService {
 
         return tourRepository.countToursByNameContainingIgnoreCase(name) // Đếm tổng số phần tử
                 .flatMap(totalElements -> {
-                    int totalPages = (int) Math.ceil((double) totalElements / size); // Tính tổng số trang
+                    int totalPages = (int) Math.ceil((double) totalElements / size);
                     return tourRepository.findToursByNameContainingIgnoreCaseWithPagination(name, size, offset) // Lấy dữ liệu phân trang
-                            .map(TourDTO::convertToDTO) // Chuyển sang DTO
-                            .collectList() // Gộp thành danh sách
+                            .flatMap(this::buildTourDTO)
+                            .collectList()
                             .map(content -> {
                                 Map<String, Object> response = new HashMap<>();
                                 response.put("content", content);
@@ -174,8 +174,6 @@ public class TourService {
                     return Mono.error(e); // Bạn có thể chọn cách xử lý lỗi khác
                 });
     }
-
-
 
 
     private Flux<TourDTO> buildTourDTO(Tour tour) {
@@ -327,7 +325,6 @@ public class TourService {
                         })
         );
     }
-
 
 
     //Lọc theo ngày khởi hành
