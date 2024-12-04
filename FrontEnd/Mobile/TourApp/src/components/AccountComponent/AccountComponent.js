@@ -7,6 +7,7 @@ import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import Octicons from '@expo/vector-icons/Octicons';
+import authApi from "../../api/authApi";
 const AccountComponent = ({ navigation, route }) => {
     // gioi tinh 1: nu, 2 nam
     const user = {
@@ -17,6 +18,16 @@ const AccountComponent = ({ navigation, route }) => {
         email: "baotruc123@gmail.com",
         phone: "0338030541"
     }
+
+    const handleLogout = async () => {
+        const isLoggedOut = await authApi.logout();
+        if (isLoggedOut) {
+          navigation.navigate("Login");
+        } else {
+          console.error("Logout failed");
+        }
+      };
+      
     return (
 
         <ScrollView style={{ backgroundColor: "#fafafa", height: "100%" }}>
@@ -131,7 +142,7 @@ const AccountComponent = ({ navigation, route }) => {
             </View>
             <View style={styles.viewBox} >
 
-                <Pressable style={styles.box}>
+                <Pressable style={styles.box} onPress={handleLogout}>
                     <AntDesign name="logout" size={24} color="black" />
                     <View style={styles.col}>
                         <Text style={styles.textTitle}>Đăng xuất</Text>

@@ -14,12 +14,12 @@ const PaymentPage = () => {
   const [isPaymentSuccess, setIsPaymentSuccess] = useState(false);
   const queryParams = new URLSearchParams(window.location.search);
   const bookingId = queryParams.get("bookingId");
+
   const { user } = useUser();
   const token = localStorage.getItem("token");
   const [payment, setPayment] = useState();
   const [booking, setBooking] = useState({});
   const [tour, setTour] = useState({});
-  
 
   useEffect(() => {
     const fetchBookingTour = async () => {
@@ -59,7 +59,7 @@ const PaymentPage = () => {
           payerId: payerID,
           bookingId: bookingId,
           discountId: null,
-          amount: details.purchase_units[0].amount.value, // Lấy số tiền từ purchase_units
+          amount: details.purchase_units[0].amount.value,
           transactionId: transactionId,
         }
       );
@@ -67,7 +67,7 @@ const PaymentPage = () => {
       console.log("Payment and booking status updated successfully.");
 
       if (user) {
-        await handleInteraction(tour.tourId, "BOOK", user, token); 
+        await handleInteraction(tour.tourId, "BOOK", user, token);
       }
     } catch (error) {
       console.error("Error updating payment and booking status:", error);
@@ -79,7 +79,7 @@ const PaymentPage = () => {
     if (user) {
       navigate("/bookings");
       setIsPaymentSuccess(false);
-    }else{
+    } else {
       navigate("/");
       setIsPaymentSuccess(false);
     }
@@ -96,67 +96,109 @@ const PaymentPage = () => {
 
   const vndToUsdRate = 24000; // tỷ giá VND -> USD, ví dụ 1 USD = 24000 VND
 
+  console.log("Tour: ", tour);
+
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    const day = String(date.getDate()).padStart(2, "0"); // Lấy ngày và đảm bảo có 2 chữ số
+    const month = String(date.getMonth() + 1).padStart(2, "0"); // Lấy tháng (tháng 0 bắt đầu từ 0)
+    const year = date.getFullYear(); // Lấy năm
+    return `${day}/${month}/${year}`; // Trả về định dạng "dd/mm/yyyy"
+  };
+
   return (
     <>
       <div className="w-full h-full flex flex-col">
         {/* Header Section */}
         <Header />
         <Menu />
-        {/* Booking Details Section */}
-        <div className="w-full bg-gray-50 py-6">
-          <div className="max-w-lg mx-auto text-center">
-            <h3 className="text-xl font-bold text-gray-700 mb-2">
-              Thông tin tour
-            </h3>
-            <p className="text-gray-600">
-              Tour: Miền Tây - Khám phá sông nước.
-            </p>
-            <p className="text-gray-600">Ngày khởi hành: 01/12/2024</p>
-          </div>
-        </div>
-        {/* Main Content Section */}
-        <div className="w-full max-w-lg mx-auto bg-white p-6 rounded-lg shadow-md mt-10">
-          <h2 className="text-2xl font-bold text-center text-gray-700 mb-4">
-            Thanh toán tour du lịch
-          </h2>
-          <p className="mt-4 text-center text-gray-600">
-            Số tiền cần thanh toán:{" "}
-            <span className="font-semibold">
-              {formatCurrency(amount * vndToUsdRate)}
-            </span>
-          </p>
-
-          <div className="mt-6">
-            <PayPalButton
-              amount={amount.toFixed(2)}
-              onSuccess={(details, data) => {
-                handlePaymentSuccess(details);
-              }}
-            />
-          </div>
-
-          {isPaymentSuccess && (
-            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-              <div className="bg-white rounded-lg p-6 text-center">
-                <h2 className="text-2xl font-semibold text-green-600">
-                  Thanh toán thành công!
-                </h2>
-                <p className="mt-2 text-gray-600">
-                  Cảm ơn bạn đã sử dụng dịch vụ của chúng tôi.
+        <div className="w-full bg-white py-8 shadow-lg rounded-lg">
+          <div className="max-w-7xl mx-auto flex space-x-10">
+            {/* Phần thông tin tour (Bên trái) */}
+            <div className="flex-1 bg-gray-50 p-6 rounded-lg shadow-md">
+              <h3 className="text-2xl font-semibold text-gray-800 mb-6">
+                Thông tin tour
+              </h3>
+              <div className="space-y-4">
+                <p className="text-lg font-medium text-gray-700">
+                  <span className="font-bold">Tour:</span> {tour.name}
                 </p>
-                <p className="mt-4 text-sm text-gray-500">
-                  Bạn sẽ được chuyển hướng đến trang đặt chỗ...
+                <p className="text-lg text-gray-600">
+                  <span className="font-bold">Ngày khởi hành:</span>{" "}
+                  {/* {formatDate(tour?.departureDate)} */}
                 </p>
-
-                <button
-                  onClick={handleCloseModal}
-                  className="mt-4 px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600 focus:outline-none"
-                >
-                  Đóng
-                </button>
+                <p className="text-lg text-gray-600">
+                  <span className="font-bold">Điểm xuất phát:</span>{" "}
+                  {tour.departureLocation}
+                </p>
+                <p className="text-lg text-gray-600">
+                  <span className="font-bold">Điểm đến:</span>{" "}
+                  {tour.destination}
+                </p>
+                <p className="text-lg text-gray-600">
+                  <span className="font-bold">Giá tour:</span>{" "}
+                  {/* {formatCurrency(tour?.price)} VND */}
+                </p>
+                {tour.includePromotions && (
+                  <p className="text-lg text-gray-600">
+                    <span className="font-bold">Khuyến mãi:</span> Có
+                  </p>
+                )}
+                <p className="text-lg text-gray-600">
+                  <span className="font-bold">Thời gian:</span> {tour.day} ngày{" "}
+                  {tour.night} đêm
+                </p>
               </div>
             </div>
-          )}
+
+            {/* Phần thanh toán (Bên phải) */}
+            <div className="flex-1">
+              <div className="w-full max-w-lg mx-auto bg-white p-6 rounded-lg shadow-md mt-10">
+                <h2 className="text-2xl font-bold text-center text-gray-700 mb-6">
+                  Thanh toán tour du lịch
+                </h2>
+                <p className="text-center text-xl text-gray-600 mb-4">
+                  Số tiền cần thanh toán:{" "}
+                  <span className="font-semibold text-green-500">
+                    {formatCurrency(amount * vndToUsdRate)}
+                  </span>
+                </p>
+
+                <div className="mt-6">
+                  <PayPalButton
+                    amount={amount.toFixed(2)}
+                    onSuccess={(details, data) => {
+                      handlePaymentSuccess(details);
+                    }}
+                  />
+                </div>
+
+                {/* Modal thanh toán thành công */}
+                {isPaymentSuccess && (
+                  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+                    <div className="bg-white rounded-lg p-8 text-center shadow-xl transform transition-all">
+                      <h2 className="text-2xl font-semibold text-green-600">
+                        Thanh toán thành công!
+                      </h2>
+                      <p className="mt-4 text-lg text-gray-600">
+                        Cảm ơn bạn đã sử dụng dịch vụ của chúng tôi.
+                      </p>
+                      <p className="mt-6 text-sm text-gray-500">
+                        Bạn sẽ được chuyển hướng đến trang đặt chỗ...
+                      </p>
+
+                      <button
+                        onClick={handleCloseModal}
+                        className="mt-6 px-6 py-2 bg-green-500 text-white rounded-md hover:bg-green-600 focus:outline-none transition-all"
+                      >
+                        Đóng
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
         </div>
 
         {/* Payment Confirmation Section */}

@@ -7,70 +7,71 @@ const axiosInstance = axios.create({
   baseURL: config.baseURL,
 });
 
-// axiosInstance.interceptors.request.use(
-//   async (config) => {
-//     try {
-//       config.headers["User-Agent"] += "Mobile";
+axiosInstance.interceptors.request.use(
+  async (config) => {
+    try {
+      // Chỉ thêm token nếu không phải endpoint đăng nhập
+      if (!config.url.includes("/auth/login")) {
+        const token = JSON.parse(await AsyncStorage.getItem("accessToken"));
+        if (token) {
+          config.headers.Authorization = `Bearer ${token}`;
+        }
+      }
 
-//       if (!config.url.includes("/auth/login")) {
-//         const token = JSON.parse(await AsyncStorage.getItem("accessToken"));
-//         if (token) {
-//           config.headers.Authorization = `Bearer ${token}`;
-//         }
-//       }
-//       return config;
-//     } catch (error) {
-//       return Promise.reject(error);
-//     }
-//   },
-//   (error) => {
-//     return Promise.reject(error);
-//   }
-// );
+      return config;
+    } catch (error) {
+      return Promise.reject(error);
+    }
+  },
+  (error) => Promise.reject(error)
+);
 
-// axiosInstance.interceptors.response.use(
-//   (response) => {
-//     return response;
-//   },
-//   async (error) => {
-//     const originalRequest = error.config;
-//     if (
-//       error.response.status === 401 &&
-//       !originalRequest.url.includes("auth/login")
-//     ) {
-//       try {
-//         const refreshToken = JSON.parse(
-//           await AsyncStorage.getItem("refreshToken")
-//         );
+// Interceptor cho response
+axiosInstance.interceptors.response.use(
+  (response) => {
+    return response;
+  },
+  async (error) => {
+    const originalRequest = error.config;
 
-//         Promise.all([refreshToken]).then(async (values) => {
-//           const refreshedTokenResponse = await axiosInstance.post(
-//             "/auth/refreshToken",
-//             {
-//               refreshToken: values[0],
-//             }
-//           );
-  
-//           const newAccessToken = refreshedTokenResponse.data.newAccessToken;
-//           await AsyncStorage.setItem(
-//             "accessToken",
-//             JSON.stringify(newAccessToken)
-//           );
-  
-//           originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
-//           return axiosInstance(originalRequest);
-//         });
+    // Nếu nhận được mã lỗi 401 và request không phải login, thử làm mới token
+    if (
+      error.response.status === 401 &&
+      !originalRequest.url.includes("auth/login")
+    ) {
+      try {
+        const refreshToken = JSON.parse(
+          await AsyncStorage.getItem("refreshToken")
+        );
 
-//       } catch (refreshError) {
-//         // console.error("Refresh token failed:", refreshError);
-//         showErrorToast("Your session has expired. Please login again.");
-//         await AsyncStorage.clear();
-//         return Promise.reject(refreshError);
-//       }
-//     }
-//     return Promise.reject(error);
-//   }
-// );
+        // Gửi request để lấy accessToken mới
+        const refreshedTokenResponse = await axiosInstance.post(
+          "/auth/refreshToken",
+          {
+            refreshToken: refreshToken,
+          }
+        );
+
+        const newAccessToken = refreshedTokenResponse.data.newAccessToken;
+        await AsyncStorage.setItem(
+          "accessToken",
+          JSON.stringify(newAccessToken)
+        );
+
+        // Cập nhật header Authorization với token mới và retry request cũ
+        originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
+        return axiosInstance(originalRequest);
+
+      } catch (refreshError) {
+        showErrorToast("Your session has expired. Please login again.");
+        await AsyncStorage.clear();
+        return Promise.reject(refreshError);
+      }
+    }
+
+    return Promise.reject(error);
+  }
+);
 
 const showErrorToast = (message) => {
   Toast.show({

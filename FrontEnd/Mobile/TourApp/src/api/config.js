@@ -1,6 +1,6 @@
 // config.js
 const config = {
-  baseURL: "http://192.168.10.28:8000/api", 
+  baseURL: "http://localhost:8000/api/v1", 
   // socketURL:  "http://192.168.1.7:3000"
 };
 

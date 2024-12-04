@@ -29,6 +29,9 @@ import resort from "../../assets/iconTour/resort.png";
 import river from "../../assets/iconTour/river.png";
 import target from "../../assets/iconTour/target.png";
 import jungle from "../../assets/iconTour/jungle.png";
+import bannerMB from "../../assets/banner/banner_MB.jpg";
+import bannerMT from "../../assets/banner/banner_MT.jpg";
+import bannerMN from "../../assets/banner/banner_MN.jpg";
 import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
 import ModalSetCriteria from "../../components/ModalSetCriteria";
@@ -48,6 +51,9 @@ function ListTour() {
 
   const { user } = useUser();
 
+  const [urlImageBanner, setUrlImageBanner] = useState("");
+  const [title, setTitle] = useState("");
+  const [regionTour, setRegionTour] = useState("");
   const [criteria, setCriteria] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [toursPerPage, setToursPerPage] = useState(12);
@@ -65,6 +71,28 @@ function ListTour() {
   const handleClose = () => setIsModalVisible(false);
 
   console.log("Criteria: ", criteria);
+
+  useEffect(() => {
+    if (region === "NORTH") {
+      setUrlImageBanner(bannerMB);
+      setTitle(
+        "Khám Phá Miền Bắc - Vùng Đất Văn Hóa Lịch Sử, Thiên Nhiên Hùng Vĩ và Ẩm Thực Đặc Sắc"
+      );
+      setRegionTour("MIỀN BẮC");
+    }else if(region === "CENTRAL"){
+      setUrlImageBanner(bannerMT);
+      setTitle(
+        "Du Lịch Miền Trung – Nơi Giao Thoa Giữa Văn Hóa Lịch Sử, Biển Cả và Món Ngon Truyền Thống"
+      );
+      setRegionTour("MIỀN TRUNG");
+    }else{
+      setUrlImageBanner(bannerMN);
+      setTitle(
+        "Hành Trình Miền Nam – Từ Sài Gòn Sầm Uất Đến Những Cảnh Đẹp Hoang Sơ và Ẩm Thực Đặc Sắc"
+      );
+      setRegionTour("MIỀN NAM");
+    }
+  }, [region]);
 
   const fetchFilteredTours = async (criteria, currentPage, toursPerPage) => {
     const url = `http://localhost:8000/api/v1/tours/getFilteredTours`;
@@ -309,17 +337,14 @@ function ListTour() {
         <Header />
         <Menu name="Tour" />
         <div className="w-full p-8 px-4 py-4 flex items-center justify-between">
-          <div className="text-xl pl-[40px] font-bold">MIỀN TÂY</div>
-          <div className="text-gray-600 pr-[40px]">
-            Khám phá Miền Tây sông nước – Vùng đất yên bình với những trải
-            nghiệm văn hóa, ẩm thực và thiên nhiên độc đáo.
-          </div>
+          <div className="text-xl pl-[40px] font-bold">{regionTour}</div>
+          <div className="text-gray-600 pr-[40px]">{title}</div>
         </div>
         <div className="relative w-full pl-[50px] pr-[50px] mx-auto">
           <img
             alt="Aerial view of a coastal area with cable cars and boats"
             className="w-full  h-[600px] object-cover "
-            src="https://res.cloudinary.com/doqbelkif/image/upload/v1726605769/9ae475e5-ab3e-4762-acd8-82a7a6e05086.png"
+            src={urlImageBanner}
           />
         </div>
 

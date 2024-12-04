@@ -123,7 +123,6 @@ function Bookings() {
   };
 
   const handlePayment = (record) =>{
-    // Điều hướng đến trang thanh toán với bookingId trong URL
     const bookingId = record.bookingDTO.bookingId;
     navigate(`/payment?bookingId=${bookingId}`);
   }
