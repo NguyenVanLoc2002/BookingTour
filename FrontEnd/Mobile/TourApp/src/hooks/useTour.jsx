@@ -12,7 +12,7 @@ const useGroup = () => {
     const fetchToursByRegion = async (region) => {      
         try {
             const response = await axiosInstance.get(
-                "/v1/tours/region",
+                "/tours/region",
                 {
                     params: { region, page: 1, size: 10, isAscending },
                 }
@@ -31,7 +31,7 @@ const useGroup = () => {
     };
     const fetchToursSort = async (region,currentPage,toursPerPage,sortType) => {
         try {
-          let url = `/v1/tours/region`;
+          let url = `/tours/region`;
           const params = {
             region,
             page: currentPage,
@@ -45,20 +45,20 @@ const useGroup = () => {
               break;
     
             case "priceDesc": // Giá cao nhất
-              url = `/v1/tours/region-order-by-price`;
+              url = `/tours/region-order-by-price`;
               params.isAscending = false;
               break;
     
             case "priceAsc": // Giá thấp nhất
-              url = `/v1/tours/region-order-by-price`;
+              url = `/tours/region-order-by-price`;
               params.isAscending = true;
               break;
             case "departureDateAsc": // Khởi hành sớm nhất
-              url = `/v1/tours/region-order-by-departure-date`;
+              url = `/tours/region-order-by-departure-date`;
               params.isAscending = true;
               break;
             case "departureDateDesc": // Khởi hành muộn nhất
-              url = `/v1/tours/region-order-by-departure-date`;
+              url = `/tours/region-order-by-departure-date`;
               params.isAscending = false;
               break;
             default:

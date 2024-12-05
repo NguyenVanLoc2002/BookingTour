@@ -9,7 +9,6 @@ const authApi = {
         email,
         password,
       });
-
       const { email: userEmail, role, token } = response.data;
 
       // Lưu token và thông tin người dùng vào AsyncStorage
@@ -41,13 +40,11 @@ const authApi = {
     }
   },
 
-  register: async (email, name, gender,dateOfBirth) => {
+  register: async (email, name) => {
     try {
       const response = await axiosInstance.post("/customers/addCustomer", {
         email,
-        name,
-        gender, 
-        dateOfBirth
+        name
       });
       return response.data;
     } catch (error) {

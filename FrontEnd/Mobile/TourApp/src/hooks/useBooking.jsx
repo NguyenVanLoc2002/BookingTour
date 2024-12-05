@@ -10,7 +10,7 @@ const useGroup = () => {
     const fetchToursByRegion = async (region) => {      
         try {
             const response = await axiosInstance.get(
-                "/v1/tours/region",
+                "/tours/region",
                 {
                     params: { region, page: 1, size: 3, isAscending },
                 }

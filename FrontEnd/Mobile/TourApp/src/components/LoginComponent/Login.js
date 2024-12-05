@@ -45,10 +45,12 @@ const Login = ({ navigation }) => {
                     <View style={styles.onlyOne}>
 
                         <Text style={styles.textTitle}>Email<Text style={[styles.textTitle, { color: "red" }]}> *</Text></Text>
+                      
                         <TextInput
                             style={[styles.formPicker, { paddingLeft: 15 }]}
                             value={email}
                             onChangeText={(text) => setEmail(text)}
+                            
                         />
                     </View>
                     <View style={styles.onlyOne}>
@@ -127,7 +129,8 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderColor: '#3FD0D4',
         borderRadius: 10,
-        paddingHorizontal: 10,
+        marginLeft:5,
+        marginRight:5,
         justifyContent: 'space-between'
     },
     formPickerPass: {

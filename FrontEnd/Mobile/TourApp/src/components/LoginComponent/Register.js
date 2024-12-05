@@ -29,38 +29,11 @@ const Register = ({ navigation }) => {
 
     const handleSubmitRegister = async (e) => {
         e.preventDefault(); // Ngăn chặn hành vi mặc định của form
-        const dateOfBirth = `${year}-${month < 10 ? "0" + month : month}-${day < 10 ? "0" + day : day
-          }`;
-        // Tính tuổi từ ngày sinh
-        const birthDate = new Date(dateOfBirth);
-        const today = new Date();
-        let age = today.getFullYear() - birthDate.getFullYear();
-        const monthDiff = today.getMonth() - birthDate.getMonth();
-        if (
-          monthDiff < 0 ||
-          (monthDiff === 0 && today.getDate() < birthDate.getDate())
-        ) {
-          age--;
-        }
-    
-        // Kiểm tra tuổi
-        if (age < 18) {
-          alert("Bạn phải từ 18 tuổi trở lên để đăng ký.");
-          return; // Dừng lại nếu không đủ tuổi
-        }
-    
-        if (!email || !name) {
-          alert("Vui lòng điền đầy đủ thông tin!");
-          return;
-        }
+       
     
         const data = {
           email,
           name,
-          address: "",
-          gender: gender === 0 ? false : true,
-          dateOfBirth,
-          phoneNumber: "",
         };
         console.log(data);
     
@@ -114,36 +87,6 @@ const Register = ({ navigation }) => {
                             value={email}
                             onChangeText={setEmail}
                         />
-                    </View>
-                    <View style={styles.onlyOne}>
-                        <Text style={styles.textTitle}>Mật khẩu<Text style={[styles.textTitle, { color: "red" }]}> *</Text></Text>
-                        <View style={styles.row}>
-                            <TextInput
-                                style={[styles.formPickerPass, { paddingLeft: 15 }]}
-                                value={password}
-                                onChangeText={setPassword}
-                                secureTextEntry={!passwordVisible}
-                                underlineColorAndroid="transparent"
-                            />
-                            <TouchableOpacity onPress={togglePasswordVisibility} style={styles.icon}>
-                                <FontAwesome5 name={passwordVisible ? "eye" : "eye-slash"} size={20} color="gray" />
-                            </TouchableOpacity>
-                        </View>
-                    </View>
-                    <View style={styles.onlyOne}>
-                        <Text style={styles.textTitle}>Nhập lại mật khẩu<Text style={[styles.textTitle, { color: "red" }]}> *</Text></Text>
-                        <View style={styles.row}>
-                            <TextInput
-                                style={[styles.formPickerPass, { paddingLeft: 15 }]}
-                                value={passwordRT}
-                                onChangeText={setPasswordRT}
-                                secureTextEntry={!passwordRTVisible}
-                                underlineColorAndroid="transparent"
-                            />
-                            <TouchableOpacity onPress={togglePasswordRTVisibility} style={styles.icon}>
-                                <FontAwesome5 name={passwordRTVisible ? "eye" : "eye-slash"} size={20} color="gray" />
-                            </TouchableOpacity>
-                        </View>
                     </View>
                 </View>
                 <Pressable style={styles.button} onPress={() => { dangKy() }}>
