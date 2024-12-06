@@ -12,7 +12,7 @@ axiosInstance.interceptors.request.use(
     try {
       // Chỉ thêm token nếu không phải endpoint đăng nhập
       if (!config.url.includes("/auth/login")) {
-        const token = JSON.parse(await AsyncStorage.getItem("accessToken"));
+        const token = await AsyncStorage.getItem("accessToken");
         if (token) {
           config.headers.Authorization = `Bearer ${token}`;
         }

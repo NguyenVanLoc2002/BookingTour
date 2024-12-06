@@ -25,6 +25,7 @@ const HomeComponent = ({ navigation }) => {
         setCentralTourList(centralTours);
         setNorthernTourList(northernTours);
         setSouthernTourList(southernTours);
+        console.log(centralTourList[1])
     }, [centralTours,northernTours, southernTours,]);
 
  

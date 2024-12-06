@@ -8,27 +8,23 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import Octicons from '@expo/vector-icons/Octicons';
 import authApi from "../../api/authApi";
-import axios from "axios";
+import axiosInstance from "./../../api/axiosInstance";
+// import { useAuthContext } from "../../contexts/AuthContext";
 const AccountComponent = ({ navigation, route }) => {
-    const [token, setToken] = useState("eyJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoiVVNFUiIsInN1YiI6InRyYW5iYW90cnVjMjAwMmJjQGdtYWlsLmNvbSIsImlhdCI6MTczMzM1MTYwMiwiZXhwIjoxNzMzNDM4MDAyfQ.gl-xecnhEGZ0zEbveKnvnVBkFNWfsApaqMh6DCxOmrw");
     const [authUser, setAuthUser] = useState(null); // Lưu thông tin người dùng
-    const fetchUserInfo = async (token) => {
-        try {
-            console.log(token);
-            const response = await axios.get(`http://localhost:8000/api/v1/customers/by-email`, {
-                headers: { Authorization: `Bearer ${token}` },
-            });
-            console.log(response.data)
-            setAuthUser(response.data);
-            return response.data;
-
-        } catch (error) {
-            throw new Error("Failed to fetch user info");
-        }
-    };
     useEffect(() => {
-       
-        fetchUserInfo("eyJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoiVVNFUiIsInN1YiI6InRyYW5iYW90cnVjMjAwMmJjQGdtYWlsLmNvbSIsImlhdCI6MTczMzM1MTYwMiwiZXhwIjoxNzMzNDM4MDAyfQ.gl-xecnhEGZ0zEbveKnvnVBkFNWfsApaqMh6DCxOmrw");
+        const fetchUserInfo = async () => {
+            try {
+                const response = await axiosInstance.get("/customers/by-email");
+                console.log(response.data)
+                setAuthUser(response.data);
+                return response.data;
+
+            } catch (error) {
+                throw new Error("Failed to fetch user info");
+            }
+        };
+        fetchUserInfo();
     }, []);
     // gioi tinh 1: nu, 2 nam
     const user = {
@@ -40,16 +36,16 @@ const AccountComponent = ({ navigation, route }) => {
         phone: "0338030541"
     }
 
-    
+
     const handleLogout = async () => {
         const isLoggedOut = await authApi.logout();
         if (isLoggedOut) {
-          navigation.navigate("Login");
+            navigation.navigate("Login");
         } else {
-          console.error("Logout failed");
+            console.error("Logout failed");
         }
-      };
-      
+    };
+
     return (
 
         <ScrollView style={{ backgroundColor: "#fafafa", height: "100%" }}>
@@ -64,8 +60,8 @@ const AccountComponent = ({ navigation, route }) => {
                     />
                 </View>
                 <View style={styles.viewHeader}>
-                    <Text style={styles.textName}>{user?.name}</Text>
-                    <Pressable style={styles.buttonXem} onPress={()=>{console.log('hihi')}}><Text style={styles.textButton}>Xem trang cá nhân</Text></Pressable>
+                    <Text style={styles.textName}>{authUser?.name}</Text>
+                    <Pressable style={styles.buttonXem}><Text style={styles.textButton}>Xem trang cá nhân</Text></Pressable>
                 </View>
             </View>
             <View style={styles.viewBox} >
@@ -100,8 +96,8 @@ const AccountComponent = ({ navigation, route }) => {
             <View style={styles.viewBox} >
                 <Text style={styles.textName}>Tài khoản và bảo mật</Text>
                 <Pressable style={styles.box}
-                  onPress={() => { navigation.navigate("AccountDetail", { user: user }); }}
-             >
+                    onPress={() => { navigation.navigate("AccountDetail", { user: authUser }); }}
+                >
                     <AntDesign name="user" size={24} color="black" />
                     <View style={styles.col}>
                         <Text style={styles.textTitle}>Thông tin tài khoản</Text>
@@ -130,7 +126,7 @@ const AccountComponent = ({ navigation, route }) => {
                     <View style={styles.rowBe}>
                         <Text style={styles.textTitle}>Tiền tệ</Text>
                         <Text style={styles.textSelect}>Việt Nam Đồng</Text>
-                    
+
                     </View>
 
                 </Pressable>
@@ -139,7 +135,7 @@ const AccountComponent = ({ navigation, route }) => {
                     <View style={styles.rowBe}>
                         <Text style={styles.textTitle}>Ngôn ngữ</Text>
                         <Text style={styles.textSelect}>Tiếng Việt</Text>
-                    
+
                     </View>
                 </Pressable>
             </View>
@@ -150,7 +146,7 @@ const AccountComponent = ({ navigation, route }) => {
                     <View style={styles.rowBe}>
                         <Text style={styles.textTitle}>Phiên bản ứng dụng</Text>
                         <Text style={styles.textSelect}>2.1.1</Text>
-                    
+
                     </View>
                 </Pressable>
                 <Pressable style={[styles.box, styles.borderTop]}>
@@ -257,14 +253,14 @@ const styles = StyleSheet.create({
         flex: 1,
         flexDirection: "row",
         justifyContent: 'space-between',
-        paddingLeft:25,
-        paddingRight:25
+        paddingLeft: 25,
+        paddingRight: 25
 
     },
-    textSelect:{
-         fontSize: 13,
+    textSelect: {
+        fontSize: 13,
         fontWeight: "400",
-        color:"gray"
+        color: "gray"
     }
 })
 

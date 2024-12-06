@@ -15,7 +15,6 @@ const authApi = {
       await AsyncStorage.setItem("accessToken", token);
       await AsyncStorage.setItem("email", userEmail);
       await AsyncStorage.setItem("role", role);
-
       // Hiển thị thông báo đăng nhập thành công
       Toast.show({
         type: "success",

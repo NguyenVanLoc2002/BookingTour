@@ -13,17 +13,12 @@ const Login = ({ navigation }) => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [passwordVisible, setPasswordVisible] = useState(false);
-
-   
-    console.log("EMail: ", email);
-    console.log("Pas: ", password);
     const togglePasswordVisibility = () => {
         setPasswordVisible(!passwordVisible);
     };
     const handleLogin  = async () => {
         try {
             const userData = await authApi.login(email, password);
-      
             navigation.navigate("TourComponent");
           } catch (error) {
             console.error(error.message);
@@ -58,7 +53,7 @@ const Login = ({ navigation }) => {
                         <Text style={styles.textTitle}>Mật khẩu<Text style={[styles.textTitle, { color: "red" }]}> *</Text></Text>
                         <View style={styles.row}>
                             <TextInput
-                                style={[styles.formPickerPass, { paddingLeft: 15 }]}
+                                style={[styles.formPickerPass, { paddingLeft: 10, width:150 }]}
                                 value={password}
                                 onChangeText={(text) => setPassword(text)}
                                 secureTextEntry={!passwordVisible}

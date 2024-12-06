@@ -13,22 +13,22 @@ const AccountDetail = ({ navigation, route }) => {
             <View style={styles.viewBox}>
                 <View style={styles.rowBe}>
                     <Text style={styles.textTieuDe}>Dữ liệu cá nhân</Text>
-                    <Pressable><Text style={styles.textButton}>THAY ĐỔI</Text></Pressable></View>
+                    <Pressable onPress={() => { navigation.navigate("FormEditPassenger", { passenger: user }); }}><Text style={styles.textButton}>THAY ĐỔI</Text></Pressable></View>
                 <Pressable style={styles.box}>
                     <Text style={styles.textTitle}>Họ tên</Text>
                     <Text style={styles.textSelect}>{user?.name}</Text>
                 </Pressable>
                 <Pressable style={[styles.box, styles.borderTop]}>
                     <Text style={styles.textTitle}>Giới tính</Text>
-                    <Text style={styles.textSelect}>{user?.gioiTinh ? (user?.gioiTinh == 1 ? "Nữ" : "Nam") : "Chưa có dữ liệu"}</Text>
+                    <Text style={styles.textSelect}>{user?.gender ? "Chưa có dữ liệu": (user?.gender == false ? "Nữ" : "Nam") }</Text>
                 </Pressable>
                 <Pressable style={[styles.box, styles.borderTop]}>
                     <Text style={styles.textTitle}>Ngày sinh</Text>
-                    <Text style={styles.textSelect}>{user?.ngaySinh}</Text>
+                    <Text style={styles.textSelect}>{user?.dateOfBirth}</Text>
                 </Pressable>
-                <Pressable style={[styles.box, styles.borderTop]}>
+                <Pressable style={[styles.boxCol, styles.borderTop]}>
                     <Text style={styles.textTitle}>Thành phố bạn đang ở</Text>
-                    <Text style={styles.textSelect}>{user?.city ? user?.city : "Chưa có dữ liệu"}</Text>
+                    <Text style={styles.textSelect}>{user?.address ?user?.address: "Chưa có dữ liệu"}</Text>
                 </Pressable>
             </View>
             <View style={styles.viewBox}>
@@ -50,7 +50,7 @@ const AccountDetail = ({ navigation, route }) => {
                     <Pressable><Text style={styles.textButton}>THAY ĐỔI</Text></Pressable></View>
                 <Pressable style={styles.box}>
                     <View>
-                        <Text style={styles.textTitle}>{user?.phone}</Text>
+                        <Text style={styles.textTitle}>{user?.phoneNumber}</Text>
                         <Text style={styles.textDetail}>Đây là số điện thoại bạn đã đăng ký với chúng tôi</Text>
                     </View>
                    <Pressable><MaterialCommunityIcons name="dots-horizontal" size={24} color="black" /></Pressable>
@@ -94,6 +94,14 @@ const styles = StyleSheet.create({
         backgroundColor: "#fff",
         flexDirection: "row",
         justifyContent: 'space-between',
+        padding: 10,
+        // alignItems: 'center',
+        paddingLeft: 15,
+        paddingRight: 10
+    },
+    boxCol: {
+        backgroundColor: "#fff",
+        flexDirection: "column",
         padding: 10,
         // alignItems: 'center',
         paddingLeft: 15,

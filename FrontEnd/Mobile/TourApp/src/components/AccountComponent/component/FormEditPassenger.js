@@ -8,9 +8,9 @@ import AntDesign from '@expo/vector-icons/AntDesign';
 const FormEditPassenger = ({ navigation, route }) => {
     const { passenger } = route.params
     const [name, setName] = useState(passenger?.name ? passenger?.name : '');
-    const [gender, setGender] = useState(passenger?.gioiTinh ? passenger?.gioiTinh : '');
+    const [gender, setGender] = useState(passenger?.gender ? passenger?.gender : false);
     const [zipCode, setZipCode] = useState(passenger?.zipCode ? passenger?.zipCode : '');
-    const [phone, setPhone] = useState(passenger?.phone ? passenger?.phone : '');
+    const [phone, setPhone] = useState(passenger?.phoneNumber ? passenger?.phoneNumber : '');
     const [email, setEmail] = useState(passenger?.email ? passenger?.email : '');
     const [passportNumber, setPassportNumber] = useState('');
     // const [passportCountry, setPassportCountry] = useState('Việt Nam');
@@ -19,12 +19,10 @@ const FormEditPassenger = ({ navigation, route }) => {
     // const [nationality, setNationality] = useState('Việt Nam');
 
     const listDanhXung = [
-        { label: 'Ông', value: 'ong' },
-        { label: 'Bà', value: 'ba' },
         { label: 'Anh', value: 'anh' },
         { label: 'Chị', value: 'chi' },
     ]
-    const [selectedDanhXung, setSelectedDanhXung] = useState(listDanhXung[0].value);
+    const [selectedDanhXung, setSelectedDanhXung] = useState(gender==false ? listDanhXung[1].value :listDanhXung[0].value);
 
     const listQuocGia = [
         { label: 'Việt Nam', value: 'VN' },
@@ -35,7 +33,7 @@ const FormEditPassenger = ({ navigation, route }) => {
     const [selectedQuocGia, setSelectedQuocGia] = useState(listQuocGia[0].value);
     const [selectedQuocTich, setSelectedQuocTich] = useState(listQuocGia[0].value);
 
-    const [dateBD, setDateBD] = useState(new Date(2002, 4, 6));
+    const [dateBD, setDateBD] = useState(passenger?.dateOfBirth ? new Date(passenger?.dateOfBirth) : new Date());
     const [showBD, setShowBD] = useState(false);
 
     const onChangeBD = (event, selectedDate) => {
@@ -49,7 +47,7 @@ const FormEditPassenger = ({ navigation, route }) => {
         setShowBD(true);
     };
     // ngày cấp passpore
-    const [datePP, setDatePP] = useState(new Date(2022, 5, 6));
+    const [datePP, setDatePP] = useState(new Date());
     const [showPP, setShowPP] = useState(false);
 
     const onChangePP = (event, selectedDate) => {
@@ -274,7 +272,11 @@ const FormEditPassenger = ({ navigation, route }) => {
 
                 </View>
             </View>
-
+            <View style={styles.rowRight}>
+            <Pressable style={styles.buttonHoanThanh}>
+                        <Text style={styles.textDat}>HOÀN THÀNH</Text>
+                    </Pressable>
+            </View>
 
         </ScrollView>
     );
@@ -323,6 +325,12 @@ const styles = StyleSheet.create({
         flex: 1,
         flexDirection: "row",
         justifyContent: 'space-between',
+        padding: 8,
+    },
+    rowRight: {
+        flex: 1,
+        flexDirection: "row",
+        justifyContent: 'flex-end',
         padding: 8,
     },
     row: {
@@ -375,6 +383,23 @@ const styles = StyleSheet.create({
     },
     onlyOne: {
         padding: 8,
+    },
+    buttonHoanThanh: {
+        height: 40,
+        backgroundColor: "#3FD0D4",
+        justifyContent: "center",
+        width: 150,
+        alignItems: "center",
+        borderRadius: 10,
+        marginRight: 10,
+        fontWeight:500,
+    },
+    textDat: {
+        textAlign: "center",
+        fontSize: 16,
+        fontWeight: "500",
+        color:"white"
+
     },
 })
 

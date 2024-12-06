@@ -1,7 +1,6 @@
 import { createContext, useContext, useState, useEffect } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import axios from "axios";
-const BASE_URL = "http://localhost:8000/api/v1";
+import axiosInstance from "./../api/axiosInstance";
 const AuthContext = createContext();
 
 export const useAuthContext = () => {
@@ -10,13 +9,12 @@ export const useAuthContext = () => {
 
 // AsyncStorage.clear();
 export const AuthContextProvider = ({ children }) => {
-    const [authUser, setAuthUser] = useState(null); // Lưu thông tin người dùng
-    // const [token, setToken] = useState(AsyncStorage.getItem("accessToken") || null); 
-    const [token, setToken] = useState("eyJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoiVVNFUiIsInN1YiI6InRyYW5iYW90cnVjMjAwMmJjQGdtYWlsLmNvbSIsImlhdCI6MTczMzM1MTYwMiwiZXhwIjoxNzMzNDM4MDAyfQ.gl-xecnhEGZ0zEbveKnvnVBkFNWfsApaqMh6DCxOmrw");
+    const [authUser, setAuthUser] = useState("hihi"); 
     useEffect(() => {
         const loadData = async () => {
+        
             try {
-                await fetchUserInfo(token); // Lấy thông tin người dùng sau khi đăng nhập
+                await fetchUserInfo(); 
             } catch (error) {
                 throw new Error("Error loading data from AsyncStorage:", error);
             }
@@ -36,11 +34,9 @@ export const AuthContextProvider = ({ children }) => {
         };
         saveData();
     }, [authUser]);
-    const fetchUserInfo = async (token) => {
+    const fetchUserInfo = async () => {
         try {
-            const response = await axios.get(`http://localhost:8000/api/v1/customers/by-email`, {
-                headers: { Authorization: `Bearer ${token}` },
-            });
+            const response = await axiosInstance.get(`/customers/by-email`);
             setAuthUser(response.data);
             return response.data;
 
@@ -53,10 +49,6 @@ export const AuthContextProvider = ({ children }) => {
             value={{
                 authUser,
                 setAuthUser,
-                accessToken,
-                setAccessToken,
-                refreshToken,
-                setRefreshToken,
             }}
         >
             {children}

@@ -3,99 +3,74 @@ import { View, Text, StyleSheet, Pressable, Image, ScrollView } from 'react-nati
 import AntDesign from '@expo/vector-icons/AntDesign';
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 
-const ListBooking = ({ navigation, route, listBooking, trangThai }) => {
+const ListBooking = ({ navigation, route, listBooking }) => {
     //trang thai 1 cho thanh toan, 2 da dat, 3 da hoan thanh, 4 da huy
     const loaiBooking = (loai) => {
-        if (loai == 1)
-            return "Chờ thanh toán"
-        else if (loai == 2)
-            return "Đã đặt"
-        else if (loai == 3)
-            return "Đã hoàn thành"
-        else if (loai == 4)
+        if (loai == "PENDING_CONFIRMATION")
+            return "Chờ xác nhận"
+        else if (loai == "CONFIRMED")
+            return "Đã xác nhận"
+        else if (loai == "PAID")
+            return "Đã thanh toán"
+        else if (loai == "REFUNDED")
             return "Đã hủy"
-        else
-            return "Đang xử lý"
     };
     const mauTrangThai = (loai) => {
-        if (loai == 1)
+        if (loai == "PENDING_CONFIRMATION")
             return "#FFCCCC"
-        else if (loai == 2)
+        else if (loai == "CONFIRMED")
             return "#3FD0D4"
-        else if (loai == 3)
+        else if (loai == "PAID")
             return "#fff"
-        else if (loai == 4)
+        else if (loai == "REFUNDED")
             return "#E1E1E1"
+    };
+    const formatDate = (dateString) => {
+        const formattedDay = dateString[2].toString().padStart(2, "0");
+        const formattedMonth = dateString[1].toString().padStart(2, "0");
+        return `${formattedDay}/${formattedMonth}/${dateString[0]}`;
     };
     return (
         <ScrollView style={styles.tourContainer}>
             {listBooking?.map((booking, index) => (
-                <View key={index}>
-                    {trangThai != 0 ? (
-                        <View>
-                            {booking?.trangThai == trangThai ? (
-                                <View style={styles.tourRow}>
+                <View key={index} style={styles.tourRow}>
+
+                    <Pressable
+                        style={[styles.itemTour, { backgroundColor: mauTrangThai(booking?.bookingDTO?.statusBooking) }]}
+                    onPress={() => { navigation.navigate("DetailTour", { tour: booking?.tourDTO }); }}
+                    >
+                        <View style={styles.tour}>
+                            <View style={styles.avt}>
+                                <Image
+                                    source={{
+                                        uri: booking?.tourDTO?.urlImage[0]
+                                    }}
+                                    style={styles.tourAvt}
+                                    resizeMode="cover"
+                                />
+                            </View>
+                            <View style={styles.detailTour}>
+                                <Text style={{ fontSize: 14, fontWeight: "500", padding: 5, paddingBottom: 10 }}>{booking?.tourDTO?.name}</Text>
+
+                                <View style={styles.row}><AntDesign name="calendar" size={16} color="black" /><Text style={{ fontSize: 12 }}>Khởi hành: {formatDate(booking?.tourDTO?.departureDate)}</Text></View>
+                                <View style={styles.row}><AntDesign name="clockcircleo" size={16} color="black" /><Text style={{ fontSize: 12 }}>Thời gian: {booking?.tourDTO?.day} ngày {booking?.tourDTO?.night} đêm</Text></View>
+
+                                <View style={styles.row}><AntDesign name="team" size={16} color="black" /><Text style={{ fontSize: 12 }}>Số vé đã đặt: {booking?.bookingDTO?.quantity}</Text></View>
+                                <View style={styles.rowAround}>
+                                    <Text style={{ fontSize: 12 }}>{loaiBooking(booking?.bookingDTO?.statusBooking)}</Text>
                                     <Pressable
-                                        style={[styles.itemTour, { backgroundColor: mauTrangThai(booking?.trangThai) }]}
-                                        onPress={() => { navigation.navigate("DetailTour", { tour: booking?.tour }); }}
-                                    >
-                                        <View style={styles.tour}>
-                                            <View style={styles.avt}>
-                                                <Image
-                                                    source={{
-                                                        uri: booking?.tour.url
-                                                    }}
-                                                    style={styles.tourAvt}
-                                                    resizeMode="cover"
-                                                />
-                                            </View>
-                                            <View style={styles.detailTour}>
-                                                <Text style={{ fontSize: 14, fontWeight: "500", padding: 5, paddingBottom: 10 }}>{booking?.tour.title}</Text>
-
-                                                <View style={styles.row}><AntDesign name="calendar" size={16} color="black" /><Text style={{ fontSize: 12 }}>Khởi hành: {booking?.tour.ngayKhoiHanh}</Text></View>
-                                                <View style={styles.row}><AntDesign name="clockcircleo" size={16} color="black" /><Text style={{ fontSize: 12 }}>Thời gian: {booking?.tour.thoiGian}</Text></View>
-
-                                                <View style={styles.row}><AntDesign name="team" size={16} color="black" /><Text style={{ fontSize: 12 }}>Số vé đã đặt: {booking?.soVe}</Text></View>
-                                                <View style={styles.row}><Text style={{ fontSize: 12 }}>{loaiBooking(booking?.trangThai)}</Text></View>
-                                            </View>
-                                        </View>
+                                        style={styles.buttonHoanThanh}
+                                        onPress={() => { navigation.navigate("Payment", { booking:  booking}); }}
+                                    ><Text style={styles.textDat}>Thanh toán</Text>
                                     </Pressable>
                                 </View>
-                            ) : (<View></View>)}
+                            </View>
                         </View>
-                    ) : (
-                        <View style={styles.tourRow}>
-                            <Pressable
-                                style={[styles.itemTour, { backgroundColor: mauTrangThai(booking?.trangThai) }]}
-                                onPress={() => { navigation.navigate("DetailTour", { tour: booking?.tour }); }}
-                            >
-                                <View style={styles.tour}>
-                                    <View style={styles.avt}>
-                                        <Image
-                                            source={{
-                                                uri: booking?.tour.url
-                                            }}
-                                            style={styles.tourAvt}
-                                            resizeMode="cover"
-                                        />
-                                    </View>
-                                    <View style={styles.detailTour}>
-                                        <Text style={{ fontSize: 14, fontWeight: "500", padding: 5, paddingBottom: 10 }}>{booking?.tour.title}</Text>
+                    </Pressable>
 
-                                        <View style={styles.row}><AntDesign name="calendar" size={16} color="black" /><Text style={{ fontSize: 12 }}>Khởi hành: {booking?.tour.ngayKhoiHanh}</Text></View>
-                                        <View style={styles.row}><AntDesign name="clockcircleo" size={16} color="black" /><Text style={{ fontSize: 12 }}>Thời gian: {booking?.tour.thoiGian}</Text></View>
-
-                                        <View style={styles.row}><AntDesign name="team" size={16} color="black" /><Text style={{ fontSize: 12 }}>Số vé đã đặt: {booking?.soVe}</Text></View>
-                                        <View style={styles.row}><Text style={{ fontSize: 12 }}>{loaiBooking(booking?.trangThai)}</Text></View>
-                                    </View>
-                                </View>
-                            </Pressable>
-                        </View>
-                    )
-                    }
                 </View>
             ))}
-        </ScrollView>
+        </ScrollView >
     );
 };
 
@@ -135,7 +110,8 @@ const styles = StyleSheet.create({
     },
 
     detailTour: {
-        paddingLeft: 5
+        paddingLeft: 5,
+        width:'60%'
     },
     row: {
         display: 'flex',
@@ -146,6 +122,25 @@ const styles = StyleSheet.create({
         display: 'flex',
         flexDirection: "row",
         justifyContent: "space-between"
+
+    },
+    buttonHoanThanh: {
+        height: 30,
+        backgroundColor: "#E1E1E1",
+        justifyContent: "center",
+        // width: 80,
+        alignItems: "center",
+        borderRadius: 10,
+        marginTop: 5,
+        fontWeight: 500,
+        marginBottom:5,
+    },
+    textDat: {
+        textAlign: "center",
+        fontSize: 13,
+        fontWeight: "500",
+        paddingLeft:10,
+        paddingRight:10,
 
     },
 

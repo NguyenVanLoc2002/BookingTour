@@ -16,13 +16,13 @@ import SetCriteria from "../components/HomeComponent/component/SetCriteria"
 import Login from "../components/LoginComponent/Login"
 import Register from "../components/LoginComponent/Register"
 import Authentic from "../components/LoginComponent/Authentic"
-
+import Payment from "../components/BookingComponent/component/Payment";
 const Stack = createNativeStackNavigator();
 
 export default function RootComponent() {
 
   return  (
-    <Stack.Navigator initialRouteName="MainComponent">
+    <Stack.Navigator initialRouteName="Login">
       <Stack.Screen
         name="TourComponent"
         component={MainComponent}
@@ -46,6 +46,7 @@ export default function RootComponent() {
        <Stack.Screen name="ListTour" component={ListTour} />
        <Stack.Screen name="Tour" component={Tour} />
        <Stack.Screen name="SetCriteria" component={SetCriteria} />
+       <Stack.Screen name="Payment" component={Payment} />
     </Stack.Navigator>
   ) 
 }
