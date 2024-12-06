@@ -45,7 +45,7 @@ const BookingComponent = ({ navigation, route }) => {
             // Lưu trữ các loại booking
             setPendingBookings(pendingBookings);
             setConfirmedBookings(confirmed);
-            setListBooking(confirmed);
+            setListBooking(pendingBookings);
         } catch (error) {
             console.error("Error fetching customer processing bookings:", error);
         }
@@ -263,8 +263,6 @@ const BookingComponent = ({ navigation, route }) => {
     // ]);
     const [selectTrangThai, setSelectTrangThai] = useState(1);
     const setTrangThai = (loai) => {
-        console.log(pendingBookings)
-        console.log(confirmedBookings)
         setSelectTrangThai(loai);
         if (loai == 1)
             setListBooking(pendingBookings);
@@ -277,11 +275,11 @@ const BookingComponent = ({ navigation, route }) => {
     };
     const loaiBooking = (loai) => {
         if (loai == 1)
-            return "Chờ thanh toán"
+            return "Chờ xác nhận"
         else if (loai == 2)
-            return "Đã đặt"
+            return "Đã xác nhận"
         else if (loai == 3)
-            return "Đã hoàn thành"
+            return "Đã thanh toán"
         else if (loai == 4)
             return "Đã hủy"
     };

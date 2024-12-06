@@ -8,11 +8,54 @@ import TourComponent from "./component/TourComponent"
 
 // const Tab = createMaterialTopTabNavigator();
 import useTour from "../../hooks/useTour";
+import axiosInstance from "../../api/axiosInstance";
 const HomeComponent = ({ navigation }) => {
     const { centralTours, northernTours, southernTours, fetchToursByRegion } = useTour();
     const [centralTourList, setCentralTourList] = useState([]);
     const [northernTourList, setNorthernTourList] = useState([])
     const [southernTourList, setSouthernTourList] = useState([])
+    const [recommendTour, setRecommendTour] = useState([]);
+    const [authUser, setAuthUser] = useState(null); // Lưu thông tin người dùng
+    useEffect(() => {
+        const fetchUserInfo = async () => {
+            try {
+                const response = await axiosInstance.get("/customers/by-email");
+                console.log(response.data)
+                setAuthUser(response.data);
+                return response.data;
+
+            } catch (error) {
+                throw new Error("Failed to fetch user info");
+            }
+        };
+        fetchUserInfo();
+    }, []);
+    useEffect(() => {
+        const fetchRecommendation = async () => {
+            if (!authUser) {
+                setRecommendTour([]); // Nếu user chưa đăng nhập, không gọi API
+                return;
+            }
+            const url = `/recommendation/${authUser.userId}?page=1&size=10`;
+
+            try {
+                const response = await axiosInstance.get(url);
+
+                if (response.data.content.length === 0) {
+                    // Xử lý khi không có gợi ý
+                    setRecommendTour([]);
+                    console.info("No recommendations found for this user");
+                } else {
+                    setRecommendTour(response.data.content);
+                }
+            } catch (error) {
+                console.error("Failed to fetch recommendation:", error);
+                setRecommendTour([]);
+            }
+        };
+
+        fetchRecommendation();
+    }, [authUser]);
     useEffect(() => {
         const fetchTours = async () => {
             await fetchToursByRegion("NORTH");
@@ -26,10 +69,10 @@ const HomeComponent = ({ navigation }) => {
         setNorthernTourList(northernTours);
         setSouthernTourList(southernTours);
         console.log(centralTourList[1])
-    }, [centralTours,northernTours, southernTours,]);
+    }, [centralTours, northernTours, southernTours,]);
 
- 
- const images = [
+
+    const images = [
         "https://res.cloudinary.com/doqbelkif/image/upload/v1726605769/9ae475e5-ab3e-4762-acd8-82a7a6e05086.png",
         "https://res.cloudinary.com/doqbelkif/image/upload/v1726605783/077dc171-f2ed-48e2-a4b4-2c20b5fa4bc7.png",
         "https://res.cloudinary.com/doqbelkif/image/upload/v1726605800/0c0179e2-43ac-447e-a579-d2a1fbcc61e0.png",
@@ -97,7 +140,7 @@ const HomeComponent = ({ navigation }) => {
     };
     const clickDanhChoBan = () => {
         setChoosedMuc(1);
-        console.log('tour',northernTourList);
+        console.log('tour', northernTourList);
     };
     const chooseMien = (a) => {
         setChoosedMien(a);
@@ -202,27 +245,31 @@ const HomeComponent = ({ navigation }) => {
                     ))}
                 </ScrollView>
             </View>
+            <View style={styles.banner}>
+                <View style={styles.mucContainer}>
+                    <View style={[styles.mucContent, { borderBottomWidth: choosedMuc == 0 ? 4 : 0 }]}>
+                        <Pressable style={[styles.buttonMuc, { backgroundColor: choosedMuc == 0 ? "#3FD0D4" : "#fff" }]} onPress={clickDeXuat}>
+                            <Text style={styles.textMuc}>Đề xuất</Text>
+                        </Pressable>
 
-            <View style={styles.mucContainer}>
-                <View style={[styles.mucContent, { borderBottomWidth: choosedMuc == 0 ? 4 : 0 }]}>
-                    <Pressable style={[styles.buttonMuc, { backgroundColor: choosedMuc == 0 ? "#3FD0D4" : "#fff" }]} onPress={clickDeXuat}>
-                        <Text style={styles.textMuc}>Đề xuất</Text>
-                    </Pressable>
-                </View>
+                    </View>
 
-                <View style={[styles.mucContent, { borderBottomWidth: choosedMuc == 0 ? 0 : 4 }]}>
-                    <Pressable style={[styles.buttonMuc, { backgroundColor: choosedMuc == 1 ? "#3FD0D4" : "#fff" }]} onPress={clickDanhChoBan}>
-                        <Text style={styles.textMuc}>Dành cho bạn</Text>
-                    </Pressable>
+                    <View style={[styles.mucContent, { borderBottomWidth: choosedMuc == 0 ? 0 : 4 }]}>
+                        <Pressable style={[styles.buttonMuc, { backgroundColor: choosedMuc == 1 ? "#3FD0D4" : "#fff" }]} onPress={clickDanhChoBan}>
+                            <Text style={styles.textMuc}>Dành cho bạn</Text>
+                        </Pressable>
+                    </View>
+
                 </View>
+                <TourComponent listTour={recommendTour} navigation={navigation} />
             </View>
             <View style={styles.banner}>
                 <View style={styles.rowBetween}>
                     <Text style={styles.tieuDe}>Ưu đãi tour giờ chót</Text>
-                    <Pressable onPress={() => { navigation.navigate("ListTour", { listTour: northernTourList, title: "TOUR GIỜ CHÓT",region:"NORTH" }); }}><Text style={styles.xemTatCa}>Xem tất cả</Text></Pressable>
+                    <Pressable onPress={() => { navigation.navigate("ListTour", { listTour: northernTourList, title: "TOUR GIỜ CHÓT", region: "NORTH" }); }}><Text style={styles.xemTatCa}>Xem tất cả</Text></Pressable>
                 </View>
 
-                <TourComponent listTour={northernTourList} navigation={navigation} />
+                {/* <TourComponent listTour={recommendTour} navigation={navigation} /> */}
             </View>
 
             <View style={styles.banner}>
@@ -261,16 +308,16 @@ const HomeComponent = ({ navigation }) => {
                 </View>
 
                 <View style={{ display: choosedMien == 0 ? "block" : "none" }}>
-                    <Pressable onPress={() => { navigation.navigate("ListTour", { listTour: northernTourList, title: "TOUR MIỀN BẮC",region:"NORTH"  }); }}><Text style={styles.xemTatCaOption}>Xem tất cả</Text></Pressable>
+                    <Pressable onPress={() => { navigation.navigate("ListTour", { listTour: northernTourList, title: "TOUR MIỀN BẮC", region: "NORTH" }); }}><Text style={styles.xemTatCaOption}>Xem tất cả</Text></Pressable>
                     <TourComponent listTour={northernTourList} navigation={navigation} />
                 </View>
                 <View style={{ display: choosedMien == 1 ? "block" : "none" }}>
-                    <Pressable onPress={() => { navigation.navigate("ListTour", { listTour: centralTourList, title: "TOUR MIỀN TRUNG",region:"CENTRAL"  }); }}><Text style={styles.xemTatCaOption}>Xem tất cả</Text></Pressable>
+                    <Pressable onPress={() => { navigation.navigate("ListTour", { listTour: centralTourList, title: "TOUR MIỀN TRUNG", region: "CENTRAL" }); }}><Text style={styles.xemTatCaOption}>Xem tất cả</Text></Pressable>
 
                     <TourComponent listTour={centralTourList} navigation={navigation} />
                 </View>
                 <View style={{ display: choosedMien == 2 ? "block" : "none" }}>
-                    <Pressable onPress={() => { navigation.navigate("ListTour", { listTour: southernTourList, title: "TOUR MIỀN NAM",region:"SOUTH"  }); }}><Text style={styles.xemTatCaOption}>Xem tất cả</Text></Pressable>
+                    <Pressable onPress={() => { navigation.navigate("ListTour", { listTour: southernTourList, title: "TOUR MIỀN NAM", region: "SOUTH" }); }}><Text style={styles.xemTatCaOption}>Xem tất cả</Text></Pressable>
                     <TourComponent listTour={southernTourList} navigation={navigation} />
                 </View>
             </View>
@@ -284,12 +331,12 @@ const HomeComponent = ({ navigation }) => {
                     </Pressable>
                 </View>
                 <View style={{ display: choosedOption == 0 ? "block" : "none" }}>
-                    <Pressable onPress={() => { navigation.navigate("ListTour", { listTour: southernTourList, title: "TOUR ĐANG HOT", region:"SOUTH"  }); }}>
+                    <Pressable onPress={() => { navigation.navigate("ListTour", { listTour: southernTourList, title: "TOUR ĐANG HOT", region: "SOUTH" }); }}>
                         <Text style={styles.xemTatCaOption}>Xem tất cả</Text></Pressable>
                     <TourComponent listTour={southernTourList} navigation={navigation} />
                 </View>
                 <View style={{ display: choosedOption == 1 ? "block" : "none" }}>
-                    <Pressable onPress={() => { navigation.navigate("ListTour", { listTour: centralTourList, title: "TOUR ĐANG GIẢM GIÁ" ,region:"CENTRAL" }); }}>
+                    <Pressable onPress={() => { navigation.navigate("ListTour", { listTour: centralTourList, title: "TOUR ĐANG GIẢM GIÁ", region: "CENTRAL" }); }}>
                         <Text style={styles.xemTatCaOption}>Xem tất cả</Text></Pressable>
                     <TourComponent listTour={centralTourList} navigation={navigation} />
                 </View>
