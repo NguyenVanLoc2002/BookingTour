@@ -34,10 +34,10 @@ const TourCard = ({ tour, user }) => {
     return `${day}/${month}/${year}`; // Trả về định dạng "dd/mm/yyyy"
   };
 
-  const handleNavigateDetail = async (tour) => {
+  const handleNavigateDetail = async (event,tour) => {
     if (event.target.closest("button")) return;
     await handleInteraction(tour.tourId, "VIEW", user, token);
-    navigate("/detail", { state: { tour } });
+    navigate(`/detail?ticketId=${tour.ticketId}`);
   };
 
   const handleSaveTour = async (tour) => {
@@ -63,7 +63,7 @@ const TourCard = ({ tour, user }) => {
   return (
     <div
       className="bg-white flex flex-col justify-between font-sriracha w-80 h-80 shadow-2xl shadow-gray-500/50 rounded-lg group overflow-hidden relative"
-      onClick={() => handleNavigateDetail(tour)}
+      onClick={(e) => handleNavigateDetail(e,tour)}
     >
       {/* Ảnh tour */}
       <img

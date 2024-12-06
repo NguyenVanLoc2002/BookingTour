@@ -5,7 +5,7 @@ import Menu from "../../layouts/Menu";
 import Footer from "../../layouts/Footer";
 import ModalSetCriteria from "../../components/ModalSetCriteria";
 import { useUser } from "../../contexts/UserContext";
-import { changePassword } from "../../services/api";
+import { changePassword, updateInfomation } from "../../services/api";
 import { message } from "antd";
 
 function Account() {
@@ -44,7 +44,7 @@ function Account() {
   }, [user]);
 
   console.log("DAY: ", day);
-  
+
   // Modal
   const [isModalVisible, setIsModalVisible] = useState(false);
   const showModal = () => {
@@ -64,7 +64,7 @@ function Account() {
   };
   const handleClose = () => setIsModalVisible(false);
 
-  const handleChinhSua = () => {
+  const handleFormat = () => {
     setIsDisabled(false);
   };
   const handleIsInfo = () => {
@@ -74,7 +74,7 @@ function Account() {
     setIsInfoAccount(false);
   };
 
-  const handleHuy = () => {
+  const handleCancle = () => {
     setIsDisabled(true);
   };
 
@@ -93,30 +93,27 @@ function Account() {
     : 31;
   const days = Array.from({ length: daysInMonth }, (_, i) => i + 1);
 
-  const handleSave = async () => {
-    const updateduser = {
-      name: name,
-      gender: gender,
-      dateOfBirth: `${day}/${month}/${year}`,
-      address: address,
-      // Add other fields as needed
+  const handleUpdateInfo = async () => {
+    const formatWithLeadingZero = (number) => {
+      return number < 10 ? `0${number}` : number;
     };
-
+    const date = `${year}-${formatWithLeadingZero(
+      month
+    )}-${formatWithLeadingZero(day)}`;
     try {
-      await axios.put(
-        "http://localhost:8000/api/v1/users/update",
-        updateduser,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
+      await updateInfomation(
+        user.userId,
+        name,
+        address,
+        date,
+        gender,
+        phoneNumber,
+        token
       );
-      alert("Information updated successfully!");
       setIsDisabled(true);
     } catch (error) {
       console.error("Error updating user data:", error);
-      alert("Failed to update information. Please try again.");
+      message.error("Lỗi khi cập nhật thông tin. Vui lòng thử lại!");
     }
   };
 
@@ -128,7 +125,7 @@ function Account() {
         return;
       }
 
-      if(newPassword != rePassword){
+      if (newPassword != rePassword) {
         message.error("Mật khẩu xác nhận mới không khớp!");
         return;
       }
@@ -156,6 +153,7 @@ function Account() {
       );
     }
   };
+  console.log("Phone: ", phoneNumber);
 
   return (
     <>
@@ -234,7 +232,7 @@ function Account() {
                     <h3 className="text-xl font-bold">Dữ liệu cá nhân</h3>
                     <button
                       className="text-xl font-bold "
-                      onClick={handleChinhSua}
+                      onClick={handleFormat}
                     >
                       THAY ĐỔI
                     </button>
@@ -370,12 +368,25 @@ function Account() {
                     </div>
                     <div className="flex justify-end space-x-4">
                       <button
-                        className="bg-gray-200 text-gray-500 py-2 px-4 rounded"
-                        onClick={handleHuy}
+                        className={`py-2 px-4 rounded ${
+                          isDisabled
+                            ? "bg-gray-200 text-gray-400 cursor-not-allowed"
+                            : "bg-gray-300 text-gray-500"
+                        }`}
+                        onClick={isDisabled ? null : handleCancle}
+                        disabled={isDisabled}
                       >
                         Hủy
                       </button>
-                      <button className="bg-gray-200 text-gray-500 py-2 px-4 rounded">
+                      <button
+                        className={`py-2 px-4 rounded ${
+                          isDisabled
+                            ? "bg-gray-200 text-gray-400 cursor-not-allowed"
+                            : "bg-cyan-300 text-gray-500"
+                        }`}
+                        onClick={isDisabled ? null : handleUpdateInfo}
+                        disabled={isDisabled}
+                      >
                         Lưu
                       </button>
                     </div>
@@ -390,9 +401,7 @@ function Account() {
                       </div>
                       <div className="flex justify-between items-center border-t border-gray-200 pt-4">
                         <div>
-                          <p className="text-gray-800 font-medium">
-                            {email}
-                          </p>
+                          <p className="text-gray-800 font-medium">{email}</p>
                           <p className="text-green-600 text-sm">
                             Nơi nhận thông báo
                           </p>

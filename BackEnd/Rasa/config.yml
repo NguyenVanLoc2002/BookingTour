@@ -31,8 +31,9 @@ pipeline:
     constrain_similarities: true
     # Fallback classifier: kiểm tra độ tin cậy của các intents
   - name: FallbackClassifier
-    threshold: 0.7
-    ambiguity_threshold: 0.1
+    threshold: 0.3 #Nếu độ tin cậy của intent thấp hơn giá trị này, fallback sẽ được kích hoạt.
+    ambiguity_threshold: 0.4 #Kiểm tra xem các intent có điểm số gần nhau hay không.
+    #Nếu độ chênh lệch giữa hai intent cao nhất < ambiguity_threshold, fallback sẽ được kích hoạt.
 
 # Configuration for Rasa Core.
 # https://rasa.com/docs/rasa/core/policies/
@@ -42,8 +43,8 @@ policies:
 # # See https://rasa.com/docs/rasa/policies for more information.
    - name: MemoizationPolicy
    - name: RulePolicy
-     core_fallback_threshold: 0.7  # Ngưỡng độ tin cậy của core cho fallback
-     core_fallback_action_name: "action_default_fallback"  # Tên action fallback
+     core_fallback_threshold: 0.4  # Ngưỡng độ tin cậy của core cho fallback
+     core_fallback_action_name: "utter_default"  # Tên action fallback
      enable_fallback_prediction: True  # Bật chế độ dự đoán fallback
    - name: UnexpecTEDIntentPolicy
      max_history: 5

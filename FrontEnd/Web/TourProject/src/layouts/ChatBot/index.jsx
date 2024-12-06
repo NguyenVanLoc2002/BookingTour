@@ -39,7 +39,9 @@ const ChatBot = () => {
         const rasaMessages = data.map((msg) => ({
           sender: "bot",
           text: msg.text,
+          buttons: msg.buttons || [], // Đảm bảo rằng nếu không có buttons thì gán là mảng rỗng
         }));
+
         setMessages([
           ...messages,
           { sender: "user", text: inputMessage },
@@ -50,16 +52,6 @@ const ChatBot = () => {
       }
 
       setInputMessage("");
-      // // phản hồi tự động
-      // setTimeout(() => {
-      //   setMessages((prevMessages) => [
-      //     ...prevMessages,
-      //     {
-      //       text: "Cảm ơn bạn đã liên hệ! Chúng tôi sẽ trả lời bạn sớm nhất.",
-      //       sender: "bot",
-      //     },
-      //   ]);
-      // }, 1000);
     }
   };
 
@@ -96,11 +88,11 @@ const ChatBot = () => {
           {messages.map((msg, index) => (
             <div
               key={index}
-              className={`flex my-1 ${
-                msg.sender === "user" ? "justify-end" : "justify-start"
+              className={`flex my-2 flex-col ${
+                msg.sender === "user" ? "items-end" : "items-start"
               }`}
             >
-              <p
+              <div
                 className={`p-2 pl-4 pr-4 text-lg rounded-2xl max-w-[75%] text-left shadow-md ${
                   msg.sender === "user"
                     ? "bg-customColor text-white"
@@ -108,7 +100,23 @@ const ChatBot = () => {
                 }`}
               >
                 {msg.text}
-              </p>
+                {/* Kiểm tra nếu tin nhắn có nút bấm */}
+                {msg.buttons && msg.buttons.length > 0 && (
+                  <div className="flex space-x-2 mt-2">
+                    {msg.buttons.map((button, buttonIndex) => (
+                      <button
+                        key={buttonIndex}
+                        onClick={() => {
+                          window.location.href = button.url; 
+                        }}
+                        className="w-full bg-blue-500 text-white rounded-lg py-2"
+                      >
+                        {button.title}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
             </div>
           ))}
         </div>

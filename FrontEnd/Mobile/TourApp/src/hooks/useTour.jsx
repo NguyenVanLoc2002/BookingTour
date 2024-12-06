@@ -9,10 +9,10 @@ const useGroup = () => {
     const [tourListSort, setTourListSort] = useState([]);
     const [totalPages, setTotalPages] = useState(1);
     //Call API Tour by Region
-    const fetchToursByRegion = async (region) => {      
+    const fetchToursByRegion = async (region) => {    
         try {
             const response = await axiosInstance.get(
-                "/v1/tours/region",
+                "/tours/region",
                 {
                     params: { region, page: 1, size: 10, isAscending },
                 }

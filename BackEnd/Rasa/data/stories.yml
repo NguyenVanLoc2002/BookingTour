@@ -2,29 +2,43 @@ version: "3.1"
 
 stories:
 
-- story: happy path
+- story: greet and respond
   steps:
   - intent: greet
   - action: utter_greet
 
-- story: sad path 1
+- story: goodbye path
   steps:
-  - intent: greet
-  - action: utter_greet
-  - intent: mood_unhappy
-  - action: utter_cheer_up
-  - action: utter_did_that_help
-  - intent: affirm
-  - action: utter_happy
-
-- story: sad path 2
-  steps:
-  - intent: greet
-  - action: utter_greet
-  - intent: deny
+  - intent: goodbye
   - action: utter_goodbye
 
 - story: introduction tour north
   steps:
   - intent: ask_tour_northern
   - action: action_show_northern_tours
+
+- story: ask about central tours
+  steps:
+  - intent: ask_tour_central
+  - action: action_show_central_tours
+
+- story: ask about south tours
+  steps:
+  - intent: ask_tour_south
+  - action: action_show_central_tours
+
+
+- story: ask about payments method
+  steps:
+    - intent: ask_payment_methods
+    - action: utter_ask_payment_methods
+
+- story: ask about cancellation policy
+  steps:
+    - intent: ask_cancellation_policy
+    - action: utter_ask_cancellation_policy
+
+- story: ask book a tour
+  steps:
+  - intent: ask_book_tour
+  - action: utter_ask_book_tour

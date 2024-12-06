@@ -15,8 +15,6 @@ const Login = ({ navigation }) => {
     const [passwordVisible, setPasswordVisible] = useState(false);
 
    
-    console.log("EMail: ", email);
-    console.log("Pas: ", password);
     const togglePasswordVisibility = () => {
         setPasswordVisible(!passwordVisible);
     };

@@ -189,6 +189,7 @@ public class TourService {
     private TourDTO createTourDTO(Tour tour, TourFeature tourFeature, TourTicketDTO ticket) {
         TourDTO tourDTO = TourDTO.convertToDTO(tour);
         tourDTO.setTourFeatureDTO(TourFeatureDTO.convertToDTO(tourFeature));
+        tourDTO.setTicketId(ticket.getTicketId());
         tourDTO.setDepartureDate(ticket.getDepartureDate());
         tourDTO.setDepartureLocation(ticket.getDepartureLocation());
         tourDTO.setAvailableSlot(ticket.getAvailableSlot());

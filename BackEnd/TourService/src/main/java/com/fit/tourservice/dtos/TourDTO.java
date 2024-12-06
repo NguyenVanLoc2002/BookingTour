@@ -23,6 +23,7 @@ public class TourDTO {
     private List<String> urlImage;
     private boolean includePromotions;
     private TourFeatureDTO tourFeatureDTO;
+    private Long ticketId;
     private LocalDate departureDate;
     private int availableSlot;
 
